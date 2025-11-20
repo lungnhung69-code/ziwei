@@ -2,63 +2,90 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>紫微斗数 - 专家格局版 (v5.1 稳定版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>紫微斗数 - 手机精修版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/iztro@2.5.3/dist/iztro.min.js"></script>
     <style>
-        body { font-family: "Microsoft YaHei", sans-serif; background-color: #f1f5f9; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        /* iOS 输入框重置 */
+        input[type="date"], input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 44px; background-color: #fff; }
+        select { -webkit-appearance: none; appearance: none; background-color: #fff; }
         .card { transition: all 0.3s ease; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
-        .loading { border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-right: 5px; margin-bottom: 4px; }
+        .loading { border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-right: 5px; }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="min-h-screen p-4 flex flex-col items-center">
 
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden border border-slate-200">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-md overflow-hidden border border-slate-100">
         <!-- 头部 -->
-        <div class="bg-slate-900 p-6 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-600/20 to-purple-600/20 z-0"></div>
-            <h1 class="text-2xl font-bold text-white tracking-wider relative z-10">🔮 紫微斗数 · 专家格局版</h1>
-            <p class="text-slate-300 text-xs mt-2 relative z-10">v5.1 稳定修复 · 真太阳时 · 智能格局分析</p>
+        <div class="bg-slate-900 p-6 text-center relative">
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
+            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 手机版</h1>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v6.0 适配 iOS/安卓 · 智能格局</p>
         </div>
 
         <!-- 输入区 -->
-        <div class="p-5 bg-slate-50 border-b border-slate-200">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <input type="date" id="birthDate" class="w-full bg-white border border-slate-300 rounded p-2 text-sm focus:border-indigo-500 outline-none">
-                <input type="time" id="birthTime" class="w-full bg-white border border-slate-300 rounded p-2 text-sm focus:border-indigo-500 outline-none">
-                <input type="text" id="location" placeholder="出生地 (如: 周口)" class="w-full bg-white border border-slate-300 rounded p-2 text-sm focus:border-indigo-500 outline-none">
-                <select id="gender" class="w-full bg-white border border-slate-300 rounded p-2 text-sm focus:border-indigo-500 outline-none">
-                    <option value="女">女</option>
-                    <option value="男">男</option>
-                </select>
+        <div class="p-5 space-y-4 bg-slate-50/50">
+            <div class="grid grid-cols-2 gap-3">
+                <!-- 日期 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">出生日期</label>
+                    <input type="date" id="birthDate" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
+                </div>
+                <!-- 时间 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">出生时间</label>
+                    <input type="time" id="birthTime" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
+                </div>
             </div>
-            <button onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded mt-3 transition shadow-md text-sm">
-                🔍 启动专家级排盘
+
+            <div class="grid grid-cols-2 gap-3">
+                <!-- 地点 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">出生城市</label>
+                    <input type="text" id="location" placeholder="如: 周口" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm" style="min-height: 44px;">
+                </div>
+                <!-- 性别 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">性别</label>
+                    <div class="relative">
+                        <select id="gender" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm appearance-none bg-white" style="min-height: 44px;">
+                            <option value="女">女</option>
+                            <option value="男">男</option>
+                        </select>
+                        <!-- 自定义下拉箭头 -->
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-200 text-sm mt-2">
+                🚀 开始排盘
             </button>
-            <p id="solarTimeHint" class="text-xs text-slate-400 mt-2 text-center min-h-[16px]"></p>
+            
+            <p id="solarTimeHint" class="text-[10px] text-slate-400 text-center min-h-[15px]"></p>
         </div>
 
         <!-- 结果区 -->
-        <div id="resultArea" class="hidden bg-white p-6 min-h-[300px]">
-            <div id="loading" class="hidden flex justify-center py-12"><div class="loading"></div></div>
-            <div id="forecastContent" class="space-y-8"></div>
-            <div id="errorMsg" class="hidden text-rose-500 text-center text-sm p-4 bg-rose-50 rounded border border-rose-100"></div>
+        <div id="resultArea" class="hidden bg-white border-t border-slate-100">
+            <div id="loading" class="hidden py-8 text-center"><div class="loading"></div><p class="text-xs text-slate-400 mt-2">正在推演天机...</p></div>
+            <div id="forecastContent" class="p-5 space-y-6"></div>
+            <div id="errorMsg" class="hidden m-4 text-rose-500 text-center text-sm p-3 bg-rose-50 rounded-lg border border-rose-100"></div>
         </div>
     </div>
 
     <script>
-        // === 1. 城市经度库 (扩充版) ===
         const CITY_LONGITUDES = {
             '北京': 116.40, '上海': 121.47, '天津': 117.20, '重庆': 106.55, 
             '周口': 114.65, '郑州': 113.62, '开封': 114.30, '洛阳': 112.45, '平顶山': 113.19, '安阳': 114.39, '新乡': 113.92, '许昌': 113.85, '漯河': 114.01, '南阳': 112.52, '商丘': 115.65, '信阳': 114.09, '驻马店': 114.02,
-            '哈尔滨': 126.63, '长春': 125.32, '沈阳': 123.43, '呼和浩特': 111.66, '石家庄': 114.52, '太原': 112.55, '西安': 108.93, '济南': 117.02, '乌鲁木齐': 87.62, '拉萨': 91.11, '西宁': 101.78, '兰州': 103.82, '银川': 106.25, '南京': 118.78, '武汉': 114.31, '杭州': 120.15, '合肥': 117.29, '福州': 119.28, '南昌': 115.85, '长沙': 112.93, '贵阳': 106.63, '成都': 104.06, '广州': 113.26, '深圳': 114.05, '昆明': 102.72, '南宁': 108.36, '海口': 110.32, '香港': 114.16, '台北': 121.50, '河南': 113.62
+            '武汉': 114.31, '长沙': 112.93, '广州': 113.26, '深圳': 114.05, '成都': 104.06, '西安': 108.93, '南京': 118.78, '杭州': 120.15, '沈阳': 123.43, '哈尔滨': 126.63, '济南': 117.02, '香港': 114.16, '台北': 121.50, '河南': 113.62
         };
 
-        // === 2. 星曜基本性质字典 ===
         const STAR_DESC = {
             'huaLu': { name: '化禄', type: 'lucky', w: 2, desc: '财禄、情缘' },
             'huaQuan': { name: '化权', type: 'lucky', w: 2, desc: '掌权、升迁' },
@@ -78,17 +105,16 @@
             'diJie': { name: '地劫', type: 'unlucky', w: -2, desc: '劫失' }
         };
 
-        // === 3. 格局规则引擎 ===
         const PATTERNS = [
-            { name: '火贪格', check: (stars) => stars.has('贪狼') && (stars.has('火星') || stars.has('铃星')), score: 5, desc: '🔥 火贪格：爆发运，利于突发横财、险中求胜。' },
-            { name: '禄马交驰', check: (stars) => (stars.has('禄存') || stars.has('化禄')) && stars.has('天马'), score: 4, desc: '🐎 禄马交驰：动中求财，越忙越有钱，利于远行。' },
-            { name: '阳梁昌禄', check: (stars) => stars.has('太阳') && stars.has('天梁') && stars.has('文昌') && stars.has('禄存'), score: 5, desc: '📚 阳梁昌禄：考运亨通，利于考试、学术研究。' },
-            { name: '辅弼拱主', check: (stars) => stars.has('紫微') && (stars.has('左辅') || stars.has('右弼')), score: 3, desc: '👑 辅弼拱主：得道多助，领导力增强，事半功倍。' },
-            { name: '空劫夹/照', check: (stars) => stars.has('地空') && stars.has('地劫'), score: -4, desc: '🌪️ 空劫同临：财来财去，宜修身养性，忌重金投资。' },
-            { name: '巨火羊', check: (stars) => stars.has('巨门') && stars.has('火星') && stars.has('擎羊'), score: -5, desc: '⚡ 巨火羊：防重大口舌冲突、意外，切勿冲动。' },
-            { name: '刑忌夹印', check: (stars) => stars.has('天相') && stars.has('化忌') && stars.has('擎羊'), score: -4, desc: '📜 刑忌夹印：小心文书合同陷阱，容易背锅。' },
-            { name: '铃昌陀武', check: (stars) => stars.has('铃星') && stars.has('文昌') && stars.has('陀罗') && stars.has('武曲'), score: -6, desc: '🌊 铃昌陀武：重大挫折信号，投资需极度谨慎。' },
-            { name: '禄逢冲破', check: (stars) => (stars.has('化禄') || stars.has('禄存')) && (stars.has('地空') || stars.has('地劫') || stars.has('化忌')), score: -3, desc: '💸 禄逢冲破：吉处藏凶，看着赚钱实际赔钱。' }
+            { name: '火贪格', check: (stars) => stars.has('贪狼') && (stars.has('火星') || stars.has('铃星')), score: 5, desc: '🔥 火贪格：爆发运，利于突发横财' },
+            { name: '禄马交驰', check: (stars) => (stars.has('禄存') || stars.has('化禄')) && stars.has('天马'), score: 4, desc: '🐎 禄马交驰：动中求财，越忙越有钱' },
+            { name: '阳梁昌禄', check: (stars) => stars.has('太阳') && stars.has('天梁') && stars.has('文昌') && stars.has('禄存'), score: 5, desc: '📚 阳梁昌禄：考运亨通，利于考试' },
+            { name: '辅弼拱主', check: (stars) => stars.has('紫微') && (stars.has('左辅') || stars.has('右弼')), score: 3, desc: '👑 辅弼拱主：得道多助，事半功倍' },
+            { name: '空劫夹/照', check: (stars) => stars.has('地空') && stars.has('地劫'), score: -4, desc: '🌪️ 空劫同临：财来财去，宜修身养性' },
+            { name: '巨火羊', check: (stars) => stars.has('巨门') && stars.has('火星') && stars.has('擎羊'), score: -5, desc: '⚡ 巨火羊：防重大口舌冲突、意外' },
+            { name: '刑忌夹印', check: (stars) => stars.has('天相') && stars.has('化忌') && stars.has('擎羊'), score: -4, desc: '📜 刑忌夹印：小心文书合同陷阱' },
+            { name: '铃昌陀武', check: (stars) => stars.has('铃星') && stars.has('文昌') && stars.has('陀罗') && stars.has('武曲'), score: -6, desc: '🌊 铃昌陀武：重大挫折信号，投资谨慎' },
+            { name: '禄逢冲破', check: (stars) => (stars.has('化禄') || stars.has('禄存')) && (stars.has('地空') || stars.has('地劫') || stars.has('化忌')), score: -3, desc: '💸 禄逢冲破：看着赚钱实际赔钱' }
         ];
 
         function getSolarOffset(locationName) {
@@ -126,9 +152,11 @@
             content.innerHTML = '';
             resultArea.classList.remove('hidden');
             errorMsg.classList.add('hidden');
+            // 滚动到结果区
+            setTimeout(() => { resultArea.scrollIntoView({behavior: "smooth", block: "start"}); }, 100);
 
             if (!dateStr || !timeStr) {
-                errorMsg.textContent = "请输入完整日期和时间";
+                errorMsg.textContent = "请先填好日期和时间哦~";
                 errorMsg.classList.remove('hidden');
                 return;
             }
@@ -141,10 +169,10 @@
                     const { index: timeIndex, fixedTimeStr } = getTrueSolarTimeIndex(dateStr, timeStr, offset);
                     
                     hint.textContent = Math.abs(offset) > 1 
-                        ? `* 真太阳时已校正为: ${fixedTimeStr} (经度偏差 ${Math.round(offset)}分)` 
-                        : `* 未检测到明显经度偏差，使用标准时间`;
+                        ? `*真太阳时: ${fixedTimeStr} (偏差${Math.round(offset)}分)` 
+                        : `*使用标准时间`;
 
-                    if (typeof iztro === 'undefined') throw new Error("库加载失败，请刷新页面");
+                    if (typeof iztro === 'undefined') throw new Error("网络小差，请刷新再试");
 
                     const gender = genderVal === '男' ? '男' : '女';
                     const astrolabe = iztro.astro.bySolar(dateStr, timeIndex, gender, true, 'zh-CN');
@@ -157,49 +185,37 @@
                     }
                 } catch (e) {
                     console.error(e);
-                    errorMsg.textContent = "程序运行错误: " + e.message;
+                    errorMsg.textContent = "出错了: " + e.message;
                     errorMsg.classList.remove('hidden');
                 }
                 loading.classList.add('hidden');
-            }, 600);
+            }, 500);
         }
 
         function getStarSetAndList(astrolabe, scope) {
             const monthIndex = scope.monthly.index;
-            // 0:本宫, 1:对宫, 2:财帛, 3:官禄
             const indices = [monthIndex, (monthIndex+6)%12, (monthIndex+4)%12, (monthIndex+8)%12];
             
             let starSet = new Set(); 
             let starList = []; 
 
-            // 1. 遍历四个宫位 (添加 || [] 防错)
             indices.forEach((idx, i) => {
                 const p = astrolabe.palace(idx);
                 const isBenGong = i === 0;
-                
                 const majors = p.majorStars || [];
                 const minors = p.minorStars || [];
-
                 [...majors, ...minors].forEach(s => {
                     starSet.add(s.name);
                     starList.push({ name: s.name, src: isBenGong ? '本宫' : '三方', type: 'static' });
                 });
             });
 
-            // 2. 添加流月四化 (添加 || [] 防错)
             const mutagens = scope.monthly.mutagens || [];
-            
             mutagens.forEach(m => {
                 starSet.add(m.name + m.mutagen); 
                 starSet.add(m.mutagen); 
                 starSet.add(m.name); 
-                
-                starList.push({ 
-                    name: m.name + m.mutagen, 
-                    src: '流变', 
-                    type: 'mutagen',
-                    rawType: m.mutagen 
-                });
+                starList.push({ name: m.name + m.mutagen, src: '流变', type: 'mutagen', rawType: m.mutagen });
             });
 
             return { starSet, starList };
@@ -212,13 +228,11 @@
             const monthIndex = scope.monthly.index;
             const palaceName = astrolabe.palace(monthIndex).name;
             const { starSet, starList } = getStarSetAndList(astrolabe, scope);
-            const lunarDate = scope.lunarDate ? scope.lunarDate.toString() : '';
+            const lunarDate = scope.lunarDate ? `${scope.lunarDate.month}月${scope.lunarDate.day}` : '';
 
             let matchedPatterns = [];
             PATTERNS.forEach(p => {
-                if (p.check(starSet)) {
-                    matchedPatterns.push(p);
-                }
+                if (p.check(starSet)) matchedPatterns.push(p);
             });
 
             let totalScore = 0;
@@ -229,98 +243,69 @@
                 else if (s.name.includes('化权')) key = 'huaQuan';
                 else if (s.name.includes('化科')) key = 'huaKe';
                 else if (s.name.includes('化忌')) key = 'huaJi';
-                else {
-                    key = Object.keys(STAR_DESC).find(k => STAR_DESC[k].name === s.name);
-                }
+                else key = Object.keys(STAR_DESC).find(k => STAR_DESC[k].name === s.name);
+                
                 if (key && STAR_DESC[key]) totalScore += STAR_DESC[key].w;
             });
 
-            let summaryTitle = "";
-            let summaryColor = "";
-            let summaryText = "";
-
-            if (totalScore >= 6) {
-                summaryTitle = "🚀 运势强劲";
-                summaryColor = "text-emerald-600";
-                summaryText = "吉星拱照，或成佳格，机遇显著，利于进攻。";
-            } else if (totalScore >= 2) {
-                summaryTitle = "📈 稳中向好";
-                summaryColor = "text-blue-600";
-                summaryText = "吉多凶少，虽有小波折，总体顺遂，宜积极争取。";
-            } else if (totalScore >= -2) {
-                summaryTitle = "⚖️ 平稳过渡";
-                summaryColor = "text-slate-600";
-                summaryText = "吉凶力量相当，得失互见，宜守成，心态平和。";
-            } else if (totalScore >= -6) {
-                summaryTitle = "🌪️ 阻力显现";
-                summaryColor = "text-orange-600";
-                summaryText = "煞星或忌星干扰较多，环境不友善，宜低调保守。";
-            } else {
-                summaryTitle = "🛑 严阵以待";
-                summaryColor = "text-red-600";
-                summaryText = "遭遇凶格或煞星云集，风险较高，凡事三思。";
-            }
+            let summaryTitle = "", summaryColor = "", summaryText = "";
+            if (totalScore >= 6) { summaryTitle = "🚀 运势强劲"; summaryColor = "text-emerald-600"; summaryText = "机遇显著，利于进攻。"; }
+            else if (totalScore >= 2) { summaryTitle = "📈 稳中向好"; summaryColor = "text-blue-600"; summaryText = "吉多凶少，积极争取。"; }
+            else if (totalScore >= -2) { summaryTitle = "⚖️ 平稳过渡"; summaryColor = "text-slate-600"; summaryText = "吉凶相当，心态平和。"; }
+            else if (totalScore >= -6) { summaryTitle = "🌪️ 阻力显现"; summaryColor = "text-orange-600"; summaryText = "环境不善，低调保守。"; }
+            else { summaryTitle = "🛑 严阵以待"; summaryColor = "text-red-600"; summaryText = "风险较高，凡事三思。"; }
 
             return `
-                <div class="card bg-white rounded-lg border border-slate-100 p-5 shadow-sm mb-6">
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                <div class="bg-white rounded-xl border border-slate-100 p-4 shadow-sm mb-4">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-3 mb-3">
                         <div>
                             <h3 class="text-lg font-bold text-slate-800">
-                                ${dateObj.getFullYear()}年${dateObj.getMonth()+1}月
-                                <span class="text-sm font-normal text-slate-500 ml-2">(农历 ${lunarDate})</span>
+                                ${dateObj.getMonth()+1}月
+                                <span class="text-xs font-normal text-slate-500 ml-1">(农历${lunarDate})</span>
                             </h3>
-                            <div class="text-xs text-slate-500 mt-1">
-                                流月命宫在【${palaceName}】，扫描三方四正
-                            </div>
+                            <div class="text-xs text-slate-500 mt-0.5">流月【${palaceName}】</div>
                         </div>
-                        <div class="text-right">
-                             <span class="text-lg font-bold ${summaryColor}">${summaryTitle}</span>
+                        <div class="text-right mt-1">
+                             <span class="text-sm font-bold ${summaryColor}">${summaryTitle}</span>
                         </div>
                     </div>
 
                     ${matchedPatterns.length > 0 ? `
-                        <div class="mb-4 bg-indigo-50 rounded-lg p-3 border border-indigo-100">
-                            <div class="text-xs font-bold text-indigo-800 mb-2 uppercase tracking-wide">✨ 命盘成格 (Key Patterns)</div>
-                            <div class="space-y-2">
+                        <div class="mb-3 bg-indigo-50 rounded-lg p-2.5 border border-indigo-100">
+                            <div class="space-y-1">
                                 ${matchedPatterns.map(p => `
-                                    <div class="flex items-start">
-                                        <span class="pattern-tag shrink-0 mt-0.5">格局</span>
-                                        <span class="text-sm text-slate-700 font-medium">${p.desc}</span>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center"><span class="pattern-tag">格局</span><span class="text-xs font-bold text-indigo-900">${p.name}</span></div>
+                                        <span class="text-xs text-slate-600 pl-1">${p.desc.split('：')[1]}</span>
                                     </div>
                                 `).join('')}
                             </div>
                         </div>
                     ` : ''}
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-400 mb-2">有利因子</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${getStarTags(starList, 'good')}
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-emerald-50/50 p-2 rounded-lg">
+                            <h4 class="text-[10px] font-bold text-emerald-600 mb-1.5 uppercase">有利</h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${getStarTags(starList, 'good') || '<span class="text-[10px] text-slate-300">无明显吉星</span>'}
                             </div>
                         </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-400 mb-2">风险因子</h4>
-                            <div class="flex flex-wrap gap-2">
-                                ${getStarTags(starList, 'bad')}
+                        <div class="bg-rose-50/50 p-2 rounded-lg">
+                            <h4 class="text-[10px] font-bold text-rose-600 mb-1.5 uppercase">警惕</h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${getStarTags(starList, 'bad') || '<span class="text-[10px] text-slate-300">无明显煞星</span>'}
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-4 pt-3 border-t border-slate-100 text-sm text-slate-600">
-                        <strong>💡 综合建议：</strong>${summaryText} 
-                    </div>
+                    <div class="text-xs text-slate-600">💡 <strong>建议：</strong>${summaryText}</div>
                 </div>
             `;
         }
 
         function getStarTags(list, type) {
-            let filtered = [];
-            let seen = new Set();
-
+            let filtered = [], seen = new Set();
             list.forEach(s => {
-                let isGood = false;
-                let isBad = false;
+                let isGood = false, isBad = false;
                 if (s.rawType) { 
                     if (['化禄','化权','化科'].includes(s.rawType)) isGood = true;
                     if (s.rawType === '化忌') isBad = true;
@@ -331,18 +316,15 @@
                         if (def.type === 'unlucky') isBad = true;
                     }
                 }
-
                 if (type === 'good' && isGood && !seen.has(s.name)) {
-                    filtered.push(`<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">${s.name}</span>`);
+                    filtered.push(`<span class="px-1.5 py-0.5 bg-white border border-emerald-100 text-emerald-700 rounded text-[10px] font-medium shadow-sm">${s.name}</span>`);
                     seen.add(s.name);
                 }
                 if (type === 'bad' && isBad && !seen.has(s.name)) {
-                    filtered.push(`<span class="px-2 py-1 bg-rose-100 text-rose-700 rounded text-xs font-medium">${s.name}</span>`);
+                    filtered.push(`<span class="px-1.5 py-0.5 bg-white border border-rose-100 text-rose-700 rounded text-[10px] font-medium shadow-sm">${s.name}</span>`);
                     seen.add(s.name);
                 }
             });
-
-            if (filtered.length === 0) return '<span class="text-slate-300 text-xs">无明显星曜</span>';
             return filtered.join('');
         }
     </script>
