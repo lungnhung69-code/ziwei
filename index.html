@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 生活指南版</title>
+    <title>紫微斗数 - 修复版</title>
+    <!-- 样式库 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/iztro@2.5.3/dist/iztro.min.js"></script>
+    <!-- 算法库：更换为 unpkg 源，试图解决微信内加载失败问题 -->
+    <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         input[type="date"], input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 44px; background-color: #fff; }
@@ -13,9 +15,9 @@
         .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-right: 5px; margin-bottom: 4px; white-space: nowrap; cursor: pointer; }
         .star-tag { cursor: pointer; transition: transform 0.1s; }
         .star-tag:active { transform: scale(0.95); }
+        .action-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; margin-bottom: 2px; }
         .loading { border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .action-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; margin-bottom: 2px; }
         /* 弹窗动画 */
         .modal-enter { opacity: 0; transform: scale(0.9); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
@@ -27,22 +29,22 @@
         <!-- 头部 -->
         <div class="bg-slate-900 p-6 text-center relative">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
-            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 生活指南</h1>
-            <p class="text-slate-300 text-xs mt-1 relative z-10">v8.0 趋吉避凶版 · 每日宜忌</p>
+            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 修复版</h1>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v8.1 网络优化 · 弹窗报错</p>
         </div>
 
         <!-- 输入区 -->
         <div class="p-5 space-y-4 bg-slate-50/50">
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">出生日期 (公历)</label>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">出生日期</label>
                     <input type="date" id="birthDate" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <p class="text-[10px] text-slate-400 mt-1">身份证上的阳历生日</p>
+                    <p class="text-[10px] text-slate-400 mt-1">公历(阳历)生日</p>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1">出生时间</label>
                     <input type="time" id="birthTime" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <p class="text-[10px] text-slate-400 mt-1">手表时间 (系统自动校正)</p>
+                    <p class="text-[10px] text-slate-400 mt-1">手表时间</p>
                 </div>
             </div>
 
@@ -65,7 +67,7 @@
                 </div>
             </div>
 
-            <button onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-200 text-sm mt-2">
+            <button id="calcBtn" onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-200 text-sm mt-2">
                 🚀 开始排盘
             </button>
             
@@ -74,12 +76,10 @@
 
         <!-- 结果区 -->
         <div id="resultArea" class="hidden bg-white border-t border-slate-100">
-            <div id="loading" class="hidden py-8 text-center"><div class="loading"></div><p class="text-xs text-slate-400 mt-2">正在推演天机...</p></div>
             <div class="p-3 text-center bg-yellow-50 text-yellow-700 text-xs border-b border-yellow-100">
-                💡 <strong>小贴士：</strong> 点击星星看解释，参考底部【宜忌指南】
+                💡 <strong>小贴士：</strong> 点击下方彩色的星星查看解释
             </div>
             <div id="forecastContent" class="p-5 space-y-6"></div>
-            <div id="errorMsg" class="hidden m-4 text-rose-500 text-center text-sm p-3 bg-rose-50 rounded-lg border border-rose-100"></div>
         </div>
     </div>
 
@@ -91,68 +91,37 @@
                 <h3 id="modalTitle" class="text-lg font-bold text-slate-800"></h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600">✕</button>
             </div>
-            <div class="space-y-3">
-                <p id="modalDesc" class="text-sm text-slate-600 leading-relaxed"></p>
-                <div class="bg-slate-50 p-3 rounded text-xs text-slate-500 italic">
-                    注：紫微斗数中，单星不能决定吉凶，需结合三方四正综合判断。
-                </div>
-            </div>
-            <button onclick="closeModal()" class="w-full mt-5 bg-slate-100 text-slate-700 py-2 rounded-lg text-sm font-bold hover:bg-slate-200">我知道了</button>
+            <p id="modalDesc" class="text-sm text-slate-600 leading-relaxed mb-4"></p>
+            <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-700 py-2 rounded-lg text-sm font-bold hover:bg-slate-200">我知道了</button>
         </div>
     </div>
 
     <script>
+        // 全局错误捕获
+        window.onerror = function(msg, url, line) {
+            alert("发生内部错误，请截图发给我:\n" + msg);
+            return true;
+        };
+
         const CITY_LONGITUDES = {
             '北京': 116.40, '上海': 121.47, '天津': 117.20, '重庆': 106.55, 
             '周口': 114.65, '郑州': 113.62, '开封': 114.30, '洛阳': 112.45, '平顶山': 113.19, '安阳': 114.39, '新乡': 113.92, '许昌': 113.85, '漯河': 114.01, '南阳': 112.52, '商丘': 115.65, '信阳': 114.09, '驻马店': 114.02,
             '武汉': 114.31, '长沙': 112.93, '广州': 113.26, '深圳': 114.05, '成都': 104.06, '西安': 108.93, '南京': 118.78, '杭州': 120.15, '沈阳': 123.43, '哈尔滨': 126.63, '济南': 117.02, '香港': 114.16, '台北': 121.50, '河南': 113.62
         };
 
-        // 1. 星曜解释字典
         const STAR_WIKI = {
-            '化禄': '【财富/情缘】事事顺遂，心情愉快，像秋天的收获。',
-            '化权': '【权力/控制】掌权升职，有行动力，但也容易固执霸道。',
-            '化科': '【名声/贵人】名气提升，考运好，有人赏识，逢凶化吉。',
-            '化忌': '【阻碍/纠结】不顺心，亏损，口舌争执，或者心里想不开。',
-            '禄存': '【存款/真财】实打实的钱财积蓄，做事稳重。',
-            '天马': '【奔波/变动】出差、旅游、跳槽。越动越有机会。',
-            '左辅': '【平辈贵人】朋友同事帮忙，效率加倍。',
-            '右弼': '【异性贵人】获得额外的帮助或资源。',
-            '天魁': '【长辈提拔】上司给机会，直接的帮助。',
-            '天钺': '【暗中相助】有人在背后说好话，间接的机遇。',
-            '擎羊': '【刑伤/冲动】像把刀。容易受伤、手术、冲突，但也适合开拓。',
-            '陀罗': '【拖延/纠结】像陀螺原地转。进展慢，内心纠结，有阻碍。',
-            '火星': '【爆发/火爆】突发事件。好的时候发横财，坏的时候发脾气。',
-            '铃星': '【暗亏/隐忍】看不见的损失，吃哑巴亏，心里憋屈。',
-            '地空': '【落空/创意】得而复失，钱花得莫名其妙。利于修行创意。',
-            '地劫': '【劫财/损失】半途而废，被人截胡，小心钱包。',
-            '文昌': '【文书/正途】利于考试、合同、正规途径的发展。',
-            '文曲': '【才艺/口才】利于演讲、艺术、创意、桃花。',
-            '巨门': '【口舌/沟通】是非多，易有误会，也适合靠嘴吃饭。',
-            '贪狼': '【欲望/交际】应酬多，桃花旺，吃喝玩乐机会多。'
+            '化禄': '【财富/情缘】事事顺遂，心情愉快，像秋天的收获。', '化权': '【权力/控制】掌权升职，有行动力，但也容易固执霸道。', '化科': '【名声/贵人】名气提升，考运好，有人赏识，逢凶化吉。', '化忌': '【阻碍/纠结】不顺心，亏损，口舌争执，或者心里想不开。',
+            '禄存': '【存款/真财】实打实的钱财积蓄，做事稳重。', '天马': '【奔波/变动】出差、旅游、跳槽。越动越有机会。', '左辅': '【平辈贵人】朋友同事帮忙，效率加倍。', '右弼': '【异性贵人】获得额外的帮助或资源。', '天魁': '【长辈提拔】上司给机会，直接的帮助。', '天钺': '【暗中相助】有人在背后说好话，间接的机遇。',
+            '擎羊': '【刑伤/冲动】像把刀。容易受伤、手术、冲突，但也适合开拓。', '陀罗': '【拖延/纠结】像陀螺原地转。进展慢，内心纠结，有阻碍。', '火星': '【爆发/火爆】突发事件。好的时候发横财，坏的时候发脾气。', '铃星': '【暗亏/隐忍】看不见的损失，吃哑巴亏，心里憋屈。',
+            '地空': '【落空/创意】得而复失，钱花得莫名其妙。利于修行创意。', '地劫': '【劫财/损失】半途而废，被人截胡，小心钱包。', '文昌': '【文书/正途】利于考试、合同、正规途径的发展。', '文曲': '【才艺/口才】利于演讲、艺术、创意、桃花。', '巨门': '【口舌/沟通】是非多，易有误会，也适合靠嘴吃饭。', '贪狼': '【欲望/交际】应酬多，桃花旺，吃喝玩乐机会多。'
         };
 
-        // 2. 宜忌行动指南 (v8.0 核心)
-        // key: 星曜名, yi: 宜做的事, ji: 忌做的事
         const ACTION_GUIDE = {
-            '化禄': { yi: ['谈薪资/奖金', '请客吃饭', '投资理财'], ji: ['过于乐观', '铺张浪费'] },
-            '化权': { yi: ['争取升职', '管理团队', '强力执行'], ji: ['刚愎自用', '得罪人', '硬碰硬'] },
-            '化科': { yi: ['考试/考证', '发表文章', '求医问药'], ji: ['作弊/造假', '隐瞒真相'] },
-            '化忌': { yi: ['低调读书', '反省复盘', '还债'], ji: ['签署合同', '与人争执', '开拓新业务'] },
-            '禄存': { yi: ['存钱/储蓄', '购买保险', '稳健经营'], ji: ['高风险借贷', '大额担保'] },
-            '天马': { yi: ['出差/旅游', '搬家/跳槽', '跑业务'], ji: ['宅在家里', '墨守成规'] },
-            '天魁': { yi: ['拜访长辈', '申请资源', '求职面试'], ji: ['傲慢无礼', '拒绝建议'] },
-            '天钺': { yi: ['拓展人脉', '相亲约会', '寻求合作'], ji: ['封闭自己', '忽视细节'] },
-            '文昌': { yi: ['签订合同', '考试学习', '处理文件'], ji: ['粗心大意', '做担保'] },
-            '文曲': { yi: ['创意设计', '演讲表达', '恋爱表白'], ji: ['感情用事', '花言巧语'] },
-            '擎羊': { yi: ['洗牙/献血', '健身运动', '看牙医'], ji: ['开快车', '极限运动', '冲动打架'] },
-            '陀罗': { yi: ['研究技术', '慢工细活', '瑜伽冥想'], ji: ['急于求成', '做重大决定'] },
-            '火星': { yi: ['速战速决', '购买彩票', '处理急事'], ji: ['发脾气', '玩火/电', '拖延症'] },
-            '铃星': { yi: ['心理咨询', '听音乐', '冷静思考'], ji: ['生闷气', '算计别人'] },
-            '地空': { yi: ['玄学/宗教', '创意构思', '断舍离'], ji: ['重金投资', '购物狂欢'] },
-            '地劫': { yi: ['捐款/布施', '破财消灾', '清理物品'], ji: ['与人合伙', '借钱给别人'] },
-            '巨门': { yi: ['演讲/谈判', '看牙医', '享受美食'], ji: ['背后议论', '祸从口出'] },
-            '贪狼': { yi: ['社交应酬', '美容美发', '学习才艺'], ji: ['烂桃花', '暴饮暴食', '贪小便宜'] }
+            '化禄': { yi: ['谈薪资', '请客', '投资'], ji: ['铺张', '浪费'] }, '化权': { yi: ['升职', '管理', '执行'], ji: ['刚愎', '树敌'] }, '化科': { yi: ['考试', '发表', '求医'], ji: ['作弊', '隐瞒'] }, '化忌': { yi: ['读书', '反省', '还债'], ji: ['签约', '争执', '开拓'] },
+            '禄存': { yi: ['存钱', '保险', '稳健'], ji: ['借贷', '担保'] }, '天马': { yi: ['出差', '搬家', '跑动'], ji: ['宅家', '守旧'] }, '天魁': { yi: ['拜访', '求职', '提问'], ji: ['傲慢', '拒绝'] }, '天钺': { yi: ['社交', '相亲', '合作'], ji: ['封闭', '马虎'] },
+            '文昌': { yi: ['签约', '考试', '文书'], ji: ['粗心', '担保'] }, '文曲': { yi: ['创意', '演讲', '表白'], ji: ['滥情', '诈骗'] }, '擎羊': { yi: ['洗牙', '健身', '看牙'], ji: ['飙车', '冒险', '打架'] }, '陀罗': { yi: ['钻研', '慢活', '冥想'], ji: ['急躁', '决断'] },
+            '火星': { yi: ['速决', '彩票', '急事'], ji: ['发火', '玩火', '拖延'] }, '铃星': { yi: ['咨询', '音乐', '思考'], ji: ['生闷气', '算计'] }, '地空': { yi: ['玄学', '创意', '断舍离'], ji: ['投资', '购物'] }, '地劫': { yi: ['捐款', '破财', '清理'], ji: ['合伙', '借出'] },
+            '巨门': { yi: ['演讲', '看牙', '美食'], ji: ['八卦', '乱说'] }, '贪狼': { yi: ['应酬', '美容', '才艺'], ji: ['烂桃花', '暴食'] }
         };
 
         const PATTERNS = [
@@ -166,18 +135,15 @@
         ];
 
         function showExplain(name) {
-            let key = name;
-            let desc = STAR_WIKI[key];
+            let key = name; let desc = STAR_WIKI[key];
             if (!desc) {
-                if (name.includes('化禄')) { key = '化禄'; desc = STAR_WIKI['化禄']; }
-                else if (name.includes('化权')) { key = '化权'; desc = STAR_WIKI['化权']; }
-                else if (name.includes('化科')) { key = '化科'; desc = STAR_WIKI['化科']; }
-                else if (name.includes('化忌')) { key = '化忌'; desc = STAR_WIKI['化忌']; }
+                if (name.includes('化禄')) key = '化禄'; else if (name.includes('化权')) key = '化权';
+                else if (name.includes('化科')) key = '化科'; else if (name.includes('化忌')) key = '化忌';
+                desc = STAR_WIKI[key];
             }
             if (!desc) return;
             document.getElementById('modalTitle').innerText = key;
             document.getElementById('modalDesc').innerText = desc;
-            
             const modal = document.getElementById('explainModal');
             const content = document.getElementById('modalContent');
             modal.classList.remove('hidden');
@@ -187,16 +153,13 @@
         function closeModal() {
             const modal = document.getElementById('explainModal');
             const content = document.getElementById('modalContent');
-            content.style.opacity = '0';
-            content.style.transform = 'scale(0.95)';
+            content.style.opacity = '0'; content.style.transform = 'scale(0.95)';
             setTimeout(() => { modal.classList.add('hidden'); }, 200);
         }
 
         function getSolarOffset(locationName) {
             let longitude = 120; 
-            for (let city in CITY_LONGITUDES) {
-                if (locationName.includes(city)) { longitude = CITY_LONGITUDES[city]; break; }
-            }
+            for (let city in CITY_LONGITUDES) { if (locationName.includes(city)) { longitude = CITY_LONGITUDES[city]; break; } }
             return (longitude - 120) * 4;
         }
 
@@ -204,46 +167,156 @@
             const dt = new Date(`${dateStr}T${timeStr}:00`);
             dt.setMinutes(dt.getMinutes() + offsetMinutes);
             const h = dt.getHours();
-            let index = Math.floor((h + 1) / 2);
-            if (index >= 12) index = 0; 
+            let index = Math.floor((h + 1) / 2); if (index >= 12) index = 0; 
             const fixedTimeStr = `${String(h).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
             return { index, fixedTimeStr };
         }
 
         async function calculate() {
+            const btn = document.getElementById('calcBtn');
             const dateStr = document.getElementById('birthDate').value;
             const timeStr = document.getElementById('birthTime').value;
             const location = document.getElementById('location').value || '';
             const genderVal = document.getElementById('gender').value;
             const resultArea = document.getElementById('resultArea');
-            const loading = document.getElementById('loading');
             const content = document.getElementById('forecastContent');
-            const errorMsg = document.getElementById('errorMsg');
             const hint = document.getElementById('solarTimeHint');
 
-            content.innerHTML = '';
-            resultArea.classList.remove('hidden');
-            errorMsg.classList.add('hidden');
-            setTimeout(() => { resultArea.scrollIntoView({behavior: "smooth", block: "start"}); }, 100);
+            if (!dateStr || !timeStr) { alert("请完整填写【出生日期】和【出生时间】！"); return; }
 
-            if (!dateStr || !timeStr) {
-                errorMsg.textContent = "⚠️ 请完整填写出生日期和时间";
-                errorMsg.classList.remove('hidden');
-                return;
-            }
+            // 视觉反馈：防止用户不知道点没点
+            btn.innerText = "🔄 正在精密推演...";
+            btn.disabled = true;
+            btn.classList.add('bg-gray-400');
 
-            loading.classList.remove('hidden');
-
+            // 模拟延迟，让UI渲染
             setTimeout(() => {
                 try {
+                    // 检查库是否加载
+                    if (typeof iztro === 'undefined') {
+                        throw new Error("算法库加载失败！\n可能原因：网络不稳定或被微信拦截。\n请尝试：\n1. 刷新页面\n2. 切换Wi-Fi/流量\n3. 使用手机自带浏览器打开");
+                    }
+
                     const offset = getSolarOffset(location);
                     const { index: timeIndex, fixedTimeStr } = getTrueSolarTimeIndex(dateStr, timeStr, offset);
-                    
-                    hint.textContent = Math.abs(offset) > 1 
-                        ? `*真太阳时: ${fixedTimeStr} (偏差${Math.round(offset)}分)` 
-                        : `*使用标准时间`;
-
-                    if (typeof iztro === 'undefined') throw new Error("网络加载慢，请刷新重试");
+                    hint.textContent = Math.abs(offset) > 1 ? `*真太阳时: ${fixedTimeStr} (偏差${Math.round(offset)}分)` : `*使用标准时间`;
 
                     const gender = genderVal === '男' ? '男' : '女';
-                    const
+                    const astrolabe = iztro.astro.bySolar(dateStr, timeIndex, gender, true, 'zh-CN');
+
+                    content.innerHTML = ''; // 清空旧结果
+                    const today = new Date();
+                    for (let i = 0; i < 3; i++) {
+                        let targetDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+                        const targetStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth()+1).padStart(2,'0')}-15 12:00:00`;
+                        content.innerHTML += generateDeepAnalysis(astrolabe, targetDate, targetStr);
+                    }
+
+                    resultArea.classList.remove('hidden');
+                    setTimeout(() => { resultArea.scrollIntoView({behavior: "smooth", block: "start"}); }, 100);
+
+                } catch (e) {
+                    alert("❌ 出错了：\n" + e.message);
+                } finally {
+                    // 恢复按钮
+                    btn.innerText = "🚀 开始排盘";
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-400');
+                }
+            }, 100);
+        }
+
+        function getStarSetAndList(astrolabe, scope) {
+            const monthIndex = scope.monthly.index;
+            const indices = [monthIndex, (monthIndex+6)%12, (monthIndex+4)%12, (monthIndex+8)%12];
+            let starSet = new Set(), starList = []; 
+            indices.forEach((idx, i) => {
+                const p = astrolabe.palace(idx);
+                const majors = p.majorStars || []; const minors = p.minorStars || [];
+                [...majors, ...minors].forEach(s => { starSet.add(s.name); starList.push({ name: s.name, src: i===0?'本宫':'三方', type: 'static' }); });
+            });
+            const mutagens = scope.monthly.mutagens || [];
+            mutagens.forEach(m => { starSet.add(m.name + m.mutagen); starSet.add(m.mutagen); starSet.add(m.name); starList.push({ name: m.name + m.mutagen, src: '流变', type: 'mutagen' }); });
+            return { starSet, starList };
+        }
+
+        function getAdvice(starList) {
+            let yiList = new Set(), jiList = new Set(), hasAdvice = false;
+            starList.forEach(s => {
+                let key = s.name;
+                if(s.name.includes('化禄')) key='化禄'; else if(s.name.includes('化权')) key='化权'; else if(s.name.includes('化科')) key='化科'; else if(s.name.includes('化忌')) key='化忌';
+                const guide = ACTION_GUIDE[key];
+                if (guide) { guide.yi.forEach(i => yiList.add(i)); guide.ji.forEach(i => jiList.add(i)); hasAdvice = true; }
+            });
+            if (!hasAdvice) { yiList.add('按部就班'); yiList.add('保持平常心'); jiList.add('急躁冒进'); jiList.add('熬夜'); }
+            return { yi: Array.from(yiList).slice(0,4), ji: Array.from(jiList).slice(0,4) };
+        }
+
+        function generateDeepAnalysis(astrolabe, dateObj, dateStr) {
+            const scope = astrolabe.horoscope(dateStr);
+            if (!scope || !scope.monthly) return '';
+            const monthIndex = scope.monthly.index;
+            const palaceName = astrolabe.palace(monthIndex).name;
+            const { starSet, starList } = getStarSetAndList(astrolabe, scope);
+            const lunarStr = scope.lunarDate ? scope.lunarDate.toString() : '';
+            let lunarShort = "农历月份";
+            if(lunarStr) { const match = lunarStr.match(/[零一二三四五六七八九十]+月/); if(match) lunarShort = "农历" + match[0]; }
+
+            let matchedPatterns = [];
+            PATTERNS.forEach(p => { if (p.check(starSet)) matchedPatterns.push(p); });
+
+            let totalScore = 0;
+            matchedPatterns.forEach(p => totalScore += p.score);
+            starList.forEach(s => {
+                if (s.name.includes('化禄') || s.name.includes('化权') || s.name.includes('化科')) totalScore += 1;
+                if (s.name.includes('化忌')) totalScore -= 1.5;
+                if (['左辅','右弼','天魁','天钺','禄存'].includes(s.name)) totalScore += 1;
+                if (['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)) totalScore -= 1.5;
+            });
+
+            let summaryTitle = "", summaryColor = "";
+            if (totalScore >= 5) { summaryTitle = "🚀 运势强劲"; summaryColor = "text-emerald-600"; }
+            else if (totalScore >= 2) { summaryTitle = "📈 稳中向好"; summaryColor = "text-blue-600"; }
+            else if (totalScore >= -2) { summaryTitle = "⚖️ 平稳过渡"; summaryColor = "text-slate-600"; }
+            else if (totalScore >= -6) { summaryTitle = "🌪️ 阻力显现"; summaryColor = "text-orange-600"; }
+            else { summaryTitle = "🛑 严阵以待"; summaryColor = "text-red-600"; }
+
+            const advice = getAdvice(starList);
+
+            return `
+                <div class="bg-white rounded-xl border border-slate-100 p-4 shadow-sm mb-4">
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-3 mb-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">${dateObj.getFullYear()}年${dateObj.getMonth()+1}月</h3>
+                            <div class="text-xs text-slate-500 mt-0.5 flex items-center"><span class="bg-slate-100 px-1.5 py-0.5 rounded mr-2">${lunarShort}</span><span>流月在【${palaceName}】</span></div>
+                        </div>
+                        <div class="text-right mt-1"><span class="text-sm font-bold ${summaryColor}">${summaryTitle}</span></div>
+                    </div>
+                    ${matchedPatterns.length > 0 ? `<div class="mb-3 bg-indigo-50 rounded-lg p-2.5 border border-indigo-100"><div class="space-y-2">${matchedPatterns.map(p => `<div class="flex flex-col" onclick="showExplain('${p.name}')"><div class="flex items-center"><span class="pattern-tag">格局</span><span class="text-xs font-bold text-indigo-900 underline decoration-dotted">${p.name}</span></div><span class="text-xs text-slate-600 pl-1">${p.desc.split('：')[1]}</span></div>`).join('')}</div></div>` : ''}
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-emerald-50/50 p-2 rounded-lg"><h4 class="text-[10px] font-bold text-emerald-600 mb-1.5 uppercase">吉象 (点击查看)</h4><div class="flex flex-wrap gap-1.5">${getStarTags(starList, 'good') || '<span class="text-[10px] text-slate-300">无明显吉星</span>'}</div></div>
+                        <div class="bg-rose-50/50 p-2 rounded-lg"><h4 class="text-[10px] font-bold text-rose-600 mb-1.5 uppercase">凶象 (点击查看)</h4><div class="flex flex-wrap gap-1.5">${getStarTags(starList, 'bad') || '<span class="text-[10px] text-slate-300">无明显煞星</span>'}</div></div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-1 gap-2">
+                        <div class="flex items-start"><span class="text-xs font-bold text-emerald-600 mr-2 mt-0.5 shrink-0">✅ 宜：</span><div class="flex flex-wrap gap-1">${advice.yi.map(t => `<span class="action-badge bg-emerald-100 text-emerald-700">${t}</span>`).join('')}</div></div>
+                        <div class="flex items-start"><span class="text-xs font-bold text-rose-600 mr-2 mt-0.5 shrink-0">❌ 忌：</span><div class="flex flex-wrap gap-1">${advice.ji.map(t => `<span class="action-badge bg-rose-100 text-rose-700">${t}</span>`).join('')}</div></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStarTags(list, type) {
+            let filtered = [], seen = new Set();
+            const BASE_DESC = {'化禄':'good','化权':'good','化科':'good','化忌':'bad','禄存':'good','天马':'good','左辅':'good','右弼':'good','天魁':'good','天钺':'good','擎羊':'bad','陀罗':'bad','火星':'bad','铃星':'bad','地空':'bad','地劫':'bad'};
+            list.forEach(s => {
+                let starType = '';
+                if(s.name.includes('化禄')||s.name.includes('化权')||s.name.includes('化科')) starType='good'; else if(s.name.includes('化忌')) starType='bad';
+                else { let key = Object.keys(BASE_DESC).find(k => s.name.includes(k)); if(key) starType = BASE_DESC[key]; }
+                if (type === 'good' && starType === 'good' && !seen.has(s.name)) { filtered.push(`<span class="star-tag px-1.5 py-0.5 bg-white border border-emerald-100 text-emerald-700 rounded text-[10px] font-medium shadow-sm" onclick="showExplain('${s.name}')">${s.name}</span>`); seen.add(s.name); }
+                if (type === 'bad' && starType === 'bad' && !seen.has(s.name)) { filtered.push(`<span class="star-tag px-1.5 py-0.5 bg-white border border-rose-100 text-rose-700 rounded text-[10px] font-medium shadow-sm" onclick="showExplain('${s.name}')">${s.name}</span>`); seen.add(s.name); }
+            });
+            return filtered.join('');
+        }
+    </script>
+</body>
+</html>
