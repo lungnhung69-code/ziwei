@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 修复版</title>
-    <!-- 样式库 -->
+    <title>紫微斗数 - 终极统一版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 算法库：更换为 unpkg 源，试图解决微信内加载失败问题 -->
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        input[type="date"], input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 44px; background-color: #fff; }
-        select { -webkit-appearance: none; appearance: none; background-color: #fff; }
+        /* 统一的下拉框样式 */
+        select { -webkit-appearance: none; appearance: none; background-color: #fff; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
+        input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 44px; background-color: #fff; }
         .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-right: 5px; margin-bottom: 4px; white-space: nowrap; cursor: pointer; }
         .star-tag { cursor: pointer; transition: transform 0.1s; }
         .star-tag:active { transform: scale(0.95); }
@@ -29,42 +28,40 @@
         <!-- 头部 -->
         <div class="bg-slate-900 p-6 text-center relative">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
-            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 修复版</h1>
-            <p class="text-slate-300 text-xs mt-1 relative z-10">v8.1 网络优化 · 弹窗报错</p>
+            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 统一版</h1>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v9.0 安卓/iOS 完美统一 · 下拉选择</p>
         </div>
 
         <!-- 输入区 -->
         <div class="p-5 space-y-4 bg-slate-50/50">
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">出生日期</label>
-                    <input type="date" id="birthDate" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <p class="text-[10px] text-slate-400 mt-1">公历(阳历)生日</p>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">出生时间</label>
-                    <input type="time" id="birthTime" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
-                    <p class="text-[10px] text-slate-400 mt-1">手表时间</p>
+            
+            <!-- 自定义日期选择器 (年/月/日) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5">出生日期 (阳历)</label>
+                <div class="flex space-x-2">
+                    <select id="selYear" class="w-[38%] border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11"></select>
+                    <select id="selMonth" class="w-[30%] border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11"></select>
+                    <select id="selDay" class="w-[32%] border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11"></select>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">出生城市</label>
-                    <input type="text" id="location" placeholder="如: 河南周口" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm" style="min-height: 44px;">
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">出生时间</label>
+                    <input type="time" id="birthTime" value="12:00" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">性别</label>
-                    <div class="relative">
-                        <select id="gender" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm appearance-none bg-white" style="min-height: 44px;">
-                            <option value="女">女</option>
-                            <option value="男">男</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                    </div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">性别</label>
+                    <select id="gender" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11">
+                        <option value="女">女</option>
+                        <option value="男">男</option>
+                    </select>
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5">出生城市</label>
+                <input type="text" id="location" placeholder="如: 河南周口" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm h-11">
             </div>
 
             <button id="calcBtn" onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-200 text-sm mt-2">
@@ -97,6 +94,50 @@
     </div>
 
     <script>
+        // === 日期选择器逻辑 (新) ===
+        function initDateSelectors() {
+            const selYear = document.getElementById('selYear');
+            const selMonth = document.getElementById('selMonth');
+            const selDay = document.getElementById('selDay');
+            const currentYear = new Date().getFullYear();
+
+            // 填充年份 (1930 - 2025)
+            for(let i = currentYear; i >= 1930; i--) {
+                selYear.add(new Option(i + '年', i));
+            }
+            selYear.value = 1990; // 默认选中1990
+
+            // 填充月份
+            for(let i = 1; i <= 12; i++) {
+                selMonth.add(new Option(i + '月', i));
+            }
+
+            // 更新日期列表
+            function updateDays() {
+                const y = parseInt(selYear.value);
+                const m = parseInt(selMonth.value);
+                const daysInMonth = new Date(y, m, 0).getDate();
+                const currentDay = selDay.value;
+                
+                selDay.innerHTML = '';
+                for(let i = 1; i <= daysInMonth; i++) {
+                    selDay.add(new Option(i + '日', i));
+                }
+                
+                // 尝试保持原选中的日期
+                if(currentDay && currentDay <= daysInMonth) {
+                    selDay.value = currentDay;
+                }
+            }
+
+            selYear.onchange = updateDays;
+            selMonth.onchange = updateDays;
+            updateDays(); // 初始化
+        }
+        
+        // 页面加载时初始化日期控件
+        initDateSelectors();
+
         // 全局错误捕获
         window.onerror = function(msg, url, line) {
             alert("发生内部错误，请截图发给我:\n" + msg);
@@ -174,7 +215,13 @@
 
         async function calculate() {
             const btn = document.getElementById('calcBtn');
-            const dateStr = document.getElementById('birthDate').value;
+            
+            // 获取自定义日期选择器的值
+            const y = document.getElementById('selYear').value;
+            const m = document.getElementById('selMonth').value.padStart(2, '0');
+            const d = document.getElementById('selDay').value.padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+            
             const timeStr = document.getElementById('birthTime').value;
             const location = document.getElementById('location').value || '';
             const genderVal = document.getElementById('gender').value;
@@ -182,19 +229,16 @@
             const content = document.getElementById('forecastContent');
             const hint = document.getElementById('solarTimeHint');
 
-            if (!dateStr || !timeStr) { alert("请完整填写【出生日期】和【出生时间】！"); return; }
+            if (!timeStr) { alert("请选择出生时间！"); return; }
 
-            // 视觉反馈：防止用户不知道点没点
             btn.innerText = "🔄 正在精密推演...";
             btn.disabled = true;
             btn.classList.add('bg-gray-400');
 
-            // 模拟延迟，让UI渲染
             setTimeout(() => {
                 try {
-                    // 检查库是否加载
                     if (typeof iztro === 'undefined') {
-                        throw new Error("算法库加载失败！\n可能原因：网络不稳定或被微信拦截。\n请尝试：\n1. 刷新页面\n2. 切换Wi-Fi/流量\n3. 使用手机自带浏览器打开");
+                        throw new Error("算法库加载失败！请检查网络。");
                     }
 
                     const offset = getSolarOffset(location);
@@ -204,7 +248,7 @@
                     const gender = genderVal === '男' ? '男' : '女';
                     const astrolabe = iztro.astro.bySolar(dateStr, timeIndex, gender, true, 'zh-CN');
 
-                    content.innerHTML = ''; // 清空旧结果
+                    content.innerHTML = ''; 
                     const today = new Date();
                     for (let i = 0; i < 3; i++) {
                         let targetDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
@@ -218,7 +262,6 @@
                 } catch (e) {
                     alert("❌ 出错了：\n" + e.message);
                 } finally {
-                    // 恢复按钮
                     btn.innerText = "🚀 开始排盘";
                     btn.disabled = false;
                     btn.classList.remove('bg-gray-400');
