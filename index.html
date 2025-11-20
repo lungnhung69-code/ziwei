@@ -12,7 +12,7 @@
         input[type="date"], input[type="time"] { -webkit-appearance: none; appearance: none; min-height: 44px; background-color: #fff; }
         select { -webkit-appearance: none; appearance: none; background-color: #fff; }
         .card { transition: all 0.3s ease; }
-        .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-right: 5px; margin-bottom: 4px; }
+        .pattern-tag { background: linear-gradient(to right, #8b5cf6, #6366f1); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-block; margin-right: 5px; margin-bottom: 4px; white-space: nowrap; }
         .loading { border: 3px solid #e2e8f0; border-top: 3px solid #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -24,18 +24,16 @@
         <div class="bg-slate-900 p-6 text-center relative">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
             <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 手机版</h1>
-            <p class="text-slate-300 text-xs mt-1 relative z-10">v6.0 适配 iOS/安卓 · 智能格局</p>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v6.1 紧急修复 · 农历显示正常</p>
         </div>
 
         <!-- 输入区 -->
         <div class="p-5 space-y-4 bg-slate-50/50">
             <div class="grid grid-cols-2 gap-3">
-                <!-- 日期 -->
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5">出生日期</label>
                     <input type="date" id="birthDate" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
                 </div>
-                <!-- 时间 -->
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5">出生时间</label>
                     <input type="time" id="birthTime" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm">
@@ -43,12 +41,10 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <!-- 地点 -->
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5">出生城市</label>
                     <input type="text" id="location" placeholder="如: 周口" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm" style="min-height: 44px;">
                 </div>
-                <!-- 性别 -->
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1.5">性别</label>
                     <div class="relative">
@@ -56,7 +52,6 @@
                             <option value="女">女</option>
                             <option value="男">男</option>
                         </select>
-                        <!-- 自定义下拉箭头 -->
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
@@ -152,7 +147,6 @@
             content.innerHTML = '';
             resultArea.classList.remove('hidden');
             errorMsg.classList.add('hidden');
-            // 滚动到结果区
             setTimeout(() => { resultArea.scrollIntoView({behavior: "smooth", block: "start"}); }, 100);
 
             if (!dateStr || !timeStr) {
@@ -195,9 +189,7 @@
         function getStarSetAndList(astrolabe, scope) {
             const monthIndex = scope.monthly.index;
             const indices = [monthIndex, (monthIndex+6)%12, (monthIndex+4)%12, (monthIndex+8)%12];
-            
-            let starSet = new Set(); 
-            let starList = []; 
+            let starSet = new Set(), starList = []; 
 
             indices.forEach((idx, i) => {
                 const p = astrolabe.palace(idx);
@@ -212,12 +204,9 @@
 
             const mutagens = scope.monthly.mutagens || [];
             mutagens.forEach(m => {
-                starSet.add(m.name + m.mutagen); 
-                starSet.add(m.mutagen); 
-                starSet.add(m.name); 
+                starSet.add(m.name + m.mutagen); starSet.add(m.mutagen); starSet.add(m.name); 
                 starList.push({ name: m.name + m.mutagen, src: '流变', type: 'mutagen', rawType: m.mutagen });
             });
-
             return { starSet, starList };
         }
 
@@ -228,12 +217,11 @@
             const monthIndex = scope.monthly.index;
             const palaceName = astrolabe.palace(monthIndex).name;
             const { starSet, starList } = getStarSetAndList(astrolabe, scope);
-            const lunarDate = scope.lunarDate ? `${scope.lunarDate.month}月${scope.lunarDate.day}` : '';
+            // 修复农历显示：直接使用 .toString() 确保兼容性
+            const lunarDate = scope.lunarDate ? scope.lunarDate.toString() : '未知农历';
 
             let matchedPatterns = [];
-            PATTERNS.forEach(p => {
-                if (p.check(starSet)) matchedPatterns.push(p);
-            });
+            PATTERNS.forEach(p => { if (p.check(starSet)) matchedPatterns.push(p); });
 
             let totalScore = 0;
             matchedPatterns.forEach(p => totalScore += p.score);
@@ -244,7 +232,6 @@
                 else if (s.name.includes('化科')) key = 'huaKe';
                 else if (s.name.includes('化忌')) key = 'huaJi';
                 else key = Object.keys(STAR_DESC).find(k => STAR_DESC[k].name === s.name);
-                
                 if (key && STAR_DESC[key]) totalScore += STAR_DESC[key].w;
             });
 
@@ -261,7 +248,7 @@
                         <div>
                             <h3 class="text-lg font-bold text-slate-800">
                                 ${dateObj.getMonth()+1}月
-                                <span class="text-xs font-normal text-slate-500 ml-1">(农历${lunarDate})</span>
+                                <span class="text-xs font-normal text-slate-500 ml-1">(农历 ${lunarDate})</span>
                             </h3>
                             <div class="text-xs text-slate-500 mt-0.5">流月【${palaceName}】</div>
                         </div>
