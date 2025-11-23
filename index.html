@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 宗师详解版</title>
+    <title>紫微斗数 - 深度解读版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <style>
@@ -25,8 +25,8 @@
     <div class="bg-white rounded-2xl shadow-lg w-full max-w-md overflow-hidden border border-slate-100 z-10">
         <div class="bg-slate-900 p-6 text-center relative">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
-            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 宗师详解</h1>
-            <p class="text-slate-300 text-xs mt-1 relative z-10">v11.0 手工校正 · 深度解读</p>
+            <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 深度解读</h1>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v12.0 增加身宫详解 · 命盘全局分析</p>
         </div>
 
         <div class="p-5 space-y-4 bg-slate-50/50">
@@ -88,90 +88,64 @@
     <script>
         const CITY_LONGITUDES = {'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'周口':114.65,'郑州':113.62,'开封':114.30,'洛阳':112.45,'平顶山':113.19,'安阳':114.39,'新乡':113.92,'许昌':113.85,'漯河':114.01,'南阳':112.52,'商丘':115.65,'信阳':114.09,'驻马店':114.02,'武汉':114.31,'长沙':112.93,'广州':113.26,'深圳':114.05,'成都':104.06,'西安':108.93,'南京':118.78,'杭州':120.15,'沈阳':123.43,'哈尔滨':126.63,'济南':117.02,'香港':114.16,'台北':121.50,'河南':113.62};
         
-        // 1. 命宫主星详解
+        // 1. 命宫主星 (性格核心)
         const MING_STAR_KEYWORDS = {
-            '紫微': '帝王之星，尊贵有领导力，但也容易耳根软、爱面子。', 
-            '天机': '智慧之星，足智多谋，善于策划，但容易思虑过重，变动多。', 
-            '太阳': '官禄之主，博爱无私，利于公职或传播，但也主劳碌奔波。', 
-            '武曲': '正财之星，刚毅果决，执行力强，不怒自威，略显孤独。', 
-            '天同': '福气之星，温和乐天，不与人争，但也可能有些懒散，坐享其成。', 
-            '廉贞': '次桃花星，长袖善舞，原则性强，爱憎分明，事业心重。',
-            '天府': '财库之星，稳重保守，善于理财守成，享受生活，有老板运。', 
-            '太阴': '田宅之主，细腻内敛，重情感，利于计划和内务，财富涓涓细流。', 
-            '贪狼': '欲望之星，多才多艺，长袖善舞，擅长交际应酬，桃花旺。', 
-            '巨门': '口舌之星，心思细密，观察力强，靠嘴吃饭，但也易惹是非。', 
-            '天相': '印星，公正无私，注重形象，辅助能力强，是极佳的幕僚人才。', 
-            '天梁': '荫星，老成持重，有原则，喜欢照顾人，利于医药法律宗教。', 
-            '七杀': '将星，肃杀冲劲，独断专行，勇于开拓，不畏艰难，人生大起大落。', 
-            '破军': '耗星，先破后立，创意无限，喜新厌旧，人生变动极大。'
+            '紫微': '【帝王之相】尊贵有领导力，但也容易耳根软、爱面子。', 
+            '天机': '【智多星】心思细腻，善于策划，学习能力极强。容易思虑过重，适合做谋士或专家。', 
+            '太阳': '【发光发热】博爱无私，利于公职或传播，但也主劳碌奔波，燃烧自己照亮别人。', 
+            '武曲': '【刚毅果决】正财之星，执行力强，不怒自威，略显孤独，适合金融或实业。', 
+            '天同': '【福星高照】温和乐天，不与人争，但也可能有些懒散，坐享其成。', 
+            '廉贞': '【长袖善舞】次桃花星，原则性强，爱憎分明，事业心重，公关能力强。',
+            '天府': '【财库之星】稳重保守，善于理财守成，享受生活，有老板运。', 
+            '太阴': '【温柔内敛】细腻重情感，利于计划和内务，财富涓涓细流，多有女性贵人。', 
+            '贪狼': '【多才多艺】欲望之星，长袖善舞，擅长交际应酬，桃花旺，适合艺术或公关。', 
+            '巨门': '【心思深沉】口舌之星，观察力强，靠嘴吃饭，但也易惹是非，适合律师或讲师。', 
+            '天相': '【宰相辅佐】公正无私，注重形象，辅助能力强，是极佳的幕僚人才。', 
+            '天梁': '【老成持重】荫星，有原则，喜欢照顾人，利于医药、法律、宗教、公益。', 
+            '七杀': '【勇往直前】肃杀冲劲，独断专行，勇于开拓，不畏艰难，人生大起大落。', 
+            '破军': '【先破后立】创意无限，喜新厌旧，人生变动极大，适合开创性工作。'
         };
 
-        // 2. 来因宫详解 (修正版)
+        // 2. 身宫详解 (人生归宿 - v12.0 新增)
+        const BODY_PALACE_DESC = {
+            '命宫': '【命运自主】身命同宫。您非常主观，相信命运掌握在自己手里。这辈子您最看重的是自我价值的实现，不太受外界影响。',
+            '夫妻宫': '【情缘为重】身宫在夫妻。您中晚年的运势重心、价值观深受感情、婚姻或异性合作伙伴的影响。由于对感情投入深，婚姻的好坏直接决定了您的后半生幸福。',
+            '财帛宫': '【财富至上】身宫在财帛。您非常看重经济基础，认为没有钱万万不能。中晚年容易因为追求财富而忙碌，通常财运不错。',
+            '迁移宫': '【动荡人生】身宫在迁移。您注定要在外奔波，闲不住。不仅适合去外地发展，而且容易受环境和人际关系的影响，适应能力强。',
+            '官禄宫': '【事业为本】身宫在官禄。您是典型的工作狂，事业心极强。中晚年极其看重名声地位和职场成就，通过工作来获得安全感。',
+            '福德宫': '【享受生活】身宫在福德。您非常重视精神世界的满足和生活品质。中晚年喜欢追求兴趣爱好，懂得享受，也可能与宗教玄学有缘。'
+        };
+
+        // 3. 来因宫详解 (核心驱动力)
         const LAI_YIN_DESC = {
-            '命宫': '【自力更生】您这一生主要靠自己。命运掌握在自己手里，凡事亲力亲为，不依赖祖荫。您的性格直接决定了命运的走向。',
-            '兄弟宫': '【手足助力】您与兄弟、朋友、合作伙伴缘分深。成就往往来自于合作、借贷或众人的帮助。',
-            '夫妻宫': '【情缘为重】婚姻感情是您人生的转折点。配偶是您的贵人，成也萧何败萧何，一生运势随婚姻状态起伏。',
-            '子女宫': '【合伙奔波】您注定在外奔波，适合合伙生意。子女教育、桃花际遇或下属关系是您需要修行的课题。',
-            '财帛宫': '【金钱至上】一生为钱忙碌，赚钱欲望强。您用财富的多少来衡量人生价值，非常适合经商或从事金融。',
-            '疾厄宫': '【身心磨练】身体健康或情绪管理是重点。可能从事技术、手艺工作，或需要通过身体力行来赚钱。',
-            '迁移宫': '【动中求财】您注定要离家发展。出生地不宜久留，越远越好。社会人际关系和外出际遇是成功的关键。',
-            '交友宫': '【众生之缘】靠朋友众人成事。您注重人脉经营，适合从事服务大众、公关、或需要大量人际互动的行业。',
-            '官禄宫': '【事业为本】典型的工作狂。您重视名声地位，通过职场成就来体现人生价值，事业心极强。',
-            '田宅宫': '【家运兴衰】祖产、房产或家庭是您关注的重点。适合从事不动产相关行业，或者非常重视家庭氛围。',
-            '福德宫': '【因果福报】您重视精神享受和兴趣爱好。有祖荫，适合赚“兴趣之财”或理念之财，晚运通常不错。',
-            '父母宫': '【公家之缘】长辈、上司是您的贵人。适合在公家机构、大企业任职，或能得到父母长辈的庇荫。'
+            '命宫': '【自力更生】命运掌握在自己手里，凡事亲力亲为，不依赖祖荫。',
+            '兄弟宫': '【手足助力】成就来自于合作、借贷或众人的帮助，注意人际财务。',
+            '夫妻宫': '【成也萧何】一生运势随婚姻而变，配偶是关键贵人。',
+            '子女宫': '【合伙奔波】适合合伙生意，或因子女、桃花而变动，在外奔波。',
+            '财帛宫': '【金钱至上】一生为钱忙碌，赚钱欲望强，适合经商。',
+            '疾厄宫': '【身心磨练】关注健康或情绪，可能从事技术手艺工作。',
+            '迁移宫': '【动中求财】核心驱动力在“外”。您必须走出去，做跨境、做传播、做连接外部世界的事情，才能激活命盘的能量。',
+            '交友宫': '【众生之缘】靠朋友众人成事，注重人脉经营，适合服务业。',
+            '官禄宫': '【事业为本】工作狂，重视名声地位，事业心极强。',
+            '田宅宫': '【家运兴衰】祖产、房产是重点，适合不动产行业。',
+            '福德宫': '【因果福报】有祖荫，靠兴趣或理念赚钱，晚运不错。',
+            '父母宫': '【公家之缘】长辈上司是贵人，适合公职、大机构。'
         };
 
-        // 3. 生年四化口诀表 (十干四化 - 核心修正)
-        // 格式: [禄, 权, 科, 忌]
+        // 4. 生年四化 (十干)
         const SHI_GAN_SI_HUA = {
-            '甲': ['廉贞', '破军', '武曲', '太阳'],
-            '乙': ['天机', '天梁', '紫微', '太阴'],
-            '丙': ['天同', '天机', '文昌', '廉贞'],
-            '丁': ['太阴', '天同', '天机', '巨门'],
-            '戊': ['贪狼', '太阴', '右弼', '天机'],
-            '己': ['武曲', '贪狼', '天梁', '文曲'],
-            '庚': ['太阳', '武曲', '太阴', '天同'],
-            '辛': ['巨门', '太阳', '文曲', '文昌'],
-            '壬': ['天梁', '紫微', '左辅', '武曲'],
-            '癸': ['破军', '巨门', '太阴', '贪狼']
+            '甲': ['廉贞', '破军', '武曲', '太阳'], '乙': ['天机', '天梁', '紫微', '太阴'], '丙': ['天同', '天机', '文昌', '廉贞'], '丁': ['太阴', '天同', '天机', '巨门'], '戊': ['贪狼', '太阴', '右弼', '天机'],
+            '己': ['武曲', '贪狼', '天梁', '文曲'], '庚': ['太阳', '武曲', '太阴', '天同'], '辛': ['巨门', '太阳', '文曲', '文昌'], '壬': ['天梁', '紫微', '左辅', '武曲'], '癸': ['破军', '巨门', '太阴', '贪狼']
         };
 
-        // 四化在各宫位的解释模板
         const SI_HUA_MEANING = {
-            '化禄': {
-                '财帛': '【财源滚滚】赚钱机会多，财路广，但不一定存得住。',
-                '田宅': '【不动产运】利于置业，家运兴旺，或家里装修豪华。',
-                '官禄': '【事业顺遂】工作机会多，升迁顺利，职场人缘好。',
-                '迁移': '【出外得利】出门遇贵人，适合外地发展，人缘佳。',
-                '疾厄': '【心宽体胖】心情愉快，但也容易发胖或慵懒。',
-                'default': '【缘分深厚】福气增加，机遇增多，顺遂。'
-            },
-            '化权': {
-                '财帛': '【掌控财权】有赚钱的能力和欲望，对钱财管理严格。',
-                '官禄': '【掌权升职】在职场上有实权，执行力强，但也较劳碌。',
-                '迁移': '【受人敬重】在外有地位，说话有分量，适合领导工作。',
-                '夫妻': '【配偶强势】另一半能力强，有主见，或者您想管束对方。',
-                'default': '【掌控变动】权力增加，竞争提升，有行动力。'
-            },
-            '化科': {
-                '命宫': '【斯文儒雅】注重名声，爱惜羽毛，给人印象好。',
-                '官禄': '【名声在外】工作上有名气，适合做专业技术或教育。',
-                '财帛': '【清白之财】收入稳定清白，适合上班族或领薪水。',
-                '疾厄': '【逢凶化吉】生病易遇良医，身体底子不错。',
-                'default': '【名声贵人】名气提升，有贵人赏识，风度佳。'
-            },
-            '化忌': {
-                '命宫': '【固执己见】容易钻牛角尖，觉得自己怀才不遇，劳碌。',
-                '财帛': '【为钱奔波】赚钱辛苦，或者对钱财特别看重，从不满足。',
-                '疾厄': '【身体隐患】注意身体保养，易有慢性病，或过度操劳。',
-                '夫妻': '【情债难偿】感情多波折，容易因为对方而烦恼，或晚婚。',
-                '田宅': '【家宅不安】家里事多，或者难以置产，第一套房易变动。',
-                'default': '【亏欠阻碍】波折，不顺，纠结，需要付出更多努力。'
-            }
+            '化禄': { '财帛':'【财源滚滚】赚钱机会多。', '田宅':'【不动产运】利于置业，家运兴旺。', '官禄':'【事业顺遂】升迁顺利，人缘好。', '迁移':'【出外得利】出门遇贵人。', '疾厄':'【心宽体胖】心情愉快，易发胖。', 'default':'【缘分深厚】福气增加，机遇增多。' },
+            '化权': { '财帛':'【掌控财权】对钱财管理严格。', '官禄':'【掌权升职】有实权，执行力强。', '迁移':'【受人敬重】在外有地位。', '夫妻':'【配偶强势】另一半有主见。', 'default':'【掌控变动】权力增加，有行动力。' },
+            '化科': { '命宫':'【斯文儒雅】注重名声，爱惜羽毛。', '官禄':'【名声在外】工作有名气。', '财帛':'【清白之财】收入稳定。', '疾厄':'【逢凶化吉】遇良医，身体底子好。', 'default':'【名声贵人】名气提升，有贵人赏识。' },
+            '化忌': { '命宫':'【固执己见】容易钻牛角尖。', '财帛':'【为钱奔波】赚钱辛苦。', '疾厄':'【身体隐患】注意身体保养，易有慢性病。', '夫妻':'【情债难偿】感情多波折。', '田宅':'【家宅不安】难以置产或变动大。', 'default':'【亏欠阻碍】波折，不顺，纠结。' }
         };
 
-        const STAR_WIKI = {'化禄': '【财富/情缘】事事顺遂，心情愉快，像秋天的收获。', '化权': '【权力/控制】掌权升职，有行动力，但也容易固执霸道。', '化科': '【名声/贵人】名气提升，考运好，有人赏识，逢凶化吉。', '化忌': '【阻碍/纠结】不顺心，亏损，口舌争执，或者心里想不开。', '禄存': '【存款/真财】实打实的钱财积蓄，做事稳重。', '天马': '【奔波/变动】出差、旅游、跳槽。越动越有机会。', '左辅': '【平辈贵人】朋友同事帮忙，效率加倍。', '右弼': '【异性贵人】获得额外的帮助或资源。', '天魁': '【长辈提拔】上司给机会，直接的帮助。', '天钺': '【暗中相助】有人在背后说好话，间接的机遇。', '擎羊': '【刑伤/冲动】像把刀。容易受伤、手术、冲突，但也适合开拓。', '陀罗': '【拖延/纠结】像陀螺原地转。进展慢，内心纠结，有阻碍。', '火星': '【爆发/火爆】突发事件。好的时候发横财，坏的时候发脾气。', '铃星': '【暗亏/隐忍】看不见的损失，吃哑巴亏，心里憋屈。', '地空': '【落空/创意】得而复失，钱花得莫名其妙。利于修行创意。', '地劫': '【劫财/损失】半途而废，被人截胡，小心钱包。'};
+        const STAR_WIKI = {'化禄': '【财富/情缘】事事顺遂，心情愉快。', '化权': '【权力/控制】掌权升职，有行动力。', '化科': '【名声/贵人】名气提升，考运好，逢凶化吉。', '化忌': '【阻碍/纠结】不顺心，亏损，心里想不开。', '禄存': '【存款/真财】实打实的钱财积蓄。', '天马': '【奔波/变动】出差、旅游、跳槽。', '左辅': '【平辈贵人】朋友同事帮忙。', '右弼': '【异性贵人】获得额外的帮助。', '天魁': '【长辈提拔】上司给机会。', '天钺': '【暗中相助】有人在背后说好话。', '擎羊': '【刑伤/冲动】容易受伤、冲突，也适合开拓。', '陀罗': '【拖延/纠结】进展慢，内心纠结。', '火星': '【爆发/火爆】突发事件，发横财或发脾气。', '铃星': '【暗亏/隐忍】吃哑巴亏，心里憋屈。', '地空': '【落空/创意】得而复失，利于修行。', '地劫': '【劫财/损失】半途而废，被人截胡。'};
         const ACTION_GUIDE = {'化禄': { yi: ['谈薪资', '请客', '投资'], ji: ['铺张', '浪费'] }, '化权': { yi: ['升职', '管理', '执行'], ji: ['刚愎', '树敌'] }, '化科': { yi: ['考试', '发表', '求医'], ji: ['作弊', '隐瞒'] }, '化忌': { yi: ['读书', '反省', '还债'], ji: ['签约', '争执', '开拓'] }, '禄存': { yi: ['存钱', '保险', '稳健'], ji: ['借贷', '担保'] }, '天马': { yi: ['出差', '搬家', '跑动'], ji: ['宅家', '守旧'] }, '天魁': { yi: ['拜访', '求职', '提问'], ji: ['傲慢', '拒绝'] }, '天钺': { yi: ['社交', '相亲', '合作'], ji: ['封闭', '马虎'] }, '擎羊': { yi: ['洗牙', '健身', '看牙'], ji: ['飙车', '冒险', '打架'] }, '陀罗': { yi: ['钻研', '慢活', '冥想'], ji: ['急躁', '决断'] }, '火星': { yi: ['速决', '彩票', '急事'], ji: ['发火', '玩火', '拖延'] }, '地空': { yi: ['玄学', '创意', '断舍离'], ji: ['投资', '购物'] }};
         const PATTERNS = [{ name: '火贪格', check: (stars) => stars.has('贪狼') && (stars.has('火星') || stars.has('铃星')), score: 5, desc: '🔥 火贪格：爆发运，利于突发横财' }, { name: '禄马交驰', check: (stars) => (stars.has('禄存') || stars.has('化禄')) && stars.has('天马'), score: 4, desc: '🐎 禄马交驰：动中求财，越忙越有钱' }, { name: '阳梁昌禄', check: (stars) => stars.has('太阳') && stars.has('天梁') && stars.has('文昌') && stars.has('禄存'), score: 5, desc: '📚 阳梁昌禄：考运亨通，利于考试' }, { name: '空劫夹/照', check: (stars) => stars.has('地空') && stars.has('地劫'), score: -4, desc: '🌪️ 空劫同临：财来财去，宜修身养性' }, { name: '巨火羊', check: (stars) => stars.has('巨门') && stars.has('火星') && stars.has('擎羊'), score: -5, desc: '⚡ 巨火羊：防重大口舌冲突、意外' }, { name: '刑忌夹印', check: (stars) => stars.has('天相') && stars.has('化忌') && stars.has('擎羊'), score: -4, desc: '📜 刑忌夹印：小心文书合同陷阱' }, { name: '禄逢冲破', check: (stars) => (stars.has('化禄') || stars.has('禄存')) && (stars.has('地空') || stars.has('地劫') || stars.has('化忌')), score: -3, desc: '💸 禄逢冲破：吉处藏凶，看着赚钱实际赔钱' }];
 
@@ -246,75 +220,64 @@
             }, 100);
         }
 
-        // === 核心功能：命局总格 & 先天基因 (宗师级修正版) ===
         function generateFateOverview(astrolabe, birthYear) {
             const pMing = astrolabe.palaces.find(p => p.name === '命宫') || { earthlyBranch: '-', majorStars: [] };
-            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '未知' };
+            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '命宫' }; // 默认身命同宫
             
-            // 1. 手动计算生年天干 (解决库计算不准的问题)
-            // 1983 -> 尾数3 -> 癸 (4甲, 5乙, 6丙, 7丁, 8戊, 9己, 0庚, 1辛, 2壬, 3癸)
+            // 1. 手动计算生年天干
             const stems = ['庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'];
             const stemIndex = birthYear % 10;
-            const birthStem = stems[stemIndex]; // 获取生年天干字符
+            const birthStem = stems[stemIndex];
 
-            // 2. 手动计算来因宫 (生年天干所在的宫位)
-            // 遍历宫位，找到宫干 == birthStem 的宫位
+            // 2. 手动计算来因宫
             let laiYinPalace = astrolabe.palaces.find(p => p.heavenlyStem === birthStem);
-            // 兜底：如果库的宫干数据有问题，默认命宫 (极少情况)
             if (!laiYinPalace) laiYinPalace = pMing;
-            
             const laiYinText = LAI_YIN_DESC[laiYinPalace.name] || "命盘根基所在";
 
-            // 3. 手动计算生年四化 (核心修正)
-            const starsToFind = SHI_GAN_SI_HUA[birthStem]; // 获取当年的四化星列表 [禄, 权, 科, 忌]
+            // 3. 身宫解读 (v12.0新增)
+            const shenText = BODY_PALACE_DESC[pShen.name] || "身宫代表后天运势的修正。";
+
+            // 4. 生年四化
+            const starsToFind = SHI_GAN_SI_HUA[birthStem];
             const siHuaTypes = ['化禄', '化权', '化科', '化忌'];
-            
             let siHuaList = [];
-            // 遍历四颗星，找它们在哪个宫位
             starsToFind.forEach((starName, index) => {
                 const type = siHuaTypes[index];
-                // 在12宫里找这颗星
                 let foundPalace = null;
                 astrolabe.palaces.forEach(p => {
-                    // 检查主星和辅星
                     const allStars = [...p.majorStars, ...p.minorStars];
-                    if (allStars.some(s => s.name === starName)) {
-                        foundPalace = p.name;
-                    }
+                    if (allStars.some(s => s.name === starName)) foundPalace = p.name;
                 });
-                
-                // 生成解释文案
                 let meaning = SI_HUA_MEANING[type]['default'];
-                if (foundPalace && SI_HUA_MEANING[type][foundPalace]) {
-                    meaning = SI_HUA_MEANING[type][foundPalace];
-                }
-
+                if (foundPalace && SI_HUA_MEANING[type][foundPalace]) meaning = SI_HUA_MEANING[type][foundPalace];
                 siHuaList.push({ star: starName, type: type, palace: foundPalace || '未知', desc: meaning });
             });
 
-            // 命宫特质
             const majorStars = pMing.majorStars || [];
             let characterTags = [];
             if (majorStars.length === 0) { characterTags.push("命宫无主星"); characterTags.push("善于察言观色"); characterTags.push("借对宫星曜"); } 
             else { majorStars.forEach(s => { const trait = MING_STAR_KEYWORDS[s.name]; if(trait) characterTags.push(`${s.name}: ${trait}`); }); }
 
-            // 构建 HTML
-            const siHuaHTML = siHuaList.map(item => `
-                <div class="p-2 bg-white rounded border border-slate-100 mb-2 last:mb-0">
-                    <div class="flex justify-between items-center text-xs mb-1">
-                        <span class="font-bold text-indigo-700">${item.star}${item.type}</span>
-                        <span class="text-slate-400">在【${item.palace}】</span>
-                    </div>
-                    <div class="text-xs text-slate-600">${item.desc}</div>
-                </div>
-            `).join('');
+            const siHuaHTML = siHuaList.map(item => `<div class="p-2 bg-white rounded border border-slate-100 mb-2 last:mb-0"><div class="flex justify-between items-center text-xs mb-1"><span class="font-bold text-indigo-700">${item.star}${item.type}</span><span class="text-slate-400">在【${item.palace}】</span></div><div class="text-xs text-slate-600">${item.desc}</div></div>`).join('');
 
             const html = `
                 <div class="mb-6">
                     <h2 class="text-sm font-bold text-slate-400 mb-4 uppercase tracking-wider border-l-4 border-purple-500 pl-2">命局总格 & 先天基因</h2>
                     <div class="grid grid-cols-1 gap-4">
-                        <div class="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100"><div class="flex items-center mb-2"><span class="text-lg mr-2">🧬</span><h3 class="font-bold text-indigo-900">命身构架</h3></div><div class="text-sm text-slate-600 mb-2"><span class="font-bold">命宫(${pMing.earthlyBranch})：</span>${characterTags.join('，')}。</div><div class="text-sm text-slate-600"><span class="font-bold">身宫(${pShen.name})：</span>身宫代表后天运势的修正与中晚年的追求。</div></div>
-                        <div class="bg-amber-50/50 rounded-xl p-4 border border-amber-100"><div class="flex items-center mb-2"><span class="text-lg mr-2">🗝️</span><h3 class="font-bold text-amber-900">前世因果 (来因宫)</h3></div><div class="text-sm font-bold text-amber-800 mb-1">落在【${laiYinPalace.name}】</div><div class="text-xs text-amber-700/80 leading-relaxed">${laiYinText}</div></div>
+                        <div class="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100">
+                            <div class="flex items-center mb-2"><span class="text-lg mr-2">🧬</span><h3 class="font-bold text-indigo-900">命宫 (性格核心)</h3></div>
+                            <div class="text-sm text-slate-600 mb-2"><span class="font-bold">命宫(${pMing.earthlyBranch})：</span>${characterTags.join('，')}</div>
+                        </div>
+                        <div class="bg-pink-50/50 rounded-xl p-4 border border-pink-100">
+                            <div class="flex items-center mb-2"><span class="text-lg mr-2">🧘‍♀️</span><h3 class="font-bold text-pink-900">身宫 (中晚年归宿)</h3></div>
+                            <div class="text-sm font-bold text-pink-800 mb-1">落在【${pShen.name}】</div>
+                            <div class="text-xs text-pink-700/80 leading-relaxed">${shenText}</div>
+                        </div>
+                        <div class="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
+                            <div class="flex items-center mb-2"><span class="text-lg mr-2">🗝️</span><h3 class="font-bold text-amber-900">来因宫 (核心驱动力)</h3></div>
+                            <div class="text-sm font-bold text-amber-800 mb-1">落在【${laiYinPalace.name}】</div>
+                            <div class="text-xs text-amber-700/80 leading-relaxed">${laiYinText}</div>
+                        </div>
                         <div class="bg-slate-50 rounded-xl p-4 border border-slate-100"><div class="flex items-center mb-2"><span class="text-lg mr-2">🌟</span><h3 class="font-bold text-slate-700">这一生的重点 (生年四化)</h3></div><div class="space-y-1">${siHuaHTML}</div></div>
                     </div>
                 </div>
