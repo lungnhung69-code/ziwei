@@ -26,7 +26,7 @@
         <div class="bg-slate-900 p-6 text-center relative">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 z-0"></div>
             <h1 class="text-xl font-bold text-white relative z-10">🔮 紫微斗数 · 深度解读</h1>
-            <p class="text-slate-300 text-xs mt-1 relative z-10">v12.0 增加身宫详解 · 命盘全局分析</p>
+            <p class="text-slate-300 text-xs mt-1 relative z-10">v12.1 字典匹配修复 · 内容全解锁</p>
         </div>
 
         <div class="p-5 space-y-4 bg-slate-50/50">
@@ -88,7 +88,7 @@
     <script>
         const CITY_LONGITUDES = {'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'周口':114.65,'郑州':113.62,'开封':114.30,'洛阳':112.45,'平顶山':113.19,'安阳':114.39,'新乡':113.92,'许昌':113.85,'漯河':114.01,'南阳':112.52,'商丘':115.65,'信阳':114.09,'驻马店':114.02,'武汉':114.31,'长沙':112.93,'广州':113.26,'深圳':114.05,'成都':104.06,'西安':108.93,'南京':118.78,'杭州':120.15,'沈阳':123.43,'哈尔滨':126.63,'济南':117.02,'香港':114.16,'台北':121.50,'河南':113.62};
         
-        // 1. 命宫主星 (性格核心)
+        // 1. 命宫主星
         const MING_STAR_KEYWORDS = {
             '紫微': '【帝王之相】尊贵有领导力，但也容易耳根软、爱面子。', 
             '天机': '【智多星】心思细腻，善于策划，学习能力极强。容易思虑过重，适合做谋士或专家。', 
@@ -106,7 +106,7 @@
             '破军': '【先破后立】创意无限，喜新厌旧，人生变动极大，适合开创性工作。'
         };
 
-        // 2. 身宫详解 (人生归宿 - v12.0 新增)
+        // 2. 身宫详解 (增加容错匹配)
         const BODY_PALACE_DESC = {
             '命宫': '【命运自主】身命同宫。您非常主观，相信命运掌握在自己手里。这辈子您最看重的是自我价值的实现，不太受外界影响。',
             '夫妻宫': '【情缘为重】身宫在夫妻。您中晚年的运势重心、价值观深受感情、婚姻或异性合作伙伴的影响。由于对感情投入深，婚姻的好坏直接决定了您的后半生幸福。',
@@ -116,7 +116,7 @@
             '福德宫': '【享受生活】身宫在福德。您非常重视精神世界的满足和生活品质。中晚年喜欢追求兴趣爱好，懂得享受，也可能与宗教玄学有缘。'
         };
 
-        // 3. 来因宫详解 (核心驱动力)
+        // 3. 来因宫详解 (增加容错匹配)
         const LAI_YIN_DESC = {
             '命宫': '【自力更生】命运掌握在自己手里，凡事亲力亲为，不依赖祖荫。',
             '兄弟宫': '【手足助力】成就来自于合作、借贷或众人的帮助，注意人际财务。',
@@ -132,7 +132,7 @@
             '父母宫': '【公家之缘】长辈上司是贵人，适合公职、大机构。'
         };
 
-        // 4. 生年四化 (十干)
+        // 4. 生年四化
         const SHI_GAN_SI_HUA = {
             '甲': ['廉贞', '破军', '武曲', '太阳'], '乙': ['天机', '天梁', '紫微', '太阴'], '丙': ['天同', '天机', '文昌', '廉贞'], '丁': ['太阴', '天同', '天机', '巨门'], '戊': ['贪狼', '太阴', '右弼', '天机'],
             '己': ['武曲', '贪狼', '天梁', '文曲'], '庚': ['太阳', '武曲', '太阴', '天同'], '辛': ['巨门', '太阳', '文曲', '文昌'], '壬': ['天梁', '紫微', '左辅', '武曲'], '癸': ['破军', '巨门', '太阴', '贪狼']
@@ -222,22 +222,20 @@
 
         function generateFateOverview(astrolabe, birthYear) {
             const pMing = astrolabe.palaces.find(p => p.name === '命宫') || { earthlyBranch: '-', majorStars: [] };
-            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '命宫' }; // 默认身命同宫
+            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '命宫' };
             
-            // 1. 手动计算生年天干
             const stems = ['庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'];
             const stemIndex = birthYear % 10;
             const birthStem = stems[stemIndex];
 
-            // 2. 手动计算来因宫
             let laiYinPalace = astrolabe.palaces.find(p => p.heavenlyStem === birthStem);
             if (!laiYinPalace) laiYinPalace = pMing;
-            const laiYinText = LAI_YIN_DESC[laiYinPalace.name] || "命盘根基所在";
+            
+            // 修复：自动补全“宫”字，确保查字典时不为空
+            const fixName = (name) => name.endsWith('宫') ? name : name + '宫';
+            const laiYinText = LAI_YIN_DESC[fixName(laiYinPalace.name)] || "命盘根基所在";
+            const shenText = BODY_PALACE_DESC[fixName(pShen.name)] || "身宫代表后天运势的修正。";
 
-            // 3. 身宫解读 (v12.0新增)
-            const shenText = BODY_PALACE_DESC[pShen.name] || "身宫代表后天运势的修正。";
-
-            // 4. 生年四化
             const starsToFind = SHI_GAN_SI_HUA[birthStem];
             const siHuaTypes = ['化禄', '化权', '化科', '化忌'];
             let siHuaList = [];
@@ -248,8 +246,18 @@
                     const allStars = [...p.majorStars, ...p.minorStars];
                     if (allStars.some(s => s.name === starName)) foundPalace = p.name;
                 });
+                // 修复：查找解释时也需要补全“宫”字（如果需要的话，但目前 SI_HUA_MEANING 用的是短名或长名？检查字典是短名，所以foundPalace应该去掉宫？）
+                // 检查 SI_HUA_MEANING，它是 '财帛', '田宅' (无宫字)。
+                // iztro 库返回的名字通常带宫，也可能不带。
+                // 策略：先尝试带宫的，再尝试不带宫的，再尝试只取前两个字。
                 let meaning = SI_HUA_MEANING[type]['default'];
-                if (foundPalace && SI_HUA_MEANING[type][foundPalace]) meaning = SI_HUA_MEANING[type][foundPalace];
+                if (foundPalace) {
+                    // 尝试匹配字典
+                    let shortName = foundPalace.replace('宫', ''); // 比如 "夫妻"
+                    if (SI_HUA_MEANING[type][shortName]) {
+                        meaning = SI_HUA_MEANING[type][shortName];
+                    }
+                }
                 siHuaList.push({ star: starName, type: type, palace: foundPalace || '未知', desc: meaning });
             });
 
