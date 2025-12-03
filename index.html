@@ -135,6 +135,7 @@
                     renderTab1(astrolabe, parseInt(y));
                     renderTab2(astrolabe);
                     
+                    // 修正：Tab3 需要使用【当前时间】来预测流年流月，而不是出生时间
                     const now = new Date();
                     const nowStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} 12:00:00`;
                     renderTab3(astrolabe, nowStr);
