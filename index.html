@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 全能详解版</title>
+    <title>紫微斗数 - 修复版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -19,32 +19,25 @@
 </head>
 <body class="min-h-screen pb-20 flex flex-col items-center">
 
-    <!-- 顶部 -->
     <div class="w-full bg-slate-900 p-6 text-center text-white shadow-lg sticky top-0 z-20">
         <h1 class="text-lg font-bold tracking-wide">🔮 紫微斗数 · 全能版</h1>
-        <p class="text-xs text-slate-400 mt-1">v15.1 修复报错 · 字典补全</p>
+        <p class="text-xs text-slate-400 mt-1">v15.2 修复报错 · 锁定当下运势</p>
     </div>
 
     <div class="w-full max-w-md p-4 space-y-4">
-        
-        <!-- 输入卡片 -->
         <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-100">
             <div class="flex flex-col space-y-3">
-                <!-- 姓名 & 历史 -->
                 <div class="flex gap-2">
                     <input type="text" id="userName" placeholder="姓名(选填)" class="w-2/3 border border-slate-300 rounded-lg px-3 py-2 text-sm">
                     <button onclick="toggleHistory()" class="w-1/3 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold">📂 历史记录</button>
                 </div>
-                <!-- 历史列表(默认隐藏) -->
                 <div id="historyPanel" class="hidden bg-slate-50 p-2 rounded-lg text-xs space-y-2 max-h-40 overflow-y-auto"></div>
 
-                <!-- 日期 -->
                 <div class="flex space-x-2">
                     <select id="selYear" class="w-[38%] border border-slate-300 rounded-lg px-3 py-2 text-sm h-10"></select>
                     <select id="selMonth" class="w-[30%] border border-slate-300 rounded-lg px-3 py-2 text-sm h-10"></select>
                     <select id="selDay" class="w-[32%] border border-slate-300 rounded-lg px-3 py-2 text-sm h-10"></select>
                 </div>
-                <!-- 时间 & 性别 -->
                 <div class="flex space-x-2">
                     <input type="time" id="birthTime" value="12:00" class="w-2/3 border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
                     <select id="gender" class="w-1/3 border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
@@ -52,7 +45,6 @@
                         <option value="男">男</option>
                     </select>
                 </div>
-                <!-- 城市 -->
                 <input type="text" id="location" placeholder="出生地 (如: 河南周口)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
                 
                 <button id="calcBtn" onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-200 transition">
@@ -62,80 +54,42 @@
             </div>
         </div>
 
-        <!-- 结果区域 -->
         <div id="resultArea" class="hidden space-y-4">
-            
-            <!-- 导航栏 -->
             <div class="bg-white rounded-xl shadow-sm p-1 flex justify-around text-sm sticky top-[80px] z-10">
                 <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-active flex-1 py-2 text-center">人生底色</button>
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-inactive flex-1 py-2 text-center">十二宫详解</button>
                 <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-inactive flex-1 py-2 text-center">运势预测</button>
             </div>
 
-            <!-- Tab 1: 人生底色 -->
             <div id="tab1" class="space-y-4 fade-in">
                 <div id="fateBasic" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500"></div>
                 <div id="fateLaiYin" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"></div>
                 <div id="fateSiHua" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"></div>
             </div>
 
-            <!-- Tab 2: 十二宫详解 -->
             <div id="tab2" class="hidden space-y-4 fade-in">
                 <div class="text-xs text-slate-400 text-center mb-2">👇 深度扫描您人生的十二个领域 👇</div>
                 <div id="palacesList" class="grid grid-cols-1 gap-3"></div>
             </div>
 
-            <!-- Tab 3: 运势 -->
             <div id="tab3" class="hidden space-y-4 fade-in">
                 <div id="decadeFortune" class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-5 text-white"></div>
                 <div class="text-sm font-bold text-slate-500 mt-4 pl-2 border-l-4 border-slate-300">未来三个月流月指引</div>
                 <div id="forecastContent" class="space-y-4"></div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // 全局错误捕获 (防崩溃)
-        window.onerror = function(msg, url, line) {
-            alert("程序遇到问题，请截图:\n" + msg);
-            return true;
-        };
-
-        // === 1. 数据字典 (补全缺失变量) ===
+        // 1. 数据字典
         const CITY_LONGITUDES = {'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'周口':114.65,'郑州':113.62,'开封':114.30,'武汉':114.31,'长沙':112.93,'广州':113.26,'深圳':114.05,'成都':104.06,'西安':108.93,'南京':118.78,'杭州':120.15,'沈阳':123.43,'哈尔滨':126.63,'济南':117.02,'香港':114.16,'台北':121.50,'河南':113.62};
         
-        // **补全：命宫主星关键词 (用于Tab2详解)**
-        const MING_STAR_KEYWORDS = {
-            '紫微': '尊贵/领导/爱面子', '天机': '智慧/谋略/变动', '太阳': '博爱/公益/奔波', '武曲': '刚毅/执行/财星', '天同': '福气/享乐/温和', '廉贞': '交际/原则/桃花',
-            '天府': '财库/稳重/保守', '太阴': '细腻/内敛/财富', '贪狼': '欲望/多才/圆滑', '巨门': '口才/是非/暗昧', '天相': '辅助/公正/形象', '天梁': '荫庇/原则/长者', '七杀': '肃杀/冲劲/孤独', '破军': '先破后立/变动'
-        };
-
-        // **补全：身宫解释**
+        const MING_STAR_KEYWORDS = {'紫微': '尊贵/领导', '天机': '智慧/变动', '太阳': '博爱/奔波', '武曲': '刚毅/求财', '天同': '福气/享乐', '廉贞': '交际/桃花', '天府': '财库/稳重', '太阴': '财富/内敛', '贪狼': '欲望/多才', '巨门': '口舌/暗昧', '天相': '辅助/形象', '天梁': '荫庇/原则', '七杀': '肃杀/冲劲', '破军': '破坏/创新'};
         const BODY_PALACE_DESC = {'命宫': '【命运自主】身命同宫，主观性强，命运掌握在自己手里。', '夫妻宫': '【情缘为重】受婚姻感情影响大，配偶是关键贵人。', '财帛宫': '【财富至上】看重经济基础，中晚年为钱忙碌，财运佳。', '迁移宫': '【动荡人生】注定在外奔波，闲不住，适应环境能力强。', '官禄宫': '【事业为本】工作狂，事业心极强，通过成就感获得满足。', '福德宫': '【享受生活】重视精神享受和兴趣，晚运不错，懂生活。'};
-
-        // **补全：来因宫解释**
         const LAI_YIN_DESC = {'命宫': '【自力更生】凡事亲力亲为。', '兄弟宫': '【手足助力】靠合作或借贷起家。', '夫妻宫': '【成也萧何】运势随婚姻而变。', '子女宫': '【合伙奔波】因子女或桃花变动。', '财帛宫': '【金钱至上】赚钱欲望强，适合经商。', '疾厄宫': '【身心磨练】靠技术手艺赚钱。', '迁移宫': '【动中求财】利于外出，离家越远越好。', '交友宫': '【众生之缘】靠人脉经营，适合服务业。', '官禄宫': '【事业为本】工作狂，重视名声。', '田宅宫': '【家运兴衰】适合不动产，重视家庭。', '福德宫': '【因果福报】有祖荫，靠兴趣赚钱。', '父母宫': '【公家之缘】长辈提拔，适合公职。'};
-
-        // 宫位模板
-        const PALACE_TEMPLATE = {
-            '财帛宫': { icon: '💰', title: '财富运势', desc: '如何赚钱、理财能力' },
-            '官禄宫': { icon: '💼', title: '事业前程', desc: '工作类型、职位升迁' },
-            '夫妻宫': { icon: '💕', title: '婚姻情感', desc: '配偶特征、相处模式' },
-            '迁移宫': { icon: '✈️', title: '外出机遇', desc: '出差、旅游、对外关系' },
-            '疾厄宫': { icon: '🏥', title: '健康体质', desc: '身体隐患、情绪管理' },
-            '福德宫': { icon: '🍀', title: '精神享受', desc: '兴趣爱好、内心世界' },
-            '父母宫': { icon: '👪', title: '长辈关系', desc: '父母缘分、上司提拔' },
-            '兄弟宫': { icon: '🤝', title: '人际助力', desc: '兄弟闺蜜、合作伙伴' },
-            '子女宫': { icon: '👶', title: '子女晚辈', desc: '子女教育、桃花运' },
-            '交友宫': { icon: '🌐', title: '社交人脉', desc: '朋友部下、众生缘' },
-            '田宅宫': { icon: '🏠', title: '家宅资产', desc: '不动产、居住环境' },
-            '命宫': { icon: '🧬', title: '核心本我', desc: '性格特质、命运总纲' }
-        };
-
+        const PALACE_TEMPLATE = {'财帛宫': { icon: '💰', title: '财富运势', desc: '如何赚钱、理财能力' }, '官禄宫': { icon: '💼', title: '事业前程', desc: '工作类型、职位升迁' }, '夫妻宫': { icon: '💕', title: '婚姻情感', desc: '配偶特征、相处模式' }, '迁移宫': { icon: '✈️', title: '外出机遇', desc: '出差、旅游、对外关系' }, '疾厄宫': { icon: '🏥', title: '健康体质', desc: '身体隐患、情绪管理' }, '福德宫': { icon: '🍀', title: '精神享受', desc: '兴趣爱好、内心世界' }, '父母宫': { icon: '👪', title: '长辈关系', desc: '父母缘分、上司提拔' }, '兄弟宫': { icon: '🤝', title: '人际助力', desc: '兄弟闺蜜、合作伙伴' }, '子女宫': { icon: '👶', title: '子女晚辈', desc: '子女教育、桃花运' }, '交友宫': { icon: '🌐', title: '社交人脉', desc: '朋友部下、众生缘' }, '田宅宫': { icon: '🏠', title: '家宅资产', desc: '不动产、居住环境' }, '命宫': { icon: '🧬', title: '核心本我', desc: '性格特质、命运总纲' }};
         const SHI_GAN_SI_HUA = {'甲':['廉贞','破军','武曲','太阳'],'乙':['天机','天梁','紫微','太阴'],'丙':['天同','天机','文昌','廉贞'],'丁':['太阴','天同','天机','巨门'],'戊':['贪狼','太阴','右弼','天机'],'己':['武曲','贪狼','天梁','文曲'],'庚':['太阳','武曲','太阴','天同'],'辛':['巨门','太阳','文曲','文昌'],'壬':['天梁','紫微','左辅','武曲'],'癸':['破军','巨门','太阴','贪狼']};
 
-        // === 2. 逻辑代码 ===
         const HISTORY_KEY = 'ziwei_history_v2';
 
         function init() {
@@ -159,7 +113,6 @@
             const name = document.getElementById('userName').value.trim() || '未命名';
 
             if(!timeStr) { alert("请选择出生时间"); return; }
-
             saveRecord({name, y, m, d, time:timeStr, loc:location, gender:genderVal});
 
             const btn = document.getElementById('calcBtn');
@@ -181,7 +134,11 @@
 
                     renderTab1(astrolabe, parseInt(y));
                     renderTab2(astrolabe);
-                    renderTab3(astrolabe, `${y}-${m}-${d}`);
+                    
+                    // 修正：Tab3 需要使用【当前时间】来预测流年流月，而不是出生时间
+                    const now = new Date();
+                    const nowStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} 12:00:00`;
+                    renderTab3(astrolabe, nowStr);
 
                     document.getElementById('resultArea').classList.remove('hidden');
                     switchTab('tab1'); 
@@ -192,8 +149,6 @@
             }, 300);
         }
 
-        // --- 渲染逻辑 ---
-
         function renderTab1(astrolabe, birthYear) {
             const pMing = astrolabe.palaces.find(p => p.name === '命宫');
             const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '命宫' };
@@ -202,27 +157,13 @@
             const birthStem = stems[birthYear % 10];
             const laiYin = astrolabe.palaces.find(p => p.heavenlyStem === birthStem) || pMing;
             
-            // 安全获取描述，防止undefined
             const fixName = (name) => name.endsWith('宫') ? name : name + '宫';
             const laiYinText = LAI_YIN_DESC[fixName(laiYin.name)] || "命盘根基所在。";
             const shenText = BODY_PALACE_DESC[fixName(pShen.name)] || "身宫代表后天运势。";
 
             const mingStars = pMing.majorStars.map(s => s.name).join('、') || '无主星(借对宫)';
-            document.getElementById('fateBasic').innerHTML = `
-                <h3 class="font-bold text-purple-900 mb-2">🧬 命身构架</h3>
-                <div class="text-sm text-slate-600 space-y-2">
-                    <p><strong>命宫 (${pMing.earthlyBranch})：</strong>主星【${mingStars}】。代表您的性格底色和天赋。</p>
-                    <div class="bg-purple-50 p-2 rounded text-xs leading-relaxed text-purple-800">
-                        <strong>身宫在【${pShen.name}】：</strong>${shenText}
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('fateLaiYin').innerHTML = `
-                <h3 class="font-bold text-amber-900 mb-2">🗝️ 前世因果 (来因宫)</h3>
-                <p class="text-sm text-slate-600 mb-1">落在<strong>【${laiYin.name}】</strong></p>
-                <p class="text-xs text-amber-800 leading-relaxed">${laiYinText}</p>
-            `;
+            document.getElementById('fateBasic').innerHTML = `<h3 class="font-bold text-purple-900 mb-2">🧬 命身构架</h3><div class="text-sm text-slate-600 space-y-2"><p><strong>命宫 (${pMing.earthlyBranch})：</strong>主星【${mingStars}】。</p><div class="bg-purple-50 p-2 rounded text-xs leading-relaxed text-purple-800"><strong>身宫在【${pShen.name}】：</strong>${shenText}</div></div>`;
+            document.getElementById('fateLaiYin').innerHTML = `<h3 class="font-bold text-amber-900 mb-2">🗝️ 前世因果 (来因宫)</h3><p class="text-sm text-slate-600 mb-1">落在<strong>【${laiYin.name}】</strong></p><p class="text-xs text-amber-800 leading-relaxed">${laiYinText}</p>`;
 
             const sihua = SHI_GAN_SI_HUA[birthStem];
             const types = ['禄 (财/缘)','权 (权/变)','科 (名/贵)','忌 (欠/冲)'];
@@ -244,38 +185,29 @@
             order.forEach(name => {
                 const p = astrolabe.palaces.find(item => item.name === name);
                 if(!p) return;
-
                 const major = p.majorStars.map(s => `<span class="star-tag bg-red-100 text-red-700">${s.name}</span>`).join('');
                 const minor = p.minorStars.filter(s=>['文昌','文曲','左辅','右弼','天魁','天钺','禄存','擎羊','陀罗','火星','铃星'].includes(s.name)).map(s => `<span class="star-tag bg-blue-50 text-blue-600">${s.name}</span>`).join('');
-                
-                // 修复：确保 MING_STAR_KEYWORDS 存在
                 const keywords = p.majorStars.map(s => MING_STAR_KEYWORDS[s.name] ? s.name + ':' + MING_STAR_KEYWORDS[s.name].split('，')[0] : '').filter(k=>k).join('；');
-
                 const info = PALACE_TEMPLATE[name] || { icon:'✨', title:name, desc:'' };
 
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-lg p-4 border border-slate-100 shadow-sm';
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center font-bold text-slate-800">
-                            <span class="mr-2 text-lg">${info.icon}</span>
-                            ${name} <span class="text-xs font-normal text-slate-400 ml-1">(${info.title})</span>
-                        </div>
-                        <span class="text-xs text-slate-300">${p.heavenlyStem}${p.earthlyBranch}</span>
-                    </div>
-                    <div class="mb-2 min-h-[24px]">${major || '<span class="text-xs text-slate-400">无主星(借对宫)</span>'} ${minor}</div>
-                    ${keywords ? `<div class="text-xs text-slate-500 bg-slate-50 p-2 rounded leading-relaxed"><strong>特质：</strong>${keywords}</div>` : ''}
-                `;
+                div.innerHTML = `<div class="flex justify-between items-center mb-2"><div class="flex items-center font-bold text-slate-800"><span class="mr-2 text-lg">${info.icon}</span>${name} <span class="text-xs font-normal text-slate-400 ml-1">(${info.title})</span></div><span class="text-xs text-slate-300">${p.heavenlyStem}${p.earthlyBranch}</span></div><div class="mb-2 min-h-[24px]">${major || '<span class="text-xs text-slate-400">无主星(借对宫)</span>'} ${minor}</div>${keywords ? `<div class="text-xs text-slate-500 bg-slate-50 p-2 rounded leading-relaxed"><strong>特质：</strong>${keywords}</div>` : ''}`;
                 container.appendChild(div);
             });
         }
 
         function renderTab3(astrolabe, dateStr) {
             const today = new Date();
+            // 使用 horoscope 获取运限数据
             const horoscope = astrolabe.horoscope(dateStr);
             const decade = horoscope.decadal;
-            const dStart = decade.age.min;
-            const dEnd = decade.age.max;
+            
+            // 修复点：使用 .range 数组而不是 .age.min
+            // range 是一个数组 [startAge, endAge]
+            const range = decade.range || [0, 0]; 
+            const dStart = range[0];
+            const dEnd = range[1];
             const dPalace = decade.palace();
             
             const stem = dPalace.heavenlyStem;
@@ -283,7 +215,7 @@
 
             document.getElementById('decadeFortune').innerHTML = `
                 <div class="flex justify-between items-end mb-2">
-                    <h3 class="text-lg font-bold">十年大运 (${dStart}-${dEnd}岁)</h3>
+                    <h3 class="text-lg font-bold">当前十年大运 (${dStart}-${dEnd}岁)</h3>
                     <span class="text-xs opacity-80">行运至【${dPalace.name}】</span>
                 </div>
                 <div class="text-sm opacity-90 mb-3">这十年，您的关注重心在<strong>${dPalace.name}</strong>所代表的领域。</div>
@@ -307,14 +239,7 @@
                 
                 const div = document.createElement('div');
                 div.className = 'bg-white border border-slate-200 rounded-lg p-3';
-                div.innerHTML = `
-                    <div class="flex justify-between font-bold text-slate-700 text-sm mb-1">
-                        <span>${targetDate.getFullYear()}年${targetDate.getMonth()+1}月</span>
-                        <span class="text-indigo-600">流月在${mPalace.name}</span>
-                    </div>
-                    <div class="text-xs text-slate-400 mb-2">${monthName}</div>
-                    <div class="text-xs text-slate-600">重点关注：${mPalace.majorStars.map(s=>s.name).join('、')||'无主星'}</div>
-                `;
+                div.innerHTML = `<div class="flex justify-between font-bold text-slate-700 text-sm mb-1"><span>${targetDate.getFullYear()}年${targetDate.getMonth()+1}月</span><span class="text-indigo-600">流月在${mPalace.name}</span></div><div class="text-xs text-slate-400 mb-2">${monthName}</div><div class="text-xs text-slate-600">重点关注：${mPalace.majorStars.map(s=>s.name).join('、')||'无主星'}</div>`;
                 container.appendChild(div);
             }
         }
