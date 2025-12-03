@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 修复版</title>
+    <title>紫微斗数 - 稳定运行版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -20,8 +20,8 @@
 <body class="min-h-screen pb-20 flex flex-col items-center">
 
     <div class="w-full bg-slate-900 p-6 text-center text-white shadow-lg sticky top-0 z-20">
-        <h1 class="text-lg font-bold tracking-wide">🔮 紫微斗数 · 全能版</h1>
-        <p class="text-xs text-slate-400 mt-1">v15.2 修复报错 · 锁定当下运势</p>
+        <h1 class="text-lg font-bold tracking-wide">🔮 紫微斗数 · 稳定版</h1>
+        <p class="text-xs text-slate-400 mt-1">v15.3 底层重构 · 彻底修复报错</p>
     </div>
 
     <div class="w-full max-w-md p-4 space-y-4">
@@ -135,7 +135,6 @@
                     renderTab1(astrolabe, parseInt(y));
                     renderTab2(astrolabe);
                     
-                    // 修正：Tab3 需要使用【当前时间】来预测流年流月，而不是出生时间
                     const now = new Date();
                     const nowStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} 12:00:00`;
                     renderTab3(astrolabe, nowStr);
@@ -144,7 +143,10 @@
                     switchTab('tab1'); 
                     document.getElementById('resultArea').scrollIntoView({behavior:'smooth'});
 
-                } catch(e) { alert("出错：" + e.message); }
+                } catch(e) { 
+                    console.error(e);
+                    alert("出错：" + e.message); 
+                }
                 finally { btn.innerText = "🚀 开始全盘解析"; btn.disabled = false; }
             }, 300);
         }
@@ -199,26 +201,38 @@
 
         function renderTab3(astrolabe, dateStr) {
             const today = new Date();
-            // 使用 horoscope 获取运限数据
             const horoscope = astrolabe.horoscope(dateStr);
             const decade = horoscope.decadal;
             
-            // 修复点：使用 .range 数组而不是 .age.min
-            // range 是一个数组 [startAge, endAge]
-            const range = decade.range || [0, 0]; 
+            // === 修复的核心代码 ===
+            // 使用 iztro 原生 API 获取宫位，而不是 decade.palace()
+            // 确保 decade 存在，并使用 index 属性
+            let dPalaceName = "未知";
+            let stem = "甲";
+            
+            if (decade) {
+                // 通过 Astrolabe 实例的反查方法，或者直接通过索引
+                // 这里使用最稳妥的 astrolabe.palace(index)
+                const dPalaceObj = astrolabe.palace(decade.index);
+                if (dPalaceObj) {
+                    dPalaceName = dPalaceObj.name;
+                    stem = dPalaceObj.heavenlyStem;
+                }
+            }
+            
+            // 年龄范围兼容性处理 (iztro v2.5+ 用 .range)
+            const range = decade.range || [0, 0];
             const dStart = range[0];
             const dEnd = range[1];
-            const dPalace = decade.palace();
             
-            const stem = dPalace.heavenlyStem;
-            const dSihua = SHI_GAN_SI_HUA[stem];
+            const dSihua = SHI_GAN_SI_HUA[stem] || ['?','?','?','?'];
 
             document.getElementById('decadeFortune').innerHTML = `
                 <div class="flex justify-between items-end mb-2">
                     <h3 class="text-lg font-bold">当前十年大运 (${dStart}-${dEnd}岁)</h3>
-                    <span class="text-xs opacity-80">行运至【${dPalace.name}】</span>
+                    <span class="text-xs opacity-80">行运至【${dPalaceName}】</span>
                 </div>
-                <div class="text-sm opacity-90 mb-3">这十年，您的关注重心在<strong>${dPalace.name}</strong>所代表的领域。</div>
+                <div class="text-sm opacity-90 mb-3">这十年，您的关注重心在<strong>${dPalaceName}</strong>所代表的领域。</div>
                 <div class="bg-white/20 rounded-lg p-3 text-xs space-y-1">
                     <div class="font-bold mb-1">📅 本限四化 (运势引信)：</div>
                     <div>🔴 <span class="font-bold">${dSihua[0]}化禄</span>：机遇到来的地方</div>
@@ -232,14 +246,19 @@
             container.innerHTML = '';
             for (let i = 0; i < 3; i++) {
                 let targetDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
+                // 构造流月日期
                 const tStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth()+1).padStart(2,'0')}-15 12:00:00`;
                 const scope = astrolabe.horoscope(tStr);
                 const monthName = scope.lunarDate.toString();
-                const mPalace = scope.monthly.palace();
+                
+                // 同样的修复逻辑：流月宫位
+                const mPalaceObj = astrolabe.palace(scope.monthly.index);
+                const mPalaceName = mPalaceObj ? mPalaceObj.name : "未知";
+                const mStars = mPalaceObj ? mPalaceObj.majorStars.map(s=>s.name).join('、') : '';
                 
                 const div = document.createElement('div');
                 div.className = 'bg-white border border-slate-200 rounded-lg p-3';
-                div.innerHTML = `<div class="flex justify-between font-bold text-slate-700 text-sm mb-1"><span>${targetDate.getFullYear()}年${targetDate.getMonth()+1}月</span><span class="text-indigo-600">流月在${mPalace.name}</span></div><div class="text-xs text-slate-400 mb-2">${monthName}</div><div class="text-xs text-slate-600">重点关注：${mPalace.majorStars.map(s=>s.name).join('、')||'无主星'}</div>`;
+                div.innerHTML = `<div class="flex justify-between font-bold text-slate-700 text-sm mb-1"><span>${targetDate.getFullYear()}年${targetDate.getMonth()+1}月</span><span class="text-indigo-600">流月在${mPalaceName}</span></div><div class="text-xs text-slate-400 mb-2">${monthName}</div><div class="text-xs text-slate-600">重点关注：${mStars||'无主星'}</div>`;
                 container.appendChild(div);
             }
         }
