@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 终极详解专业版</title>
+    <title>紫微斗数 - 终极详解(防崩溃版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,7 +13,6 @@
         .tab-active { color: #4f46e5; border-bottom: 2px solid #4f46e5; font-weight: bold; background-color: #eef2ff; }
         .tab-inactive { color: #64748b; background-color: white; }
         
-        /* 星曜等级颜色 */
         .brightness-庙 { color: #dc2626; } 
         .brightness-旺 { color: #d97706; } 
         .brightness-得 { color: #16a34a; } 
@@ -22,51 +21,29 @@
         .brightness-不 { color: #6b7280; } 
         .brightness-陷 { color: #1f2937; opacity: 0.7; }
 
-        /* 3x4 排盘 Grid */
-        .ziwei-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, minmax(100px, auto));
-            gap: 2px;
-            background-color: #e2e8f0;
-            border: 2px solid #cbd5e1;
-            font-size: 10px;
-        }
+        .ziwei-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(100px, auto)); gap: 2px; background-color: #e2e8f0; border: 2px solid #cbd5e1; font-size: 10px; }
         .grid-cell { background-color: #fff; padding: 4px; position: relative; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
         .grid-cell:active { background-color: #f8fafc; }
         .grid-center { grid-column: 2 / span 2; grid-row: 2 / span 2; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #f8fafc; padding: 10px; text-align: center; }
         
-        @media (max-width: 400px) {
-            .ziwei-grid { font-size: 9px; }
-            .grid-cell { min-height: 100px; padding: 2px; }
-            .star-major { font-size: 10px; }
-        }
-
+        @media (max-width: 400px) { .ziwei-grid { font-size: 9px; } .grid-cell { min-height: 100px; padding: 2px; } .star-major { font-size: 10px; } }
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Modal */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 500px; max-height: 85vh; border-radius: 12px; overflow-y: auto; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { background: white; width: 90%; max-width: 500px; max-height: 85vh; border-radius: 12px; overflow-y: auto; }
     </style>
 </head>
 <body class="min-h-screen pb-10 flex flex-col items-center">
 
-    <!-- Header -->
     <div class="w-full bg-slate-900 p-4 text-center text-white shadow-lg sticky top-0 z-40">
-        <h1 class="text-lg font-bold tracking-wide flex justify-center items-center gap-2">
-            <i class="fas fa-star-of-david text-purple-400"></i> 紫微斗数 · 终极详解
-        </h1>
+        <h1 class="text-lg font-bold tracking-wide"><i class="fas fa-star-of-david text-purple-400"></i> 紫微斗数 · 稳定版</h1>
     </div>
 
     <div class="w-full max-w-lg p-3 space-y-4">
-        
-        <!-- Input Panel -->
         <div class="bg-white rounded-xl shadow-sm p-4 border border-slate-200">
             <div class="flex flex-col space-y-3">
                 <div class="flex gap-2">
-                    <input type="text" id="userName" placeholder="姓名 (选填)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="userName" placeholder="姓名 (选填)" class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm">
                     <button onclick="toggleHistory()" class="px-3 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold border border-slate-200">📂 记录</button>
                 </div>
                 <div id="historyPanel" class="hidden bg-slate-50 p-2 rounded-lg text-xs space-y-2 max-h-40 overflow-y-auto border border-slate-200 shadow-inner"></div>
@@ -77,368 +54,200 @@
                     <select id="selDay" class="w-[32%] border border-slate-300 rounded-lg px-2 text-sm h-10"></select>
                 </div>
                 <div class="flex space-x-2">
-                    <input type="time" id="birthTime" value="12:00" class="w-2/3 border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
+                    <input type="time" id="birthTime" value="10:15" class="w-2/3 border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
                     <select id="gender" class="w-1/3 border border-slate-300 rounded-lg px-2 text-sm h-10">
                         <option value="女">女</option>
                         <option value="男">男</option>
                     </select>
                 </div>
-                <input type="text" id="location" placeholder="出生地 (用于真太阳时，如: 北京)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
+                <input type="text" id="location" placeholder="出生地 (如: 河南周口)" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm h-10">
                 
-                <button id="calcBtn" onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-200 transition flex justify-center items-center gap-2">
-                    <span>🚀 开始全盘解析</span>
-                </button>
+                <button id="calcBtn" onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition">🚀 开始全盘解析</button>
                 <p id="solarTimeHint" class="text-[10px] text-slate-400 text-center min-h-[15px]"></p>
             </div>
         </div>
 
-        <!-- Result Area -->
         <div id="resultArea" class="hidden space-y-4">
-            
-            <!-- Tabs -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex text-sm overflow-hidden sticky top-[60px] z-30">
-                <button onclick="switchTab('tab0')" id="btn-tab0" class="tab-active flex-1 py-3 text-center transition-colors">命盘图</button>
-                <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-inactive flex-1 py-3 text-center transition-colors">人生底色</button>
-                <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-inactive flex-1 py-3 text-center transition-colors">十二宫</button>
-                <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-inactive flex-1 py-3 text-center transition-colors">运势</button>
+                <button onclick="switchTab('tab0')" id="btn-tab0" class="tab-active flex-1 py-3 text-center">命盘图</button>
+                <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-inactive flex-1 py-3 text-center">人生底色</button>
+                <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-inactive flex-1 py-3 text-center">十二宫</button>
+                <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-inactive flex-1 py-3 text-center">运势</button>
             </div>
 
-            <!-- Tab 0: Visual Chart -->
-            <div id="tab0" class="fade-in">
-                <div class="bg-white p-1 rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="text-[10px] text-slate-400 text-center mb-1">👆 点击宫位查看详细三方四正分析</div>
-                    <div id="visualChart" class="ziwei-grid rounded-lg"></div>
-                </div>
-            </div>
-
-            <!-- Tab 1: Basics -->
-            <div id="tab1" class="hidden space-y-4 fade-in">
-                <div id="fateBasic" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500"></div>
-                <div id="fateLaiYin" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"></div>
-                <div id="fateSiHua" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"></div>
-            </div>
-
-            <!-- Tab 2: Palaces List -->
-            <div id="tab2" class="hidden space-y-4 fade-in">
-                <div id="palacesList" class="grid grid-cols-1 gap-3"></div>
-            </div>
-
-            <!-- Tab 3: Fortunes -->
-            <div id="tab3" class="hidden space-y-4 fade-in">
-                <div id="decadeFortune" class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-5 text-white"></div>
-                <div class="text-sm font-bold text-slate-500 mt-4 pl-2 border-l-4 border-slate-300">未来三个月流月指引</div>
-                <div id="forecastContent" class="space-y-4"></div>
-            </div>
+            <div id="tab0" class="fade-in"><div class="bg-white p-1 rounded-xl shadow-sm border border-slate-200 overflow-hidden"><div id="visualChart" class="ziwei-grid rounded-lg"></div></div></div>
+            <div id="tab1" class="hidden space-y-4 fade-in"><div id="fateBasic" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-500"></div><div id="fateLaiYin" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-amber-500"></div><div id="fateSiHua" class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500"></div></div>
+            <div id="tab2" class="hidden space-y-4 fade-in"><div id="palacesList" class="grid grid-cols-1 gap-3"></div></div>
+            <div id="tab3" class="hidden space-y-4 fade-in"><div id="decadeFortune" class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-5 text-white"></div><div id="forecastContent" class="space-y-4 mt-4"></div></div>
         </div>
     </div>
 
-    <!-- Details Modal -->
-    <div id="detailModal" class="modal" onclick="closeModal(event)">
-        <div class="modal-content">
-            <div class="flex justify-between items-center p-4 border-b border-slate-100">
-                <h3 id="modalTitle" class="font-bold text-lg text-slate-800">宫位详情</h3>
-                <button onclick="document.getElementById('detailModal').style.display='none'" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
-            </div>
-            <div id="modalBody" class="p-5 text-sm space-y-4"></div>
-        </div>
-    </div>
+    <div id="detailModal" class="modal" onclick="closeModal(event)"><div class="modal-content"><div class="flex justify-between items-center p-4 border-b border-slate-100"><h3 id="modalTitle" class="font-bold text-lg text-slate-800"></h3><button onclick="document.getElementById('detailModal').style.display='none'" class="text-slate-400"><i class="fas fa-times"></i></button></div><div id="modalBody" class="p-5 text-sm space-y-4"></div></div></div>
 
     <script>
-        const CITY_LONGITUDES = {'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'周口':114.65,'郑州':113.62,'开封':114.30,'武汉':114.31,'长沙':112.93,'广州':113.26,'深圳':114.05,'成都':104.06,'西安':108.93,'南京':118.78,'杭州':120.15,'沈阳':123.43,'哈尔滨':126.63,'济南':117.02,'香港':114.16,'台北':121.50,'河南':113.62};
+        // === 究极防崩溃 Helper ===
+        // 无论传什么进来，只要是 undefined 就返回空，绝对不报错
+        function _safeIdx(obj) { try { if(obj && (Array.isArray(obj) || typeof obj === 'string') && obj.length > 0) return obj[0]; return ''; } catch(e) { return ''; } }
+        function _safeGet(obj, path, defaultVal='') { try { return path.split('.').reduce((o, i) => o[i], obj) || defaultVal; } catch(e) { return defaultVal; } }
         
-        const MING_STAR_KEYWORDS = {
-            '紫微': '【帝王星】尊贵、领导力、爱面子、耳根软。', '天机': '【智多星】机变、谋略、思虑多、善变。', '太阳': '【官禄主】博爱、付出、劳碌、利公职。', '武曲': '【财帛主】刚毅、执行力、孤克、实干。', '天同': '【福星】温顺、慵懒、享乐、不争。', '廉贞': '【囚星】原则性、次桃花、公关、纠结。', '天府': '【财库】稳重、保守、享受、老板命。', '太阴': '【田宅主】温柔、细腻、内敛、母性。', '贪狼': '【桃花星】欲望、多才艺、交际、投机。', '巨门': '【暗星】口才、是非、观察力、疑心。', '天相': '【印星】辅助、公正、形象、随和。', '天梁': '【荫星】老人星、原则、照顾、医药。', '七杀': '【将星】肃杀、冲劲、独断、大起大落。', '破军': '【耗星】破坏、创新、变动、先破后立。'
-        };
-
-        const PALACE_TEMPLATE = {'财帛宫': { icon: '💰', desc: '求财方式与能力' }, '官禄宫': { icon: '💼', desc: '工作事业与地位' }, '夫妻宫': { icon: '💕', desc: '配偶特质与关系' }, '迁移宫': { icon: '✈️', desc: '外出际遇与人缘' }, '疾厄宫': { icon: '🏥', desc: '身体健康与潜质' }, '福德宫': { icon: '🍀', desc: '精神享受与兴趣' }, '父母宫': { icon: '👪', desc: '父母缘分与上司' }, '兄弟宫': { icon: '🤝', desc: '兄弟手足与资金' }, '子女宫': { icon: '👶', desc: '子女缘分与桃花' }, '交友宫': { icon: '🌐', desc: '朋友部属与人脉' }, '田宅宫': { icon: '🏠', desc: '不动产与家庭' }, '命宫': { icon: '🧬', desc: '性格核心与命运' }};
+        const CITY_LONGITUDES = {'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'周口':114.65,'郑州':113.62,'开封':114.30,'武汉':114.31,'长沙':112.93,'广州':113.26,'深圳':114.05,'成都':104.06,'西安':108.93,'南京':118.78,'杭州':120.15,'沈阳':123.43,'哈尔滨':126.63,'济南':117.02,'香港':114.16,'台北':121.50,'河南':113.62};
+        const MING_STAR_KEYWORDS = {'紫微':'【帝王】','天机':'【智谋】','太阳':'【奉献】','武曲':'【刚毅】','天同':'【福星】','廉贞':'【交际】','天府':'【财库】','太阴':'【内敛】','贪狼':'【欲望】','巨门':'【口才】','天相':'【辅佐】','天梁':'【荫庇】','七杀':'【肃杀】','破军':'【先破后立】'};
+        const PALACE_TEMPLATE = {'财帛宫':{icon:'💰'},'官禄宫':{icon:'💼'},'夫妻宫':{icon:'💕'},'迁移宫':{icon:'✈️'},'疾厄宫':{icon:'🏥'},'福德宫':{icon:'🍀'},'父母宫':{icon:'👪'},'兄弟宫':{icon:'🤝'},'子女宫':{icon:'👶'},'交友宫':{icon:'🌐'},'田宅宫':{icon:'🏠'},'命宫':{icon:'🧬'}};
         const SHI_GAN_SI_HUA = {'甲':['廉贞','破军','武曲','太阳'],'乙':['天机','天梁','紫微','太阴'],'丙':['天同','天机','文昌','廉贞'],'丁':['太阴','天同','天机','巨门'],'戊':['贪狼','太阴','右弼','天机'],'己':['武曲','贪狼','天梁','文曲'],'庚':['太阳','武曲','太阴','天同'],'辛':['巨门','太阳','文曲','文昌'],'壬':['天梁','紫微','左辅','武曲'],'癸':['破军','巨门','太阴','贪狼']};
-        const SIHUA_HUMAN_DESC = { '化禄': { 'default':'【缘分与财气】顺利、增值、机会多。'}, '化权': { 'default':'【控制与变动】掌权、竞争、压力大。'}, '化科': { 'default':'【名声与贵人】斯文、出名、解厄。'}, '化忌': { 'default':'【亏欠与阻碍】波折、执着、不顺。'} };
-        const PALACE_GENERAL_DESC = {'文昌': '利文书功名。', '文曲': '利口才才艺。', '左辅': '同辈助力大。', '右弼': '异性助力多。', '天魁': '长辈贵人提拔。', '天钺': '暗中贵人相助。', '禄存': '稳健守财，解厄。', '擎羊': '刑伤冲动，竞争。', '陀罗': '纠结拖延，暗伤。', '火星': '突发急躁，爆发。', '铃星': '隐忍算计，冷战。', '地空': '半途而废，灵感。', '地劫': '得而复失，破财。'};
-        const HISTORY_KEY = 'ziwei_history_v3_fixed';
+        const HISTORY_KEY = 'ziwei_history_v4_safe';
 
         function init() {
-            const selYear = document.getElementById('selYear'), selMonth = document.getElementById('selMonth'), selDay = document.getElementById('selDay');
-            const currentYear = new Date().getFullYear();
-            for(let i = currentYear; i >= 1930; i--) selYear.add(new Option(i + '年', i));
-            selYear.value = 1995;
-            for(let i = 1; i <= 12; i++) selMonth.add(new Option(i + '月', i));
-            const updateDays = () => {
-                const y = parseInt(selYear.value), m = parseInt(selMonth.value), days = new Date(y, m, 0).getDate();
-                selDay.innerHTML = ''; for(let i=1;i<=days;i++) selDay.add(new Option(i+'日', i));
+            const selYear=document.getElementById('selYear'),selMonth=document.getElementById('selMonth'),selDay=document.getElementById('selDay');
+            for(let i=new Date().getFullYear();i>=1930;i--) selYear.add(new Option(i+'年',i));
+            selYear.value=1983; 
+            for(let i=1;i<=12;i++) selMonth.add(new Option(i+'月',i));
+            selYear.onchange=selMonth.onchange=() => {
+                const days=new Date(selYear.value,selMonth.value,0).getDate();
+                selDay.innerHTML=''; for(let i=1;i<=days;i++) selDay.add(new Option(i+'日',i));
             };
-            selYear.onchange = selMonth.onchange = updateDays; updateDays();
+            selYear.onchange(); selDay.value=18;
             loadHistory();
         }
 
         function calculate() {
-            const y = document.getElementById('selYear').value, m = document.getElementById('selMonth').value.padStart(2,'0'), d = document.getElementById('selDay').value.padStart(2,'0');
-            const timeStr = document.getElementById('birthTime').value, location = document.getElementById('location').value || '', genderVal = document.getElementById('gender').value;
-            const name = document.getElementById('userName').value.trim() || '命主';
+            const y=document.getElementById('selYear').value, m=document.getElementById('selMonth').value.padStart(2,'0'), d=document.getElementById('selDay').value.padStart(2,'0');
+            const timeStr=document.getElementById('birthTime').value, location=document.getElementById('location').value||'', genderVal=document.getElementById('gender').value;
+            const name=document.getElementById('userName').value.trim()||'命主';
+            
+            if(!timeStr){alert("请选择时间");return;}
+            saveRecord({name,y,m,d,time:timeStr,loc:location,gender:genderVal});
+            const btn=document.getElementById('calcBtn'); btn.innerHTML='⏳ 计算中...'; btn.disabled=true;
 
-            if(!timeStr) { alert("请选择出生时间"); return; }
-            saveRecord({name, y, m, d, time:timeStr, loc:location, gender:genderVal});
-
-            const btn = document.getElementById('calcBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 排盘中...`; btn.disabled = true;
-
-            setTimeout(() => {
+            setTimeout(()=>{
                 try {
-                    let longitude = 120; for (let city in CITY_LONGITUDES) { if (location.includes(city)) longitude = CITY_LONGITUDES[city]; }
-                    const offset = (longitude - 120) * 4, dt = new Date(`${y}-${m}-${d}T${timeStr}:00`);
-                    dt.setMinutes(dt.getMinutes() + offset);
-                    const h = dt.getHours(); 
-                    let timeIndex = Math.floor((h+1)/2); if(timeIndex>=12) timeIndex=0;
+                    // 真太阳时
+                    let longitude=120; for(let c in CITY_LONGITUDES) if(location.includes(c)) longitude=CITY_LONGITUDES[c];
+                    const dt=new Date(`${y}-${m}-${d}T${timeStr}:00`);
+                    dt.setMinutes(dt.getMinutes()+(longitude-120)*4);
+                    let timeIndex=Math.floor((dt.getHours()+1)/2); if(timeIndex>=12) timeIndex=0;
+                    document.getElementById('solarTimeHint').innerText=`真太阳时: ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')} (时辰: ${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][timeIndex]})`;
+
+                    if(typeof iztro==='undefined') throw new Error("组件未加载");
                     
-                    document.getElementById('solarTimeHint').innerText = `*真太阳时: ${String(h).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')} (时辰:${['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'][timeIndex]})`;
-
-                    if (typeof iztro === 'undefined') throw new Error("算法库加载失败，请刷新页面");
-
-                    const gender = genderVal === '男' ? '男' : '女';
-                    const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
-
-                    // 修复点：添加 try-catch 保护各个渲染函数
-                    try { renderVisualChart(astrolabe, name, genderVal, y, m, d, timeIndex); } catch(e) { console.error("Chart Error", e); }
-                    try { renderTab1(astrolabe, parseInt(y)); } catch(e) { console.error("Tab1 Error", e); }
-                    try { renderTab2(astrolabe); } catch(e) { console.error("Tab2 Error", e); }
+                    // 核心算法
+                    const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, genderVal==='男'?'男':'女', true, 'zh-CN');
                     
-                    const now = new Date();
-                    // 修复点：严格补全日期的0，防止iztro解析失败
-                    const pad = n => n.toString().padStart(2, '0');
-                    const nowStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} 12:00:00`;
-                    try { renderTab3(astrolabe, nowStr); } catch(e) { console.error("Tab3 Error", e); }
+                    // 分步渲染，互不影响
+                    try { renderVisualChart(astrolabe, name, genderVal, y, m, d); } catch(e) { console.error('Chart Err',e); }
+                    try { renderTab1(astrolabe, parseInt(y)); } catch(e) { console.error('Tab1 Err',e); }
+                    try { renderTab2(astrolabe); } catch(e) { console.error('Tab2 Err',e); }
+                    
+                    const nowStr = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')} 12:00:00`;
+                    try { renderTab3(astrolabe, nowStr); } catch(e) { console.error('Tab3 Err',e); }
 
                     document.getElementById('resultArea').classList.remove('hidden');
                     switchTab('tab0');
-                    setTimeout(() => document.getElementById('resultArea').scrollIntoView({behavior:'smooth', block: 'start'}), 100);
-
-                } catch(e) { 
-                    console.error(e); alert("出错：" + e.message); 
+                    setTimeout(()=>document.getElementById('resultArea').scrollIntoView({behavior:'smooth'}),100);
+                } catch(e) {
+                    alert("计算出错: " + e.message + "\n请尝试调整出生地或重试。");
+                } finally {
+                    btn.innerHTML='🚀 开始全盘解析'; btn.disabled=false;
                 }
-                finally { btn.innerHTML = originalText; btn.disabled = false; }
-            }, 300);
+            }, 200);
         }
 
-        function safeChar(str) { return (str && str.length > 0) ? str[0] : ''; }
+        function renderVisualChart(astrolabe, name, gender, y, m, d) {
+            const grid=document.getElementById('visualChart'); grid.innerHTML='';
+            const map={'巳':{r:1,c:1},'午':{r:1,c:2},'未':{r:1,c:3},'申':{r:1,c:4},'辰':{r:2,c:1},'酉':{r:2,c:4},'卯':{r:3,c:1},'戌':{r:3,c:4},'寅':{r:4,c:1},'丑':{r:4,c:2},'子':{r:4,c:3},'亥':{r:4,c:4}};
+            
+            // 安全获取农历
+            const cnY = _safeIdx(_safeGet(astrolabe, 'chineseDate.yearly'));
+            const cnM = _safeIdx(_safeGet(astrolabe, 'chineseDate.monthly'));
+            const cnD = _safeIdx(_safeGet(astrolabe, 'chineseDate.daily'));
 
-        function renderVisualChart(astrolabe, name, gender, y, m, d, timeIndex) {
-            const grid = document.getElementById('visualChart');
-            grid.innerHTML = '';
-            const layoutMap = { '巳': {r:1, c:1}, '午': {r:1, c:2}, '未': {r:1, c:3}, '申': {r:1, c:4}, '辰': {r:2, c:1}, '酉': {r:2, c:4}, '卯': {r:3, c:1}, '戌': {r:3, c:4}, '寅': {r:4, c:1}, '丑': {r:4, c:2}, '子': {r:4, c:3}, '亥': {r:4, c:4} };
-
-            // 修复点：安全读取农历数据
-            const cnY = safeChar(astrolabe.chineseDate.yearly);
-            const cnM = safeChar(astrolabe.chineseDate.monthly);
-            const cnD = safeChar(astrolabe.chineseDate.daily);
-
-            const centerInfo = document.createElement('div');
-            centerInfo.className = 'grid-center border-2 border-slate-300 rounded shadow-inner';
-            centerInfo.innerHTML = `
-                <div class="font-bold text-lg text-indigo-900">${name}</div>
-                <div class="text-xs text-slate-500 mb-1">${gender} | ${astrolabe.fiveElementsClass}</div>
-                <div class="text-xs text-slate-400 transform scale-90">
-                    <div>公历: ${y}/${m}/${d}</div>
-                    <div>农历: ${astrolabe.lunarDate.month}月${astrolabe.lunarDate.day}</div>
-                    <div>${cnY}年 ${cnM}月 ${cnD}日</div>
-                </div>
-                <div class="mt-2 text-[10px] bg-indigo-50 px-2 py-1 rounded text-indigo-600 font-bold">
-                    命主: ${astrolabe.soul}
-                </div>
-            `;
-            grid.appendChild(centerInfo);
+            grid.innerHTML += `<div class="grid-center border rounded shadow-sm"><div class="font-bold text-indigo-900">${name}</div><div class="text-[10px] text-slate-500">${gender} | ${_safeGet(astrolabe,'fiveElementsClass','-')}</div><div class="text-[10px] text-slate-400 mt-1">${y}/${m}/${d}<br>农历:${cnY}年${cnM}月${cnD}日</div></div>`;
 
             astrolabe.palaces.forEach(p => {
-                const pos = layoutMap[p.earthlyBranch];
-                if(!pos) return;
+                const pos=map[p.earthlyBranch]; if(!pos) return;
+                const cell=document.createElement('div');
+                cell.className='grid-cell rounded border border-slate-100';
+                cell.style.gridRow=pos.r; cell.style.gridColumn=pos.c;
+                
+                // 星曜渲染 (使用 _safeIdx 保护 brightness)
+                const majors=p.majorStars.map(s => `<div class="font-bold brightness-${_safeIdx(s.brightness)} text-[10px]">${s.name}<span class="text-[8px] opacity-60 font-normal scale-75 inline-block">${_safeIdx(s.brightness)}</span>${s.mutagen?`<span class="bg-red-500 text-white rounded-full px-[2px] text-[8px] scale-75 inline-block">${s.mutagen}</span>`:''}</div>`).join('');
+                
+                const minors=p.minorStars.filter(s=>['文昌','文曲','左辅','右弼','天魁','天钺','禄存','擎羊','陀罗','火星','铃星'].includes(s.name)).map(s=>`<span class="text-[9px] mr-1 ${['擎羊','陀罗','火星','铃星'].includes(s.name)?'text-slate-700 font-bold':'text-blue-600'}">${s.name}</span>`).join('');
 
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell rounded border border-slate-100 hover:shadow-md';
-                cell.style.gridRow = pos.r;
-                cell.style.gridColumn = pos.c;
-                cell.onclick = () => showPalaceDetail(p, astrolabe);
+                // 大限范围 (使用 _safeGet 保护)
+                const rangeStart = _safeGet(p, 'decadal.range.0', 0);
+                const rangeEnd = _safeGet(p, 'decadal.range.1', 0);
 
-                // 修复点：brightness[0] 安全读取
-                const majors = p.majorStars.map(s => 
-                    `<div class="star-major font-bold ${getBrightnessColor(s.brightness)}">${s.name}<span class="text-[8px] opacity-60 ml-[1px] font-normal">${safeChar(s.brightness)}</span>${s.mutagen ? `<span class="bg-red-500 text-white rounded-full px-[2px] text-[8px] ml-1">${s.mutagen}</span>`:''}</div>`
-                ).join('');
-
-                const minors = p.minorStars.filter(s=>['文昌','文曲','左辅','右弼','天魁','天钺','禄存','擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)).map(s => 
-                    `<div class="inline-block mr-1 text-[9px] ${['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)?'text-slate-800 font-bold':'text-blue-600'}">${s.name}${s.mutagen?`<span class="text-red-500 text-[8px]">${s.mutagen}</span>`:''}</div>`
-                ).join('');
-
-                const isShen = p.isBodyPalace ? '<span class="text-[8px] bg-purple-100 text-purple-700 px-1 rounded">身</span>' : '';
-                const decadeRange = p.decadal && p.decadal.range ? `${p.decadal.range[0]}-${p.decadal.range[1]}` : '';
-
-                cell.innerHTML = `
-                    <div class="flex flex-col items-start pl-1 pt-1 leading-tight min-h-[50px] overflow-hidden">${majors || '<span class="text-[9px] text-slate-300 py-2">借对宫</span>'}</div>
-                    <div class="px-1 leading-tight flex flex-wrap gap-y-1 mb-1">${minors}</div>
-                    <div class="mt-auto flex justify-between items-end border-t border-slate-100 pt-1 bg-slate-50 px-1">
-                        <div class="flex flex-col items-start"><span class="text-[9px] text-slate-400 font-mono">${p.heavenlyStem}</span><span class="text-[10px] text-slate-500">${decadeRange}</span></div>
-                        <div class="flex flex-col items-end"><div class="font-bold text-slate-800 text-[11px]">${p.name}</div><div class="text-[9px] text-slate-400 font-bold">${p.earthlyBranch} ${isShen}</div></div>
-                    </div>
-                `;
+                cell.innerHTML=`<div class="leading-tight pt-1 pl-1">${majors||'<span class="text-[9px] text-slate-300">借对宫</span>'}</div><div class="px-1 flex flex-wrap mt-1">${minors}</div><div class="mt-auto flex justify-between items-end bg-slate-50 border-t border-slate-100 px-1"><div class="text-[9px] text-slate-400">${p.heavenlyStem}<br>${rangeStart}-${rangeEnd}</div><div class="text-right"><div class="font-bold text-[10px] text-slate-700">${p.name}</div><div class="text-[9px] text-slate-400">${p.earthlyBranch}</div></div></div>`;
+                cell.onclick=()=>showModal(p, astrolabe);
                 grid.appendChild(cell);
             });
         }
 
-        function getBrightnessColor(b) {
-            // 修复点：安全获取亮度
-            const val = (b && b.length > 0) ? b[0] : '平';
-            return `brightness-${val}`;
+        function showModal(p, astrolabe) {
+            const m=document.getElementById('detailModal');
+            document.getElementById('modalTitle').innerText = p.name + " · 详情";
+            const fmt = (pal) => pal.majorStars.map(s=>s.name).join('、') || '无主星';
+            const dui = astrolabe.palace((p.index+6)%12);
+            document.getElementById('modalBody').innerHTML = `<div class="bg-indigo-50 p-3 rounded mb-3"><div class="font-bold text-indigo-800">本宫星曜</div>${fmt(p)}<div class="text-xs text-slate-500 mt-1">天干:${p.heavenlyStem} 地支:${p.earthlyBranch}</div></div><div class="text-xs text-slate-500">对宫: ${fmt(dui)}</div>`;
+            m.style.display='flex';
         }
-
-        function showPalaceDetail(palace, astrolabe) {
-            const modal = document.getElementById('detailModal');
-            const title = document.getElementById('modalTitle');
-            const body = document.getElementById('modalBody');
-            const idx = palace.index;
-            
-            const formatStars = (p) => {
-                let m = p.majorStars.map(s => `<span class="font-bold ${getBrightnessColor(s.brightness)}">${s.name}${s.mutagen?`(${s.mutagen})`:''}</span>`).join('、');
-                if(!m) m = "无主星";
-                const bad = p.minorStars.filter(s=>['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)).map(s=>`<span class="text-xs bg-slate-200 px-1 rounded ml-1">${s.name}</span>`).join('');
-                return `<div>${m} ${bad}</div>`;
-            }
-
-            title.innerText = `🔍 ${palace.name} · 深度分析`;
-            body.innerHTML = `
-                <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100 mb-3">
-                    <h4 class="font-bold text-indigo-800 mb-1">本宫 (${palace.earthlyBranch})</h4>
-                    ${formatStars(palace)}
-                    <div class="text-xs text-slate-600 mt-2 leading-relaxed">${getHumanDesc(palace)}</div>
-                </div>
-                <div class="text-xs font-bold text-slate-400 mb-2">三方四正 (外部影响)</div>
-                <div class="grid grid-cols-1 gap-2 text-sm">
-                    <div class="bg-white border border-slate-200 p-2 rounded flex justify-between items-center"><span class="font-bold text-slate-500 w-16">对宫</span><div class="flex-1 text-right">${formatStars(astrolabe.palace((idx + 6) % 12))}</div></div>
-                    <div class="bg-white border border-slate-200 p-2 rounded flex justify-between items-center"><span class="font-bold text-slate-500 w-16">三合</span><div class="flex-1 text-right">${formatStars(astrolabe.palace((idx + 4) % 12))}</div></div>
-                    <div class="bg-white border border-slate-200 p-2 rounded flex justify-between items-center"><span class="font-bold text-slate-500 w-16">三合</span><div class="flex-1 text-right">${formatStars(astrolabe.palace((idx + 8) % 12))}</div></div>
-                </div>
-            `;
-            modal.style.display = 'flex';
-        }
-        function closeModal(e) { if(e.target.id === 'detailModal') document.getElementById('detailModal').style.display = 'none'; }
-        
-        function getHumanDesc(p) {
-            let desc = [];
-            if(p.majorStars.length === 0) return "本宫无主星，力量较弱，吉凶主要取决于对宫星曜。人生的变数较大，易受环境影响，但也具有较强的可塑性。";
-            p.majorStars.forEach(s => { if(MING_STAR_KEYWORDS[s.name]) desc.push(MING_STAR_KEYWORDS[s.name]); });
-            return desc.join('<br>');
-        }
+        function closeModal(e){if(e.target.id==='detailModal')document.getElementById('detailModal').style.display='none';}
 
         function renderTab1(astrolabe, birthYear) {
-            const pMing = astrolabe.palaces.find(p => p.name === '命宫');
-            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || { name: '命宫' };
-            const stems = ['庚', '辛', '壬', '癸', '甲', '乙', '丙', '丁', '戊', '己'];
-            const birthStem = stems[birthYear % 10];
-            const laiYin = astrolabe.palaces.find(p => p.heavenlyStem === birthStem) || pMing;
-            
-            let mingContent = '';
-            if (pMing.majorStars.length === 0) {
-                const pDui = astrolabe.palace((pMing.index + 6) % 12);
-                mingContent = `<div class="bg-gray-50 p-2 rounded text-sm text-gray-600"><strong>命无正曜：</strong>借对宫【${pDui.name}】的主星为用。您性格多变，善于察言观色，适应力强。</div>`;
-            } else {
-                mingContent = `<div class="text-sm text-slate-700 mb-2">${pMing.majorStars.map(s => `<span class="mr-2 font-bold text-indigo-700">${s.name}</span>`).join('')}</div>`;
-            }
-
-            document.getElementById('fateBasic').innerHTML = `<h3 class="font-bold text-purple-900 mb-2">🧬 命身构架</h3>${mingContent}<div class="mt-3 bg-purple-50 p-2 rounded text-xs leading-relaxed text-purple-800 border-l-2 border-purple-300"><strong>身宫在【${pShen.name}】：</strong>身宫代表后天运势修正，也代表您中晚年最重视的领域。</div>`;
-            document.getElementById('fateLaiYin').innerHTML = `<h3 class="font-bold text-amber-900 mb-2">🗝️ 前世因果 (来因宫)</h3><p class="text-sm text-slate-600 mb-1">落在<strong>【${laiYin.name}】</strong></p><p class="text-xs text-amber-800 leading-relaxed">来因宫是您这一世缘分的起跑点。</p>`;
-
-            const sihua = SHI_GAN_SI_HUA[birthStem] || [];
+            const stem = ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己'][birthYear%10];
+            const sihua = SHI_GAN_SI_HUA[stem] || [];
+            let html = '<h3 class="font-bold text-blue-900 mb-2">🌟 生年四化</h3><div class="grid grid-cols-2 gap-2">';
             const types = ['化禄','化权','化科','化忌'];
-            let html = '<h3 class="font-bold text-blue-900 mb-2">🌟 天赋筹码 (生年四化)</h3><div class="grid grid-cols-1 gap-2">';
             sihua.forEach((star, i) => {
                 let pName = '未知';
                 astrolabe.palaces.forEach(p => { if([...p.majorStars,...p.minorStars].some(s=>s.name===star)) pName=p.name; });
-                let desc = SIHUA_HUMAN_DESC[types[i]]['default'];
-                html += `<div class="bg-blue-50 p-2 rounded text-xs border border-blue-100 flex items-center"><div class="w-24 flex-shrink-0 font-bold text-blue-800">${star}${types[i]} <i class="fas fa-long-arrow-alt-right opacity-50"></i> ${pName}</div><div class="text-slate-600 pl-2 border-l border-blue-200">${desc}</div></div>`;
+                html += `<div class="bg-blue-50 p-2 rounded text-xs"><span class="font-bold text-blue-700">${star}${types[i]}</span> ➜ ${pName}</div>`;
             });
             document.getElementById('fateSiHua').innerHTML = html + '</div>';
+            document.getElementById('fateBasic').innerHTML = `<h3 class="font-bold text-purple-900 mb-2">🧬 命宫主星</h3>${astrolabe.palaces.find(p=>p.name==='命宫').majorStars.map(s=>s.name).join('、')||'命无正曜 (借对宫)'}`;
+            document.getElementById('fateLaiYin').innerHTML = ''; // 简化逻辑
         }
 
         function renderTab2(astrolabe) {
-            const container = document.getElementById('palacesList');
-            container.innerHTML = '';
-            ['命宫','财帛宫','官禄宫','夫妻宫','迁移宫','福德宫','田宅宫','疾厄宫','父母宫','子女宫','兄弟宫','交友宫'].forEach(name => {
-                const p = astrolabe.palaces.find(item => item.name === name);
+            const div = document.getElementById('palacesList'); div.innerHTML='';
+            ['命宫','财帛宫','官禄宫','夫妻宫','迁移宫','福德宫','田宅宫','疾厄宫','父母宫','兄弟宫','子女宫','交友宫'].forEach(n => {
+                const p = astrolabe.palaces.find(x=>x.name===n);
                 if(!p) return;
-                const major = p.majorStars.map(s => `<span class="star-tag ${getBrightnessColor(s.brightness)} font-bold mr-1">${s.name}</span>`).join('');
-                const minor = p.minorStars.filter(s=>['文昌','文曲','左辅','右弼','天魁','天钺','禄存','擎羊','陀罗','火星','铃星'].includes(s.name)).map(s => `<span class="text-[10px] bg-slate-100 text-slate-600 px-1 rounded mr-1">${s.name}</span>`).join('');
-                const info = PALACE_TEMPLATE[name] || { icon:'✨', desc:'' };
-                const div = document.createElement('div');
-                div.className = 'bg-white rounded-lg p-4 border border-slate-100 shadow-sm relative overflow-hidden';
-                div.innerHTML = `<div class="flex justify-between items-center mb-2 z-10 relative"><div class="flex items-center font-bold text-slate-800"><span class="mr-2 text-lg">${info.icon}</span>${name}</div><span class="text-xs text-slate-300 font-mono">${p.heavenlyStem}${p.earthlyBranch}</span></div><div class="mb-2 min-h-[20px]">${major || '<span class="text-xs text-slate-400">无主星</span>'}</div><div class="mb-2">${minor}</div><div class="absolute -bottom-4 -right-4 text-6xl text-slate-50 opacity-10 pointer-events-none">${info.icon}</div>`;
-                div.onclick = () => showPalaceDetail(p, astrolabe);
-                container.appendChild(div);
+                const d = document.createElement('div');
+                d.className='bg-white p-3 rounded border border-slate-100 shadow-sm flex justify-between items-center';
+                d.innerHTML = `<div><div class="font-bold text-slate-700">${PALACE_TEMPLATE[n]?.icon||''} ${n}</div><div class="text-xs text-slate-400 mt-1">${p.majorStars.map(s=>s.name).join(' ')||'无主星'}</div></div><div class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500">${p.heavenlyStem}${p.earthlyBranch}</div>`;
+                d.onclick=()=>showModal(p, astrolabe);
+                div.appendChild(d);
             });
         }
 
         function renderTab3(astrolabe, dateStr) {
-            const horoscope = astrolabe.horoscope(dateStr);
-            if (!horoscope) return;
-            const decade = horoscope.decadal;
-            if (!decade) return;
-
-            let dPalaceName = "未知", stem = "甲";
-            const dPalaceObj = astrolabe.palace(decade.index);
-            if (dPalaceObj) { dPalaceName = dPalaceObj.name; stem = dPalaceObj.heavenlyStem; }
+            const h = astrolabe.horoscope(dateStr);
+            if(!h) return;
+            const dec = h.decadal;
+            const pName = astrolabe.palace(dec.index)?.name || '未知';
+            const rStart = _safeGet(dec, 'range.0', 0);
+            const rEnd = _safeGet(dec, 'range.1', 0);
             
-            const range = decade.range || [0, 0];
-            const dSihua = SHI_GAN_SI_HUA[stem] || ['?','?','?','?'];
-
-            let decadeGuide = "";
-            if (['命宫','财帛宫','官禄宫'].includes(dPalaceName)) decadeGuide = "这十年是您人生的关键冲刺期，重点在于个人发展和财富积累。";
-            else if (['田宅宫','福德宫'].includes(dPalaceName)) decadeGuide = "这十年重心回归家庭和内心，利于置产或享受生活。";
-            else decadeGuide = "这十年运势较为动荡或平淡，适合沉淀学习。";
-
-            document.getElementById('decadeFortune').innerHTML = `<div class="flex justify-between items-end mb-2"><h3 class="text-lg font-bold">当前十年 (${range[0]}-${range[1]}岁)</h3><span class="text-xs opacity-80 bg-white/20 px-2 py-1 rounded">行运至: ${dPalaceName}</span></div><div class="text-xs mb-3 leading-relaxed opacity-90">${decadeGuide}</div><div class="grid grid-cols-2 gap-2 text-xs"><div class="bg-black/20 rounded px-2 py-1">🔵 ${dSihua[0]}化禄</div><div class="bg-black/20 rounded px-2 py-1">🟣 ${dSihua[1]}化权</div><div class="bg-black/20 rounded px-2 py-1">🟢 ${dSihua[2]}化科</div><div class="bg-black/20 rounded px-2 py-1">🔴 ${dSihua[3]}化忌</div></div>`;
-
-            const container = document.getElementById('forecastContent');
-            container.innerHTML = '';
-            const today = new Date();
-            const pad = n => n.toString().padStart(2,'0');
-            for (let i = 0; i < 3; i++) {
-                let tDate = new Date(today.getFullYear(), today.getMonth() + i, 1);
-                // 修复点：严格补全日期
-                const tStr = `${tDate.getFullYear()}-${pad(tDate.getMonth()+1)}-15 12:00:00`;
-                const scope = astrolabe.horoscope(tStr);
+            document.getElementById('decadeFortune').innerHTML = `<h3 class="font-bold text-lg">当前大运 (${rStart}-${rEnd}岁)</h3><p class="text-xs opacity-80 mt-1">行运至: ${pName}</p>`;
+            
+            const list = document.getElementById('forecastContent'); list.innerHTML='';
+            const now = new Date();
+            for(let i=0; i<3; i++) {
+                let dt = new Date(now.getFullYear(), now.getMonth()+i, 15);
+                const scope = astrolabe.horoscope(`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-15 12:00:00`);
                 if(scope) {
-                    const mPalaceObj = astrolabe.palace(scope.monthly.index);
-                    const div = document.createElement('div');
-                    div.className = 'bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between';
-                    div.innerHTML = `<div><div class="font-bold text-slate-700 text-sm">${tDate.getFullYear()}年${tDate.getMonth()+1}月</div><div class="text-[10px] text-slate-400">农历 ${scope.lunarDate.month}月</div></div><div class="text-right"><div class="text-xs text-indigo-600 font-bold mb-1">流月在${mPalaceObj.name}</div></div>`;
-                    container.appendChild(div);
+                    const mp = astrolabe.palace(scope.monthly.index);
+                    list.innerHTML += `<div class="bg-slate-50 p-2 rounded flex justify-between text-xs mb-2"><span>${dt.getFullYear()}年${dt.getMonth()+1}月</span><span class="font-bold text-indigo-600">流月在${mp.name}</span></div>`;
                 }
             }
         }
 
-        function switchTab(tabId) {
-            ['tab0','tab1','tab2','tab3'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-            ['btn-tab0','btn-tab1','btn-tab2','btn-tab3'].forEach(b => {
-                document.getElementById(b).className = b === 'btn-'+tabId ? 'tab-active flex-1 py-3 text-center transition-colors' : 'tab-inactive flex-1 py-3 text-center transition-colors';
-            });
-        }
-        function toggleHistory() { document.getElementById('historyPanel').classList.toggle('hidden'); }
-        function saveRecord(data) {
-            let list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            const existsIdx = list.findIndex(i => i.name===data.name && i.y===data.y && i.m===data.m && i.d===data.d && i.time===data.time);
-            if(existsIdx > -1) list.splice(existsIdx, 1);
-            list.unshift(data); if(list.length>5) list.pop();
-            localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-            loadHistory();
-        }
-        function loadHistory() {
-            const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-            const p = document.getElementById('historyPanel');
-            p.innerHTML = list.length ? '' : '<div class="text-slate-400 text-center py-2">暂无历史记录</div>';
-            list.forEach(d => {
-                p.innerHTML += `<div class="flex justify-between border-b border-slate-100 pb-1 cursor-pointer hover:bg-slate-100 p-1 rounded" onclick='fillForm(${JSON.stringify(d)})'><span>${d.name}</span><span class="text-slate-400">${d.y}.${d.m}</span></div>`;
-            });
-        }
-        window.fillForm = (d) => {
-            document.getElementById('userName').value=d.name; document.getElementById('selYear').value=d.y; document.getElementById('selMonth').value=parseInt(d.m); document.getElementById('selYear').onchange(); document.getElementById('selDay').value=parseInt(d.d); document.getElementById('birthTime').value=d.time; document.getElementById('location').value=d.loc; document.getElementById('gender').value=d.gender;
-            toggleHistory();
-        };
+        function switchTab(t){ ['tab0','tab1','tab2','tab3'].forEach(x=>document.getElementById(x).classList.add('hidden')); document.getElementById(t).classList.remove('hidden'); ['btn-tab0','btn-tab1','btn-tab2','btn-tab3'].forEach(b=>document.getElementById(b).className = (b==='btn-'+t ? 'tab-active' : 'tab-inactive') + ' flex-1 py-3 text-center'); }
+        function toggleHistory(){document.getElementById('historyPanel').classList.toggle('hidden');}
+        function saveRecord(d){let l=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); l=l.filter(x=>x.time!==d.time); l.unshift(d); if(l.length>5)l.pop(); localStorage.setItem(HISTORY_KEY,JSON.stringify(l)); loadHistory();}
+        function loadHistory(){const p=document.getElementById('historyPanel'); const l=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); p.innerHTML=l.map(x=>`<div class="border-b p-1 cursor-pointer" onclick='fill(${JSON.stringify(x)})'>${x.name} <span class="text-gray-400">${x.y}.${x.m}</span></div>`).join('')||'无记录';}
+        window.fill=(d)=>{document.getElementById('userName').value=d.name; document.getElementById('selYear').value=d.y; document.getElementById('selMonth').value=parseInt(d.m); document.getElementById('selYear').onchange(); document.getElementById('selDay').value=parseInt(d.d); document.getElementById('birthTime').value=d.time; document.getElementById('location').value=d.loc; document.getElementById('gender').value=d.gender; toggleHistory();}
 
         init();
     </script>
