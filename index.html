@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 深度解析纯享版</title>
+    <title>紫微斗数 - 深度解析修复版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
         .tag { padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block; }
         .tag-ji { background: #dcfce7; color: #15803d; }
         .tag-sha { background: #fee2e2; color: #b91c1c; }
-        .tag-jie { border: 1px dashed #94a3b8; color: #64748b; background: #f1f5f9; } /* 借星标记 */
+        .tag-jie { border: 1px dashed #94a3b8; color: #64748b; background: #f1f5f9; } 
         
         .brightness-庙 { color: #dc2626; font-weight: 800; }
         .brightness-旺 { color: #d97706; font-weight: 700; }
@@ -40,8 +40,8 @@
 
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-book-reader text-indigo-600 mr-2"></i>紫微斗数 · 深度解析</h1>
-            <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full font-bold">文字纯享版</span>
+            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-check-shield text-green-500 mr-2"></i>紫微斗数 · 深度解析</h1>
+            <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full font-bold">修复版</span>
         </div>
     </div>
 
@@ -70,7 +70,6 @@
 
         <!-- 结果区 -->
         <div id="resultArea" class="hidden space-y-5 fade-in">
-            <!-- 只有3个Tab，去掉了命盘图 -->
             <div class="flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-[60px] z-40">
                 <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-3.5 text-sm tab-active">专家总评</button>
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-3.5 text-sm tab-inactive">十二宫详解</button>
@@ -140,7 +139,7 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
 
-        // === 2. 安全卫士函数 (防崩溃) ===
+        // === 2. 安全卫士函数 (防崩溃核心) ===
         function _getStars(palace) {
             if (!palace || !palace.majorStars) return [];
             return palace.majorStars;
@@ -267,7 +266,10 @@
             const order = ['命宫','兄弟宫','夫妻宫','子女宫','财帛宫','疾厄宫','迁移宫','交友宫','官禄宫','田宅宫','福德宫','父母宫'];
             
             order.forEach(name => {
+                // 核心修复点：增加空值检查，防止 crash
                 const p = astrolabe.palaces.find(item => item.name === name);
+                if (!p) return; // 如果找不到宫位，直接跳过，防止报错 reading 'heavenlyStem'
+
                 const data = _getMajorStarsData(p, astrolabe);
                 
                 let starsHtml = '';
