@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 专业校准版</title>
+    <title>紫微斗数 - 专业真太阳时版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -28,27 +28,29 @@
 <body class="pb-20">
 
     <div class="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-lg">
-        <h1 class="text-center font-bold text-lg"><i class="fas fa-compass text-yellow-400"></i> 紫微斗数 · 真太阳时版</h1>
+        <h1 class="text-center font-bold text-lg"><i class="fas fa-compass text-yellow-400"></i> 紫微斗数 · 专业详解</h1>
     </div>
 
     <div class="max-w-md mx-auto p-4 space-y-4">
         
         <!-- 输入区域 -->
         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 space-y-3">
+            <!-- 年月日 -->
             <div class="grid grid-cols-3 gap-2">
                 <select id="selYear" class="border p-2 rounded text-sm bg-slate-50"></select>
                 <select id="selMonth" class="border p-2 rounded text-sm bg-slate-50"></select>
                 <select id="selDay" class="border p-2 rounded text-sm bg-slate-50"></select>
             </div>
+            <!-- 时间和性别 -->
             <div class="grid grid-cols-2 gap-2">
                 <input type="time" id="birthTime" value="10:15" class="border p-2 rounded text-sm w-full bg-slate-50">
                 <select id="gender" class="border p-2 rounded text-sm bg-slate-50"><option value="女">女</option><option value="男">男</option></select>
             </div>
             
-            <!-- 新增：出生地输入 -->
+            <!-- 【核心修复】出生地输入框 -->
             <div class="relative">
-                <input type="text" id="location" placeholder="出生地 (如: 河南周口，用于真太阳时校准)" class="border p-2 rounded text-sm w-full bg-slate-50 pl-8">
-                <i class="fas fa-map-marker-alt absolute left-3 top-2.5 text-slate-400"></i>
+                <input type="text" id="location" placeholder="出生地 (如: 河南周口，用于校准时辰)" class="border p-2 rounded text-sm w-full bg-slate-50 pl-8 border-indigo-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                <i class="fas fa-map-marker-alt absolute left-3 top-2.5 text-indigo-500"></i>
             </div>
 
             <button onclick="calculate()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold shadow hover:bg-indigo-700 transition flex justify-center items-center gap-2">
@@ -121,7 +123,7 @@
             '石家庄':114.48,'太原':112.53,'济南':117.00,'郑州':113.65,'西安':108.95,'兰州':103.73,'银川':106.27,'西宁':101.74,
             '乌鲁木齐':87.68,'合肥':117.27,'南京':118.78,'杭州':120.19,'福州':119.30,'南昌':115.89,'武汉':114.31,'长沙':113.00,
             '广州':113.23,'南宁':108.33,'海口':110.35,'成都':104.06,'贵阳':106.71,'昆明':102.73,'拉萨':91.11,'西安':108.95,
-            '香港':114.17,'澳门':113.54,'台北':121.50,'周口':114.65,'开封':114.35,'洛阳':112.44,'信阳':114.08,'驻马店':114.02
+            '香港':114.17,'澳门':113.54,'台北':121.50,'周口':114.65,'开封':114.35,'洛阳':112.44,'信阳':114.08,'驻马店':114.02,'河南':113.6
         };
 
         // === 2. 解释文案库 ===
@@ -206,7 +208,7 @@
                 // UI 提示用户
                 const hintDiv = document.getElementById('solarHint');
                 if (matchedCity) {
-                    hintDiv.innerHTML = `✅ 已根据【${matchedCity}】经度校准，真太阳时约：${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
+                    hintDiv.innerHTML = `✅ 已校准【${matchedCity}】真太阳时：${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}`;
                 } else if (loc) {
                     hintDiv.innerHTML = `⚠️ 未识别城市，使用默认北京时间。`;
                 } else {
