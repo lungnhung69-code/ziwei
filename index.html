@@ -20,6 +20,7 @@
         .card-desc { font-size: 0.9rem; line-height: 1.6; color: #475569; text-align: justify; margin-top: 5px; }
         .brightness-庙 { color: #dc2626; font-weight: bold; } .brightness-旺 { color: #d97706; font-weight: bold; } 
         .brightness-平 { color: #64748b; } .brightness-陷 { color: #1f2937; opacity: 0.6; }
+        .error-msg { background: #fee2e2; color: #991b1b; padding: 8px; border-radius: 6px; font-size: 12px; margin-top: 10px; display: none; border: 1px solid #ef4444; }
         
         /* 运势卡片特定样式 */
         .yun-card { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3); }
@@ -29,7 +30,7 @@
 <body class="pb-20">
 
     <div class="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-lg">
-        <h1 class="text-center font-bold text-lg"><i class="fas fa-shield-alt text-yellow-400"></i> 紫微斗数 · 安全稳定版</h1>
+        <h1 class="text-center font-bold text-lg"><i class="fas fa-shield-alt text-yellow-400"></i> 紫微斗数 · 防崩溃终极版</h1>
     </div>
 
     <div class="max-w-md mx-auto p-4 space-y-4">
@@ -53,6 +54,7 @@
                 <span>🔮 开始深度排盘</span>
             </button>
             <div id="solarHint" class="text-[10px] text-center text-slate-400 h-4"></div>
+            <div id="errorBox" class="error-msg"></div>
         </div>
 
         <!-- 结果区域 -->
@@ -83,7 +85,7 @@
             <!-- TAB 2: 十二宫 -->
             <div id="tab2" class="hidden space-y-4 fade-in"><div id="palacesList" class="grid gap-3"></div></div>
 
-            <!-- TAB 3: 运势 (修复版) -->
+            <!-- TAB 3: 运势 -->
             <div id="tab3" class="hidden space-y-4 fade-in">
                 <div id="decadeCard" class="yun-card"></div>
                 <div class="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
@@ -142,10 +144,19 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'长春':125.35,'沈阳':123.43,'呼和浩特':111.65,'石家庄':114.48,'太原':112.53,'济南':117.00,'郑州':113.65,'西安':108.95,'兰州':103.73,'银川':106.27,'西宁':101.74,'乌鲁木齐':87.68,'合肥':117.27,'南京':118.78,'杭州':120.19,'福州':119.30,'南昌':115.89,'武汉':114.31,'长沙':113.00,'广州':113.23,'南宁':108.33,'海口':110.35,'成都':104.06,'贵阳':106.71,'昆明':102.73,'拉萨':91.11,'西安':108.95,'香港':114.17,'澳门':113.54,'台北':121.50,'周口':114.65,'开封':114.35,'洛阳':112.44,'信阳':114.08,'驻马店':114.02,'河南':113.6};
 
-        // 安全获取星曜名称的工具函数
-        function safeStars(palace) {
+        // --- 核心修复：安全获取函数 ---
+        // 无论 palace 是什么，这个函数永远返回数组，绝不报错
+        function _stars(palace) {
             if (!palace || !palace.majorStars) return [];
             return palace.majorStars;
+        }
+        function _minor(palace) {
+            if (!palace || !palace.minorStars) return [];
+            return palace.minorStars;
+        }
+        function _safemap(arr, fn) {
+            if (!arr || !Array.isArray(arr)) return '';
+            return arr.map(fn).join('');
         }
 
         // 初始化
@@ -159,10 +170,12 @@
                 d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
             };
             y.onchange = m.onchange = updateD; updateD(); d.value=18;
+            document.getElementById('errorBox').style.display='none';
         }
 
         // 计算逻辑
         function calculate() {
+            document.getElementById('errorBox').style.display='none';
             if (typeof iztro === 'undefined') { alert("资源加载中，请稍后点击..."); return; }
             
             const y = document.getElementById('selYear').value;
@@ -191,71 +204,63 @@
                 // 排盘
                 const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
 
-                // 分步渲染，防止一步错全盘挂
-                try { renderTab1(astrolabe, parseInt(y)); } catch(e) { console.error(e); }
-                try { renderTab2(astrolabe); } catch(e) { console.error(e); }
-                try { renderTab3(astrolabe); } catch(e) { console.error(e); }
-                try { renderChart(astrolabe); } catch(e) { console.error(e); }
+                // 分步安全渲染
+                try { renderTab1(astrolabe); } catch(e) { console.error("Tab1 Err", e); }
+                try { renderTab2(astrolabe); } catch(e) { console.error("Tab2 Err", e); }
+                try { renderTab3(astrolabe); } catch(e) { console.error("Tab3 Err", e); }
+                try { renderChart(astrolabe); } catch(e) { console.error("Chart Err", e); }
 
                 document.getElementById('resultArea').classList.remove('hidden');
                 switchTab('tab1');
 
             } catch(e) {
-                alert('排盘错误: ' + e.message);
+                const box = document.getElementById('errorBox');
+                box.style.display = 'block';
+                box.innerText = "排盘发生错误，请截图反馈: " + e.message;
             }
         }
 
-        // TAB 1: 深度底色 (修复内容少的问题)
-        function renderTab1(astrolabe, birthYear) {
+        // TAB 1: 深度底色
+        function renderTab1(astrolabe) {
             const pMing = astrolabe.palaces.find(p => p.name === '命宫');
             if(!pMing) return;
-
-            const majorStars = safeStars(pMing);
+            const majorStars = _stars(pMing);
             let mingHtml = '';
 
-            // 命宫解释
             if(majorStars.length === 0) {
                 const pDui = astrolabe.palace((pMing.index+6)%12);
-                const duiStars = safeStars(pDui);
+                const duiStars = _stars(pDui);
                 mingHtml = `
                     <div class="font-bold text-slate-800 mb-2">命无正曜 (借对宫)</div>
-                    <div class="card-desc">您的命宫没有主星，这意味着您的性格可塑性极强，像一张白纸，容易受环境和朋友的影响。您善于察言观色，适应能力强。核心性格需参考对宫（${pDui.name}）的主星：<span class="font-bold">${duiStars.map(s=>s.name).join('、')}</span>。这通常意味着您在外出发展或社交场合中更能展现才华。</div>
+                    <div class="card-desc">您的命宫没有主星，这意味着您的性格可塑性极强，像一张白纸。核心性格需参考对宫（${pDui.name}）的主星：<span class="font-bold">${duiStars.map(s=>s.name).join('、')}</span>。这通常意味着您在外出发展或社交场合中更能展现才华。</div>
                 `;
             } else {
                 mingHtml = `<div class="flex items-center gap-2 mb-2">` + majorStars.map(s => `<span class="text-lg font-bold text-indigo-700">${s.name}</span><span class="text-xs bg-slate-100 px-1 rounded">${s.brightness}</span>`).join('') + `</div>`;
-                // 拼接详细解释
                 let detailedDesc = majorStars.map(s => DB_MING[s.name] || '').join('<br><br>');
                 mingHtml += `<div class="card-desc">${detailedDesc}</div>`;
             }
             document.getElementById('mingContent').innerHTML = mingHtml;
 
-            // 身宫解释
             const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || pMing;
             const shenDesc = DB_SHEN[pShen.name] || '身宫代表后天运势的修正。';
             document.getElementById('shenContent').innerHTML = `<div class="font-bold text-amber-800 mb-1">身宫在【${pShen.name}】</div><div class="card-desc">${shenDesc}</div>`;
 
-            // 四化解释
+            // 安全四化渲染
             const sihuaHTML = ['禄','权','科','忌'].map((type, i) => {
                 let found = null;
                 astrolabe.palaces.forEach(p => {
-                    safeStars(p).forEach(s => { if(s.mutagen === type) found = {star: s.name, palace: p.name}; });
+                    // 这里使用安全函数 _stars 和 _minor 防止崩溃
+                    const allStars = [..._stars(p), ..._minor(p)];
+                    allStars.forEach(s => { if(s.mutagen === type) found = {star: s.name, palace: p.name}; });
                 });
                 if(!found) return '';
-                const meaning = {'禄':'财禄、缘分、享受','权':'权力、竞争、控制','科':'名声、贵人、文书','忌':'阻碍、执着、亏欠'}[type];
                 const colors = ['bg-red-50 text-red-700', 'bg-orange-50 text-orange-700', 'bg-blue-50 text-blue-700', 'bg-slate-100 text-slate-700'];
-                return `
-                <div class="border rounded p-3 flex justify-between items-center ${colors[i]}">
-                    <div>
-                        <span class="font-bold text-sm">${found.star}化${type}</span>
-                        <span class="text-xs ml-2 opacity-80">(${meaning})</span>
-                    </div>
-                    <span class="font-bold text-sm">入 ${found.palace}</span>
-                </div>`;
+                return `<div class="border rounded p-3 flex justify-between items-center ${colors[i]}"><div><span class="font-bold text-sm">${found.star}化${type}</span></div><span class="font-bold text-sm">入 ${found.palace}</span></div>`;
             }).join('');
             document.getElementById('sihuaContent').innerHTML = sihuaHTML;
         }
 
-        // TAB 2: 十二宫 (增加解释)
+        // TAB 2: 十二宫
         function renderTab2(astrolabe) {
             const list = document.getElementById('palacesList'); list.innerHTML = '';
             const order = ['命宫','兄弟宫','夫妻宫','子女宫','财帛宫','疾厄宫','迁移宫','交友宫','官禄宫','田宅宫','福德宫','父母宫'];
@@ -263,124 +268,74 @@
             order.forEach(name => {
                 const p = astrolabe.palaces.find(item => item.name === name);
                 if (!p) return;
-                const majors = safeStars(p).map(s => `<span class="font-bold text-indigo-900 mr-1">${s.name}</span><span class="text-xs text-slate-400 mr-2">${s.brightness}</span>`).join('');
-                const minors = p.minorStars.map(s => {
+                const majors = _stars(p).map(s => `<span class="font-bold text-indigo-900 mr-1">${s.name}</span><span class="text-xs text-slate-400 mr-2">${s.brightness}</span>`).join('');
+                const minors = _minor(p).map(s => {
                     if(['左辅','右弼','天魁','天钺','文昌','文曲','禄存'].includes(s.name)) return `<span class="tag-ji mr-1">${s.name}</span>`;
                     if(['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)) return `<span class="tag-sha mr-1">${s.name}</span>`;
                     return '';
                 }).join('');
                 
-                // 宫位解释
                 const desc = DB_PALACE[name] || '';
-
                 const div = document.createElement('div');
                 div.className = 'bg-white rounded-lg p-4 border border-slate-100 shadow-sm';
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="font-bold text-lg text-slate-800">${name}</div>
-                        <div class="text-xs bg-slate-50 px-2 py-1 rounded text-slate-400">${p.heavenlyStem}${p.earthlyBranch}</div>
-                    </div>
-                    <div class="text-xs text-slate-400 mb-3">${desc}</div>
-                    <div class="mb-2 min-h-[24px]">${majors || '<span class="text-sm text-slate-300">无主星</span>'}</div>
-                    <div class="flex flex-wrap gap-1">${minors}</div>
-                `;
+                div.innerHTML = `<div class="flex justify-between items-center mb-1"><div class="font-bold text-lg text-slate-800">${name}</div><div class="text-xs bg-slate-50 px-2 py-1 rounded text-slate-400">${p.heavenlyStem}${p.earthlyBranch}</div></div><div class="text-xs text-slate-400 mb-3">${desc}</div><div class="mb-2 min-h-[24px]">${majors || '<span class="text-sm text-slate-300">无主星</span>'}</div><div class="flex flex-wrap gap-1">${minors}</div>`;
                 list.appendChild(div);
             });
         }
 
-        // TAB 3: 运势 (彻底修复 0-0 岁及空白问题)
+        // TAB 3: 运势 (安全版)
         function renderTab3(astrolabe) {
-            // 1. 获取当前系统时间，而不是出生时间
             const now = new Date();
             const nowStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' 12:00:00';
-            
-            // 2. 获取运限
             let horoscope;
-            try {
-                horoscope = astrolabe.horoscope(nowStr);
-            } catch (e) { console.error(e); }
+            try { horoscope = astrolabe.horoscope(nowStr); } catch (e) {}
 
-            // 3. 渲染大运卡片
             if (!horoscope || !horoscope.decadal) {
                 document.getElementById('decadeCard').innerHTML = '<div class="text-center p-4">运势数据计算中...</div>';
             } else {
                 const dec = horoscope.decadal;
                 const dPalace = astrolabe.palace(dec.index);
-                // 这里加个保护，防止dPalace为空
                 if (dPalace) {
-                    const starsStr = safeStars(dPalace).map(s=>s.name).join('、') || '无主星';
-                    document.getElementById('decadeCard').innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <div class="text-white/80 text-xs uppercase tracking-wider">Current Decade</div>
-                                <div class="text-2xl font-bold mt-1">当前大限 ${dec.range[0]}-${dec.range[1]}岁</div>
-                            </div>
-                            <div class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
-                                ${dPalace.name}
-                            </div>
-                        </div>
-                        <div class="text-sm text-white/90 mt-2 pt-2 border-t border-white/20">
-                            本大限命宫在【${dPalace.name}】，主星为：${starsStr}。
-                            <br>这是您人生中关键的十年，重点关注该宫位代表的领域。
-                        </div>
-                    `;
+                    const starsStr = _stars(dPalace).map(s=>s.name).join('、') || '无主星';
+                    document.getElementById('decadeCard').innerHTML = `<div class="flex justify-between items-start mb-2"><div><div class="text-white/80 text-xs uppercase tracking-wider">Current Decade</div><div class="text-2xl font-bold mt-1">当前大限 ${dec.range[0]}-${dec.range[1]}岁</div></div><div class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">${dPalace.name}</div></div><div class="text-sm text-white/90 mt-2 pt-2 border-t border-white/20">本大限命宫在【${dPalace.name}】，主星为：${starsStr}。<br>这是您人生中关键的十年，重点关注该宫位代表的领域。</div>`;
                 }
             }
 
-            // 4. 渲染未来三月 (手动循环推算)
             const forecastDiv = document.getElementById('monthlyForecast');
             forecastDiv.innerHTML = '';
             
             for (let i = 0; i < 3; i++) {
-                // 手动构建未来月份的 Date 对象
                 let futureDate = new Date();
                 futureDate.setMonth(now.getMonth() + i);
-                // 构造 iztro 需要的时间字符串 YYYY-MM-DD HH:mm:ss
-                let fStr = futureDate.getFullYear() + '-' + 
-                           String(futureDate.getMonth() + 1).padStart(2, '0') + '-' + 
-                           String(futureDate.getDate()).padStart(2, '0') + ' 12:00:00';
-
-                let scope;
-                try {
-                    scope = astrolabe.horoscope(fStr);
-                } catch(e) {}
+                let fStr = futureDate.getFullYear() + '-' + String(futureDate.getMonth() + 1).padStart(2, '0') + '-' + String(futureDate.getDate()).padStart(2, '0') + ' 12:00:00';
+                let scope; try { scope = astrolabe.horoscope(fStr); } catch(e) {}
 
                 if (scope && scope.monthly) {
                     const mPalace = astrolabe.palace(scope.monthly.index);
                     if(mPalace) {
-                        const stars = safeStars(mPalace).map(s=>s.name).join(' ') || '空宫';
-                        
+                        const stars = _stars(mPalace).map(s=>s.name).join(' ') || '空宫';
                         const item = document.createElement('div');
                         item.className = 'yun-item';
-                        item.innerHTML = `
-                            <div>
-                                <div class="font-bold text-slate-700">${futureDate.getMonth() + 1}月</div>
-                                <div class="text-xs text-slate-400">农历${scope.lunarDate.month}月</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-indigo-500 font-bold mb-1">流月在${mPalace.name}</div>
-                                <div class="text-xs text-slate-500">${stars}</div>
-                            </div>
-                        `;
+                        item.innerHTML = `<div><div class="font-bold text-slate-700">${futureDate.getMonth() + 1}月</div><div class="text-xs text-slate-400">农历${scope.lunarDate.month}月</div></div><div class="text-right"><div class="text-xs text-indigo-500 font-bold mb-1">流月在${mPalace.name}</div><div class="text-xs text-slate-500">${stars}</div></div>`;
                         forecastDiv.appendChild(item);
                     }
                 }
             }
         }
 
-        // TAB 0: 盘图
+        // TAB 0: 盘图 (安全版)
         function renderChart(astrolabe) {
             const grid = document.getElementById('visualChart'); grid.innerHTML = '';
             const map={'巳':{r:1,c:1},'午':{r:1,c:2},'未':{r:1,c:3},'申':{r:1,c:4},'辰':{r:2,c:1},'酉':{r:2,c:4},'卯':{r:3,c:1},'戌':{r:3,c:4},'寅':{r:4,c:1},'丑':{r:4,c:2},'子':{r:4,c:3},'亥':{r:4,c:4}};
             astrolabe.palaces.forEach(p => {
                 const pos = map[p.earthlyBranch];
                 const d = document.createElement('div'); d.className = 'grid-cell'; d.style.gridRow = pos.r; d.style.gridColumn = pos.c;
-                const mHtml = safeStars(p).map(s => `<span class="text-xs brightness-${s.brightness}">${s.name}</span>`).join('<br>');
-                const nHtml = p.minorStars.filter(s=>['擎羊','陀罗','火星','铃星'].includes(s.name)).map(s=>`<span class="text-[10px] text-red-800">${s.name}</span>`).join(' ');
+                const mHtml = _stars(p).map(s => `<span class="text-xs brightness-${s.brightness}">${s.name}</span>`).join('<br>');
+                const nHtml = _minor(p).filter(s=>['擎羊','陀罗','火星','铃星'].includes(s.name)).map(s=>`<span class="text-[10px] text-red-800">${s.name}</span>`).join(' ');
                 d.innerHTML = `<div class="pl-1 pt-1 leading-tight">${mHtml}</div><div class="text-[9px] px-1">${nHtml}</div><div class="mt-auto flex justify-between items-end border-t border-slate-200 bg-slate-50 px-1"><span class="text-[10px] text-slate-400">${p.heavenlyStem}</span><span class="text-[10px] font-bold text-slate-700">${p.name}</span></div>`;
                 grid.appendChild(d);
             });
-            const c = document.createElement('div'); c.className = 'grid-center'; c.innerHTML = `<div class="font-bold text-indigo-900">紫微斗数</div><div class="text-xs text-slate-500 mt-1">深度精批版</div>`;
+            const c = document.createElement('div'); c.className = 'grid-center'; c.innerHTML = `<div class="font-bold text-indigo-900">紫微斗数</div><div class="text-xs text-slate-500 mt-1">防崩溃版</div>`;
             grid.appendChild(c);
         }
 
