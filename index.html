@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 终极匹配修正版 V8.0</title>
+    <title>紫微斗数 - 深度精批内容版 V9.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -11,17 +11,20 @@
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background-color: #f8fafc; color: #334155; }
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: #eef2ff; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #fff; font-weight: 500; }
-        .tag { padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block; }
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block; background: #f1f5f9; color: #64748b; }
         .tag-ji { background: #dcfce7; color: #15803d; }
         .tag-sha { background: #fee2e2; color: #b91c1c; }
-        .tag-jie { border: 1px dashed #94a3b8; color: #64748b; background: #f1f5f9; padding: 2px 6px; font-size: 10px; border-radius: 4px; }
+        .tag-jie { border: 1px dashed #94a3b8; color: #64748b; background: #f1f5f9; }
         .brightness-庙 { color: #dc2626; font-weight: 800; }
         .brightness-旺 { color: #d97706; font-weight: 700; }
         .brightness-平 { color: #475569; }
         .brightness-陷 { color: #1e293b; opacity: 0.7; }
-        .analysis-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .analysis-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         .ac-title { font-size: 18px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
         .ac-content { font-size: 15px; line-height: 1.8; color: #475569; text-align: justify; }
+        .highlight { color: #4338ca; font-weight: bold; background: #e0e7ff; padding: 0 4px; border-radius: 4px; }
+        .star-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e2e8f0; }
+        .star-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .yun-card { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); margin-bottom: 20px; }
     </style>
 </head>
@@ -29,7 +32,7 @@
 
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-file-alt text-indigo-600 mr-2"></i>紫微斗数 · 终极匹配版 V8.0</h1>
+            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-book-open text-indigo-600 mr-2"></i>紫微斗数 · 深度精批版 V9.0</h1>
         </div>
     </div>
 
@@ -94,363 +97,56 @@
     </div>
 
     <script>
+        // === 1. 扩充版大师级数据库 ===
         const DB_STARS = {
-            '紫微': { char: '自带贵气，自尊心强，喜主导。', career: '适合管理、公职、一把手。', love: '配偶气质高雅，但也可能有傲气。' },
-            '天机': { char: '反应极快，善于分析，思虑多变。', career: '适合策划、设计、IT、幕后军师。', love: '配偶聪明机灵，感情易变动。' },
-            '太阳': { char: '热情豪爽，博爱无私，劳心劳力。', career: '利公职、教育、传播、外交。', love: '配偶性格爽朗，但易忽略家庭。' },
-            '武曲': { char: '刚毅果决，对金钱敏感，执行力强。', career: '利金融、军警、实业、财务。', love: '配偶个性强，相处需多沟通。' },
-            '天同': { char: '温和慵懒，知足常乐，不喜争斗。', career: '利服务、餐饮、休闲、享受型行业。', love: '配偶温和，感情较平顺。' },
-            '廉贞': { char: '爱憎分明，社交手腕高，心思深沉。', career: '利公关、IT、精密仪器、公务员。', love: '感情浓烈，占有欲强。' },
-            '天府': { char: '稳重保守，善于守成，有老板运。', career: '利行政、银行、大机构管理。', love: '配偶稳重，有帮夫/妻运。' },
-            '太阴': { char: '温柔细腻，重情感，擅长计划。', career: '利房地产、内勤、财务、护理。', love: '配偶温柔体贴，异性缘佳。' },
-            '贪狼': { char: '多才多艺，八面玲珑，欲望较强。', career: '利娱乐、艺术、销售、公关。', love: '桃花旺，配偶有才艺。' },
-            '巨门': { char: '观察敏锐，心思缜密，口才极佳。', career: '利律师、讲师、研究、销售。', love: '容易有口角，沟通是关键。' },
-            '天相': { char: '公正无私，形象好，喜欢帮助别人。', career: '利秘书、辅助、服务、中介。', love: '配偶多为老同学或同事。' },
-            '天梁': { char: '老成持重，心地善良，原则性强。', career: '利医药、法律、公益、监督。', love: '配偶年长或心理成熟。' },
-            '七杀': { char: '性格冲动，独断专行，行动力强。', career: '利业务、外勤、创业、高难度工作。', love: '感情来去快，配偶个性强。' },
-            '破军': { char: '先破后立，喜新厌旧，创意无限。', career: '利设计、爆破、拆迁、创新。', love: '感情不稳定，适合晚婚。' }
-        };
-
-        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
-
-        // === 1. 终极宫位定位器 ===
-        // 不再推算，直接搜名字。例如搜"财"，一定能找到"财帛宫"
-        function findPalace(astrolabe, keyword) {
-            return astrolabe.palaces.find(p => p.name.includes(keyword));
-        }
-
-        // 安全获取
-        function _getStars(palace) {
-            return (palace && palace.majorStars) ? palace.majorStars : [];
-        }
-        function _getMinors(palace) {
-            return (palace && palace.minorStars) ? palace.minorStars : [];
-        }
-
-        // 获取主星（含借对宫逻辑）
-        function _getMajorStarsData(palace, astrolabe) {
-            if (!palace) return { stars: [], isBorrowed: false };
-            const majors = _getStars(palace);
-            if (majors.length > 0) return { stars: majors, isBorrowed: false };
-            
-            // 借对宫：使用 iztro 的 palace() 方法，传入 (index + 6) % 12
-            const duiIdx = (palace.index + 6) % 12;
-            const duiPalace = astrolabe.palace(duiIdx);
-            return { stars: _getStars(duiPalace), isBorrowed: true };
-        }
-
-        function init() {
-            const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
-            for(let i=new Date().getFullYear(); i>=1940; i--) y.add(new Option(i+'年', i));
-            y.value = 1983; 
-            for(let i=1; i<=12; i++) m.add(new Option(i+'月', i));
-            const updateD = () => {
-                const days = new Date(y.value, m.value, 0).getDate();
-                d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
-            };
-            y.onchange = m.onchange = updateD; updateD(); d.value=18;
-        }
-
-        function calculate() {
-            if (typeof iztro === 'undefined') { alert("资源加载中..."); return; }
-            
-            const y = document.getElementById('selYear').value;
-            const m = document.getElementById('selMonth').value.padStart(2,'0');
-            const d = document.getElementById('selDay').value.padStart(2,'0');
-            const t = document.getElementById('birthTime').value;
-            const gender = document.getElementById('gender').value;
-            const loc = document.getElementById('location').value;
-
-            try {
-                let longitude = 120, matchedCity = '';
-                for (let city in CITY_LONGITUDES) {
-                    if (loc.includes(city)) { longitude = CITY_LONGITUDES[city]; matchedCity = city; break; }
-                }
-                const offset = (longitude - 120) * 4;
-                const dateObj = new Date(`${y}-${m}-${d}T${t}:00`);
-                dateObj.setMinutes(dateObj.getMinutes() + offset);
-                let timeIndex = Math.floor((dateObj.getHours()+1)/2); if(timeIndex>=12) timeIndex=0;
-
-                document.getElementById('solarHint').innerText = matchedCity ? `✅ 真太阳时已校准 (${matchedCity})` : "ℹ️ 默认北京时间";
-
-                // 排盘
-                const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
-
-                renderExpert(astrolabe);
-                renderPalaceDetail(astrolabe);
-                renderDecades(astrolabe, parseInt(y));
-
-                document.getElementById('resultArea').classList.remove('hidden');
-                switchTab('tab1');
-
-            } catch(e) {
-                alert('排盘失败: ' + e.message);
-            }
-        }
-
-        function renderExpert(astrolabe) {
-            // 1. 命宫 - 关键字搜索 "命"
-            const pMing = findPalace(astrolabe, '命');
-            const mingData = _getMajorStarsData(pMing, astrolabe);
-            let mingHTML = '';
-            
-            let starNames = mingData.stars.map(s => s.name).join('、');
-            if (mingData.stars.length === 0) starNames = "无主星";
-            
-            mingHTML += `<div class="mb-3"><span class="text-lg font-bold text-indigo-900">主星：${starNames}</span>${mingData.isBorrowed ? '<span class="text-xs bg-slate-100 ml-2 px-1 rounded">借对宫</span>' : ''}</div>`;
-
-            if (mingData.stars.length > 0) {
-                mingHTML += `<div class="space-y-3">`;
-                mingData.stars.forEach(s => {
-                    const desc = DB_STARS[s.name] ? DB_STARS[s.name].char : "个性独特。";
-                    mingHTML += `<div class="text-sm text-slate-700"><span class="font-bold text-indigo-600">【${s.name}】</span> ${desc}</div>`;
-                });
-                mingHTML += `</div>`;
-            }
-            document.getElementById('expertMing').innerHTML = mingHTML;
-
-            // 2. 事业(官) + 财运(财)
-            const pGuan = findPalace(astrolabe, '官');
-            const pCai = findPalace(astrolabe, '财');
-            
-            // 修复：此时 pGuan 和 pCai 绝对不为空，_getMajorStarsData 会正确读取
-            const guanData = _getMajorStarsData(pGuan, astrolabe);
-            const caiData = _getMajorStarsData(pCai, astrolabe);
-
-            let careerHTML = `<div class="mb-4"><div class="font-bold text-slate-800 mb-2 border-l-4 border-amber-500 pl-2">官禄宫（事业）</div>`;
-            
-            if (guanData.stars.length > 0) {
-                // 显示借星提示
-                if (guanData.isBorrowed) careerHTML += `<div class="text-xs text-slate-400 mb-2">（本宫无主星，借对宫星曜分析）</div>`;
-                guanData.stars.forEach(s => {
-                    const desc = DB_STARS[s.name] ? DB_STARS[s.name].career : "适合变动性大的工作。";
-                    careerHTML += `<div class="text-sm text-slate-600 mb-1">· <b>${s.name}</b>：${desc}</div>`;
-                });
-            } else {
-                careerHTML += `<div class="text-sm text-slate-500">本宫及对宫皆无主星，可参考命宫。</div>`;
-            }
-            careerHTML += `</div>`;
-
-            careerHTML += `<div><div class="font-bold text-slate-800 mb-2 border-l-4 border-amber-500 pl-2">财帛宫（财运）</div>`;
-            if (caiData.stars.length > 0) {
-                if (caiData.isBorrowed) careerHTML += `<div class="text-xs text-slate-400 mb-2">（本宫无主星，借对宫星曜分析）</div>`;
-                caiData.stars.forEach(s => {
-                    const desc = DB_STARS[s.name] ? DB_STARS[s.name].career : "财运起伏。"; 
-                    careerHTML += `<div class="text-sm text-slate-600 mb-1">· <b>${s.name}</b>：${desc.replace('适合','利于求财，如')}</div>`;
-                });
-            } else {
-                careerHTML += `<div class="text-sm text-slate-500">本宫及对宫皆无主星。</div>`;
-            }
-            careerHTML += `</div>`;
-            document.getElementById('expertCareer').innerHTML = careerHTML;
-
-            // 3. 婚姻 (夫)
-            const pFu = findPalace(astrolabe, '夫');
-            const fuData = _getMajorStarsData(pFu, astrolabe);
-            
-            let loveHTML = `<div class="mb-2"><span class="font-bold text-slate-800">夫妻宫主星：</span>${fuData.stars.map(s=>s.name).join('、') || '空宫'}</div>`;
-            
-            if (fuData.stars.length > 0) {
-                if (fuData.isBorrowed) loveHTML += `<div class="text-xs text-slate-400 mb-2">（本宫无主星，借对宫星曜分析）</div>`;
-                loveHTML += `<div class="space-y-2">`;
-                fuData.stars.forEach(s => {
-                    const desc = DB_STARS[s.name] ? DB_STARS[s.name].love : "感情需要经营。";
-                    loveHTML += `<div class="text-sm text-slate-600">· <b>${s.name}</b>：${desc}</div>`;
-                });
-                loveHTML += `</div>`;
-            } else {
-                loveHTML += `<div class="text-sm text-slate-500 bg-slate-50 p-2 rounded">夫妻宫及对宫皆无主星，缘分可能较晚。</div>`;
-            }
-            document.getElementById('expertLove').innerHTML = loveHTML;
-        }
-
-        // === Tab 2: 十二宫详解 ===
-        function renderPalaceDetail(astrolabe) {
-            const list = document.getElementById('palacesList');
-            list.innerHTML = '';
-            // 使用关键字搜索，确保顺序正确且不漏
-            const order = [
-                {k:'命', n:'命宫'}, {k:'兄', n:'兄弟宫'}, {k:'夫', n:'夫妻宫'}, {k:'子', n:'子女宫'},
-                {k:'财', n:'财帛宫'}, {k:'疾', n:'疾厄宫'}, {k:'迁', n:'迁移宫'}, {k:'友', n:'交友宫'},
-                {k:'官', n:'官禄宫'}, {k:'田', n:'田宅宫'}, {k:'福', n:'福德宫'}, {k:'父', n:'父母宫'}
-            ];
-            
-            order.forEach(obj => {
-                const p = findPalace(astrolabe, obj.k);
-                if (!p) return;
-                const data = _getMajorStarsData(p, astrolabe);
-                
-                let starsHtml = '';
-                if (data.isBorrowed) starsHtml = `<span class="tag tag-jie">借星安宫</span>`;
-                starsHtml += data.stars.map(s => `<span class="font-bold text-indigo-700 mr-1 text-base">${s.name}</span><span class="text-xs opacity-50 mr-3 brightness-${s.brightness}">${s.brightness}</span>`).join('');
-
-                const minors = _getMinors(p).map(s => {
-                    if(['左辅','右弼','天魁','天钺','文昌','文曲','禄存'].includes(s.name)) return `<span class="tag tag-ji">${s.name}</span>`;
-                    if(['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s.name)) return `<span class="tag tag-sha">${s.name}</span>`;
-                    return `<span class="text-xs text-slate-400 mr-1">${s.name}</span>`;
-                }).join('');
-
-                let desc = "";
-                if (data.stars.length > 0) {
-                    const sName = data.stars[0].name;
-                    if (DB_STARS[sName]) {
-                        if (obj.k === '命') desc = `性格特质：${DB_STARS[sName].char}`;
-                        else if (obj.k === '财') desc = `财富特质：${DB_STARS[sName].career}`;
-                        else if (obj.k === '夫') desc = `感情特质：${DB_STARS[sName].love}`;
-                        else if (obj.k === '官') desc = `事业特质：${DB_STARS[sName].career}`;
-                        else desc = `主星${sName}：${DB_STARS[sName].char}`; 
-                    }
-                } else {
-                    desc = "本宫及对宫皆无主星。";
-                }
-
-                const div = document.createElement('div');
-                div.className = 'bg-white rounded-xl p-4 border border-slate-200 shadow-sm';
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="font-bold text-lg text-slate-800 border-l-4 border-indigo-500 pl-2">${obj.n}</div>
-                        <div class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500 font-mono">${p.heavenlyStem||''}${p.earthlyBranch||''}</div>
-                    </div>
-                    <div class="mb-2 min-h-[24px] flex items-center">${starsHtml}</div>
-                    <div class="mb-3 flex flex-wrap gap-1 min-h-[20px]">${minors}</div>
-                    <div class="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg leading-relaxed text-justify">${desc}</div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // === Tab 3: 大运流年 ===
-        function renderDecades(astrolabe, birthYear) {
-            const currentYear = new Date().getFullYear();
-            const age = currentYear - birthYear + 1;
-
-            let currentDecadePalace = null;
-            let currentRange = [0, 0];
-
-            astrolabe.palaces.forEach(p => {
-                if (p.decadal && p.decadal.range) {
-                    if (age >= p.decadal.range[0] && age <= p.decadal.range[1]) {
-                        currentDecadePalace = p;
-                        currentRange = p.decadal.range;
-                    }
-                }
-            });
-
-            const decadeCard = document.getElementById('decadeCard');
-            if (currentDecadePalace) {
-                const pData = _getMajorStarsData(currentDecadePalace, astrolabe);
-                const starsStr = pData.stars.map(s=>s.name).join('、') || '无主星';
-                let luckDesc = "本大限运势变动较大，需脚踏实地。";
-                if (pData.stars.length > 0 && DB_STARS[pData.stars[0].name]) {
-                    luckDesc = DB_STARS[pData.stars[0].name].char; 
-                }
-
-                decadeCard.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="text-white/80 text-xs uppercase tracking-wider font-bold">Current Decade</div>
-                            <div class="text-3xl font-extrabold mt-1">当前大限 ${currentRange[0]}-${currentRange[1]}岁</div>
-                        </div>
-                        <div class="bg-white/20 px-3 py-1 rounded-lg text-sm font-bold backdrop-blur-sm border border-white/30">
-                            行运至【${currentDecadePalace.name}】
-                        </div>
-                    </div>
-                    <div class="text-sm text-white/95 mt-2 pt-3 border-t border-white/20 leading-relaxed">
-                        <span class="font-bold">大限主星：</span>${starsStr}
-                        <br>
-                        <span class="font-bold">运势基调：</span>${luckDesc}
-                    </div>
-                `;
-            } else {
-                decadeCard.innerHTML = '<div class="text-center opacity-80">无法计算当前大运</div>';
-            }
-
-            const list = document.getElementById('decadeList');
-            list.innerHTML = '';
-            
-            const sortedPalaces = [...astrolabe.palaces].sort((a,b) => {
-                const r1 = (a.decadal && a.decadal.range) ? a.decadal.range[0] : 999;
-                const r2 = (b.decadal && b.decadal.range) ? b.decadal.range[0] : 999;
-                return r1 - r2;
-            });
-            
-            sortedPalaces.slice(0, 8).forEach((p, idx) => {
-                if(!p.decadal || !p.decadal.range) return;
-                const range = p.decadal.range;
-                const pData = _getMajorStarsData(p, astrolabe);
-                const starsStr = pData.stars.map(s=>s.name).join('、') || '空';
-                
-                let advice = "平稳发展。";
-                if (pData.stars.length > 0 && DB_STARS[pData.stars[0].name]) {
-                    const sName = pData.stars[0].name;
-                    if(['紫微','天府','太阳'].includes(sName)) advice = "利于求名、升迁，贵人运强。";
-                    else if(['武曲','太阴','禄存'].includes(sName)) advice = "利于求财、积蓄，财运不错。";
-                    else if(['破军','七杀','贪狼'].includes(sName)) advice = "变动较大，机会与风险并存。";
-                    else if(['天同','天梁','天机'].includes(sName)) advice = "平稳过渡，利于学习、思考。";
-                }
-
-                const item = document.createElement('div');
-                item.className = 'flex gap-4 border-b border-slate-100 pb-4 mb-2 last:border-0 last:mb-0';
-                item.innerHTML = `
-                    <div class="w-16 pt-1 text-center flex-shrink-0">
-                        <div class="text-sm font-bold text-indigo-600 bg-indigo-50 rounded py-1">${range[0]}-${range[1]}岁</div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between mb-1">
-                            <span class="font-bold text-slate-800 text-base">行运【${p.name}】</span>
-                            <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500">${starsStr}</span>
-                        </div>
-                        <div class="text-sm text-slate-500 leading-relaxed">${advice}</div>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-
-            // 5. 渲染未来三月
-            const forecastDiv = document.getElementById('monthlyForecast');
-            forecastDiv.innerHTML = '';
-            
-            const now = new Date();
-            for (let i = 0; i < 3; i++) {
-                let futureDate = new Date();
-                futureDate.setMonth(now.getMonth() + i);
-                let fStr = futureDate.getFullYear() + '-' + String(futureDate.getMonth() + 1).padStart(2, '0') + '-15 12:00:00';
-                
-                let scope; 
-                try { scope = astrolabe.horoscope(fStr); } catch(e) {}
-
-                if (scope && scope.monthly) {
-                    const mPalace = astrolabe.palace(scope.monthly.index);
-                    if(mPalace) {
-                        const stars = _getStars(mPalace).map(s=>s.name).join(' ') || '空宫';
-                        const item = document.createElement('div');
-                        item.className = 'flex justify-between items-center bg-slate-50 rounded-lg p-3 border border-slate-100';
-                        item.innerHTML = `
-                            <div>
-                                <div class="font-bold text-slate-700 text-sm">${futureDate.getFullYear()}年${futureDate.getMonth() + 1}月</div>
-                                <div class="text-xs text-slate-400 mt-0.5">农历${scope.lunarDate.month}月</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-indigo-600 font-bold mb-1">流月在${mPalace.name}</div>
-                                <div class="text-xs text-slate-500">${stars}</div>
-                            </div>
-                        `;
-                        forecastDiv.appendChild(item);
-                    }
-                }
-            }
-        }
-
-        function switchTab(id) {
-            ['tab1','tab2','tab3'].forEach(t => document.getElementById(t).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-            ['btn-tab1','btn-tab2','btn-tab3'].forEach(b => { 
-                const btn = document.getElementById(b);
-                btn.className = b==='btn-'+id ? 'flex-1 py-3.5 text-sm tab-active' : 'flex-1 py-3.5 text-sm tab-inactive'; 
-            });
-        }
-
-        init();
-    </script>
-</body>
-</html>
+            '紫微': { 
+                char: '您天生自带贵气，自尊心强，喜欢主导局面。外表敦厚，内心有主见，但缺点是耳根子软，容易受人怂恿，且略显清高孤傲。',
+                advice: '建议多听取他人意见，避免刚愎自用。',
+                career: '适合管理、一把手、公职或自主创业。不宜屈居人下，需要拥有决策权的工作环境。', 
+                love: '眼光极高，配偶通常气质高雅或家世不错，但对方个性也强，相处时容易互不相让。' 
+            },
+            '天机': { 
+                char: '您是智多星，反应极快，善于分析和策划，是天生的军师。心思细腻，但容易思虑过重，导致精神紧张。变动是您人生的常态，很难闲下来。',
+                advice: '建议培养一门专精技术，避免博而不精。注意神经系统的保养。',
+                career: '适合动脑不动手的工作，如策划、设计、IT、幕后军师、咨询、专门技术。', 
+                love: '配偶聪明机灵，但心思也多。感情生活容易因为生活琐事而有波折，需要多沟通精神层面。' 
+            },
+            '太阳': { 
+                char: '您性格热情豪爽，乐于助人，像太阳一样燃烧自己照亮别人。做事积极，不知疲倦，但往往劳心劳力，容易为别人忙碌。',
+                advice: '别太在意面子，量力而行，不要打肿脸充胖子。',
+                career: '利于公职、教育、传播、外交、公益事业。名气大于财气，适合追求社会地位。', 
+                love: '配偶性格爽朗，但您可能太重事业或朋友而忽略家庭，导致对方有怨言。' 
+            },
+            '武曲': { 
+                char: '您性格刚强，做事干脆利落，不拖泥带水。对金钱敏感，执行力极强，是天生的实干家。但容易给人冷酷、不近人情的感觉。',
+                advice: '待人处事要圆融一些，避免太过于利益导向。',
+                career: '利于金融、军警、实业、技术、财务。是标准的财星，适合直接与钱打交道。', 
+                love: '配偶个性强，甚至有些固执，相处不够浪漫。婚姻中容易因钱财或原则问题争执。' 
+            },
+            '天同': { 
+                char: '您性格温和，不喜与人争执，甚至有点慵懒，喜欢享受生活。福气很好，往往能逢凶化吉。缺点是缺乏冲劲，容易安于现状。',
+                advice: '需要一点压力才能成才，不要太放纵自己的惰性。',
+                career: '利于服务、餐饮、休闲、旅游、养生等享受型行业。不适合竞争太激烈的红海市场。', 
+                love: '配偶温和体贴，感情较平顺。但也可能因为生活太从容而缺乏激情。' 
+            },
+            '廉贞': { 
+                char: '您心思深沉且敏感，情感丰富，爱恨分明。社交能力极强，长袖善舞，但内心颇有原则。事业心重，占有欲强。',
+                advice: '控制自己的占有欲和疑心病，避免钻牛角尖。',
+                career: '利于公关、IT、精密仪器、公务员、监控、设计。工作表现出色，但容易犯小人。', 
+                love: '感情浓烈，占有欲强。爱一个人会付出全部，恨一个人也记很久，易有爱恨纠葛。' 
+            },
+            '天府': { 
+                char: '您性格稳重，包容力强，善于守成和理财。喜欢享受生活，注重衣食住行。做事步步为营，不打无把握之仗，有老板运。',
+                advice: '虽然稳重，但有时过于保守，可能会错失开创性的机会。',
+                career: '利于行政、人事、银行、大机构管理、房地产。适合做二把手或守成者。', 
+                love: '配偶稳重顾家，有帮夫/妻运。婚姻生活稳定，物质基础通常不错。' 
+            },
+            '太阴': { 
+                char: '您性格内敛，重情感，有洁癖或完美主义倾向。擅长计划和内务，像月亮一样阴柔。男命多异性缘，女命端庄贤淑。',
+                advice: '不要太情绪化，避免多愁善感。',
+                career: '利于房地产、内勤、财务、护理、女性行业、设计。财运是慢慢积累起来的。', 
+                love: '配偶温柔体贴，异性缘佳。男命得妻助，女命则老公个性较柔和。' 
+            },
+            '贪狼': { 
+                char: '您是欲望的化身，八面玲珑，善于交际应酬。多才多艺，对新鲜事物充满好奇。欲望较强，不喜欢一成不变的生活。',
+                a
