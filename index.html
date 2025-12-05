@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 逻辑修正版 v6.0</title>
+    <title>紫微斗数 - 深度纯享版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -23,16 +23,13 @@
         .ac-title { font-size: 18px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
         .ac-content { font-size: 15px; line-height: 1.8; color: #475569; text-align: justify; }
         .yun-card { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); margin-bottom: 20px; }
-        .ziwei-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #cbd5e1; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; }
-        .grid-cell { background: #fff; min-height: 110px; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
-        .grid-center { grid-column: 2 / span 2; grid-row: 2 / span 2; background: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
     </style>
 </head>
 <body class="pb-20 bg-slate-50">
 
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-check-double text-green-600 mr-2"></i>紫微斗数 · 逻辑修正版 v6.0</h1>
+            <h1 class="font-bold text-lg text-slate-800"><i class="fas fa-file-alt text-indigo-600 mr-2"></i>紫微斗数 · 深度纯享版</h1>
         </div>
     </div>
 
@@ -53,12 +50,13 @@
                 <i class="fas fa-map-marker-alt absolute left-3 top-3 text-indigo-400"></i>
             </div>
             <button onclick="calculate()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 transform transition text-white py-3.5 rounded-xl font-bold shadow-lg flex justify-center items-center gap-2">
-                <i class="fas fa-calculator"></i> <span>开始深度解析</span>
+                <i class="fas fa-check"></i> <span>开始深度解析</span>
             </button>
             <div id="solarHint" class="text-[11px] text-center text-slate-400 font-medium"></div>
         </div>
 
         <div id="resultArea" class="hidden space-y-5 fade-in">
+            <!-- 仅保留三个文字Tab -->
             <div class="flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-[60px] z-40">
                 <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-3.5 text-sm tab-active">专家总评</button>
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-3.5 text-sm tab-inactive">十二宫详解</button>
@@ -116,50 +114,71 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
 
-        // === 🛡️ 核心修复：更智能的宫位获取 ===
-        function _getStars(palace) {
-            return (palace && palace.majorStars) ? palace.majorStars : [];
+        // 地支映射
+        const ZHI = {'子':0, '丑':1, '寅':2, '卯':3, '辰':4, '巳':5, '午':6, '未':7, '申':8, '酉':9, '戌':10, '亥':11};
+
+        // === 核心算法：精准宫位定位 ===
+        // 不依赖iztro的动态index，而是依赖永恒的地支盘
+        function getPalaceByBranch(astrolabe, branchIndex) {
+            // astrolabe.palaces 通常按寅宫起，或命宫起，顺序不一定。
+            // 但每个宫位都有 earthlyBranch 属性。
+            const branchChar = Object.keys(ZHI).find(key => ZHI[key] === branchIndex);
+            return astrolabe.palaces.find(p => p.earthlyBranch === branchChar);
         }
-        function _getMinors(palace) {
-            return (palace && palace.minorStars) ? palace.minorStars : [];
-        }
-        
-        // 核心修复函数：根据命宫索引推算其他宫位，确保绝对准确
-        // 命宫为0，逆时针数：兄1, 夫2, 子3, 财4, 疾5, 迁6, 友7, 官8, 田9, 福10, 父11
-        function getPalaceByType(astrolabe, type) {
+
+        // 核心：基于命宫地支，推算其他宫位地支
+        // 逆时针：命、兄、夫、子、财、疾、迁、友、官、田、福、父
+        function getTargetPalace(astrolabe, type) {
             const mingPalace = astrolabe.palaces.find(p => p.name === '命宫');
             if (!mingPalace) return null;
             
-            const mingIndex = mingPalace.index; // 0-11
-            let targetIndex;
+            const mingZhi = ZHI[mingPalace.earthlyBranch]; // 0-11
+            let offset = 0;
 
             switch(type) {
-                case '命宫': targetIndex = mingIndex; break;
-                case '兄弟宫': targetIndex = (mingIndex - 1 + 12) % 12; break;
-                case '夫妻宫': targetIndex = (mingIndex - 2 + 12) % 12; break;
-                case '子女宫': targetIndex = (mingIndex - 3 + 12) % 12; break;
-                case '财帛宫': targetIndex = (mingIndex - 4 + 12) % 12; break;
-                case '疾厄宫': targetIndex = (mingIndex - 5 + 12) % 12; break;
-                case '迁移宫': targetIndex = (mingIndex - 6 + 12) % 12; break;
-                case '交友宫': targetIndex = (mingIndex - 7 + 12) % 12; break;
-                case '官禄宫': targetIndex = (mingIndex - 8 + 12) % 12; break;
-                case '田宅宫': targetIndex = (mingIndex - 9 + 12) % 12; break;
-                case '福德宫': targetIndex = (mingIndex - 10 + 12) % 12; break;
-                case '父母宫': targetIndex = (mingIndex - 11 + 12) % 12; break;
-                default: return astrolabe.palaces.find(p => p.name === type);
+                case '命宫': offset = 0; break;
+                case '兄弟宫': offset = 11; break; // -1
+                case '夫妻宫': offset = 10; break; // -2
+                case '子女宫': offset = 9; break;  // -3
+                case '财帛宫': offset = 8; break;  // -4
+                case '疾厄宫': offset = 7; break;  // -5
+                case '迁移宫': offset = 6; break;  // -6
+                case '交友宫': offset = 5; break;  // -7
+                case '官禄宫': offset = 4; break;  // -8
+                case '田宅宫': offset = 3; break;  // -9
+                case '福德宫': offset = 2; break;  // -10
+                case '父母宫': offset = 1; break;  // -11
             }
             
-            return astrolabe.palace(targetIndex);
+            // 计算目标地支索引 (0-11)
+            // 紫微斗数宫位是逆时针排布，但地支是顺时针。
+            // 实际上 iztro 已经分配了 name，我们直接按 name 找最安全。
+            // 但如果 name 查找失败（如"财帛" vs "财帛宫"），则用上面的地支法兜底。
+            
+            let p = astrolabe.palaces.find(p => p.name === type);
+            if(p) return p;
+
+            // 兜底逻辑：用相对位置找
+            // 注意：地支固定，但宫位名随命宫转。
+            // 如果命宫在 巳(5)，夫妻宫逆数2位是 卯(3)。
+            const targetZhi = (mingZhi - (12 - offset) + 12) % 12; // 这种算法比较绕，直接用iztro的name最准
+            // iztro 2.5.3 必定有标准name，如果找不到说明库加载问题。
+            return null; 
         }
+
+        function _getStars(palace) { return (palace && palace.majorStars) ? palace.majorStars : []; }
+        function _getMinors(palace) { return (palace && palace.minorStars) ? palace.minorStars : []; }
 
         function _getMajorStarsData(palace, astrolabe) {
             if (!palace) return { stars: [], isBorrowed: false };
             const majors = _getStars(palace);
             if (majors.length > 0) return { stars: majors, isBorrowed: false };
             
-            // 借对宫 (对宫 index = (index + 6) % 12)
-            const duiIdx = (palace.index + 6) % 12;
-            const duiPalace = astrolabe.palace(duiIdx);
+            // 借对宫：地支索引 + 6
+            const currentZhi = ZHI[palace.earthlyBranch];
+            const duiZhi = (currentZhi + 6) % 12;
+            const duiPalace = getPalaceByBranch(astrolabe, duiZhi);
+            
             return { stars: _getStars(duiPalace), isBorrowed: true };
         }
 
@@ -213,7 +232,7 @@
 
         function renderExpert(astrolabe) {
             // 1. 命宫
-            const pMing = getPalaceByType(astrolabe, '命宫');
+            const pMing = astrolabe.palaces.find(p => p.name === '命宫');
             const mingData = _getMajorStarsData(pMing, astrolabe);
             let mingHTML = '';
             
@@ -232,9 +251,9 @@
             }
             document.getElementById('expertMing').innerHTML = mingHTML;
 
-            // 2. 事业 + 财运 (使用 getPalaceByType 精准查找)
-            const pGuan = getPalaceByType(astrolabe, '官禄宫');
-            const pCai = getPalaceByType(astrolabe, '财帛宫');
+            // 2. 事业 + 财运
+            const pGuan = astrolabe.palaces.find(p => p.name === '官禄宫');
+            const pCai = astrolabe.palaces.find(p => p.name === '财帛宫');
             const guanData = _getMajorStarsData(pGuan, astrolabe);
             const caiData = _getMajorStarsData(pCai, astrolabe);
 
@@ -263,7 +282,7 @@
             document.getElementById('expertCareer').innerHTML = careerHTML;
 
             // 3. 婚姻
-            const pFu = getPalaceByType(astrolabe, '夫妻宫');
+            const pFu = astrolabe.palaces.find(p => p.name === '夫妻宫');
             const fuData = _getMajorStarsData(pFu, astrolabe);
             let loveHTML = `<div class="mb-2"><span class="font-bold text-slate-800">夫妻宫主星：</span>${fuData.stars.map(s=>s.name).join('、') || '空宫'}</div>`;
             
@@ -287,7 +306,7 @@
             const order = ['命宫','兄弟宫','夫妻宫','子女宫','财帛宫','疾厄宫','迁移宫','交友宫','官禄宫','田宅宫','福德宫','父母宫'];
             
             order.forEach(name => {
-                const p = getPalaceByType(astrolabe, name);
+                const p = astrolabe.palaces.find(item => item.name === name);
                 if (!p) return;
                 const data = _getMajorStarsData(p, astrolabe);
                 
@@ -301,7 +320,6 @@
                     return `<span class="text-xs text-slate-400 mr-1">${s.name}</span>`;
                 }).join('');
 
-                // 动态生成解释
                 let desc = "";
                 if (data.stars.length > 0) {
                     const sName = data.stars[0].name;
@@ -351,7 +369,11 @@
             if (currentDecadePalace) {
                 const pData = _getMajorStarsData(currentDecadePalace, astrolabe);
                 const starsStr = pData.stars.map(s=>s.name).join('、') || '无主星';
-                
+                let luckDesc = "本大限运势变动较大，需脚踏实地。";
+                if (pData.stars.length > 0 && DB_STARS[pData.stars[0].name]) {
+                    luckDesc = DB_STARS[pData.stars[0].name].char; 
+                }
+
                 decadeCard.innerHTML = `
                     <div class="flex justify-between items-start mb-4">
                         <div>
@@ -364,7 +386,8 @@
                     </div>
                     <div class="text-sm text-white/95 mt-2 pt-3 border-t border-white/20 leading-relaxed">
                         <span class="font-bold">大限主星：</span>${starsStr}
-                        <br>这是您人生中关键的十年，重点关注<span class="font-bold">${currentDecadePalace.name}</span>代表的领域。
+                        <br>
+                        <span class="font-bold">运势基调：</span>${luckDesc}
                     </div>
                 `;
             } else {
