@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 宫位定义增强版 V12.0</title>
+    <title>紫微斗数 - 稳定防崩版 V13.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -11,12 +11,6 @@
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background-color: #f8fafc; color: #334155; }
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: #eef2ff; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #fff; font-weight: 500; }
-        
-        /* 亮度与星曜 */
-        .brightness-庙, .brightness-旺 { color: #dc2626; font-weight: 800; }
-        .brightness-得, .brightness-利 { color: #d97706; }
-        .brightness-平, .brightness-不 { color: #475569; }
-        .brightness-陷 { color: #1e293b; opacity: 0.6; }
         
         .tag { padding: 2px 5px; border-radius: 4px; font-size: 11px; margin-right: 4px; display: inline-block; font-weight: bold;}
         .tag-ji { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
@@ -44,7 +38,7 @@
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-2xl mx-auto px-4 py-3 flex justify-between items-center">
             <h1 class="font-bold text-lg text-slate-800">
-                <i class="fas fa-book-reader text-purple-600 mr-2"></i>紫微斗数 · 详解修复版
+                <i class="fas fa-shield-alt text-green-600 mr-2"></i>紫微斗数 · 稳定防崩版
             </h1>
         </div>
     </div>
@@ -105,7 +99,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: 十二宫 (修复标题和内容) -->
+            <!-- Tab 2: 十二宫 -->
             <div id="tab2" class="hidden space-y-4"><div id="palacesList" class="grid gap-4"></div></div>
 
             <!-- Tab 3: 大运流年 -->
@@ -124,23 +118,21 @@
     <script>
         // === 1. 核心数据库 ===
         
-        // 宫位定义库 (新增)
         const PALACE_DEF = {
-            '命宫': '代表您的【核心人格】、外貌气质、天赋才能以及人生的总基调。',
-            '兄弟宫': '代表您的【手足情分】、合作伙伴，也是现金流的库位（财之田）。',
-            '夫妻宫': '代表您的【婚姻缘分】、配偶的性格特质，以及您对待感情的态度。',
-            '子女宫': '代表您的【子女缘分】、教育方式，同时也代表合伙生意和桃花。',
-            '财帛宫': '代表您的【理财能力】、赚钱模式、金钱价值观以及现金流来源。',
-            '疾厄宫': '代表您的【身体体质】、易患疾病，也代表潜意识和脾气。',
-            '迁移宫': '代表您的【外出际遇】、出差旅游运势，以及给陌生人的第一印象。',
-            '交友宫': '代表您的【人际圈子】、朋友层次、下属关系以及众生缘（粉丝）。',
-            '官禄宫': '代表您的【事业发展】、工作态度、适合的职业类型及职位高低。',
-            '田宅宫': '代表您的【不动产运】、居住环境、家庭氛围以及存钱守财能力。',
-            '福德宫': '代表您的【精神世界】、兴趣爱好、享受福气的能力以及祖荫。',
-            '父母宫': '代表您的【长辈缘分】、父母关系，也代表上司、老师及文书运。'
+            '命宫': '代表您的【核心人格】、天赋才能及人生总基调。',
+            '兄弟宫': '代表您的【手足情分】、合作伙伴及现金流（财之库）。',
+            '夫妻宫': '代表您的【婚姻缘分】、配偶特质及对待感情的态度。',
+            '子女宫': '代表您的【子女缘分】、合伙生意及桃花位。',
+            '财帛宫': '代表您的【理财能力】、赚钱模式及金钱价值观。',
+            '疾厄宫': '代表您的【身体体质】、潜在疾病及潜意识。',
+            '迁移宫': '代表您的【外出际遇】、对外关系及给人的第一印象。',
+            '交友宫': '代表您的【人际圈子】、朋友层次及众生缘。',
+            '官禄宫': '代表您的【事业发展】、工作模式及职位高低。',
+            '田宅宫': '代表您的【不动产运】、居住环境及存钱守财能力。',
+            '福德宫': '代表您的【精神世界】、兴趣爱好及祖荫福气。',
+            '父母宫': '代表您的【长辈缘分】、上司关系及文书运。'
         };
 
-        // 星曜情境解释库 (升级版)
         const STAR_CONTEXT = {
             '紫微': { 
                 base: '尊贵、领导、爱面子', 
@@ -244,7 +236,7 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
 
-        // === 2. 核心辅助函数 ===
+        // === 2. 核心辅助函数 (增强安全性) ===
         // 精准查找宫位
         function findPalace(astrolabe, keyword) {
             return astrolabe.palaces.find(p => p.name.includes(keyword));
@@ -258,6 +250,7 @@
             const majors = _getStars(palace);
             if (majors.length > 0) return { stars: majors, isBorrowed: false, src: palace.name };
             
+            // 借对宫
             const duiIdx = (palace.index + 6) % 12;
             const duiPalace = astrolabe.palace(duiIdx);
             return { stars: _getStars(duiPalace), isBorrowed: true, src: duiPalace.name };
@@ -313,14 +306,13 @@
             }
         }
 
-        // === 3. 专家总评生成器 (情境化内容) ===
+        // === 3. 专家总评生成器 ===
         function generateMasterReport(astrolabe, birthYear) {
             const pMing = findPalace(astrolabe, '命');
-            const pShen = astrolabe.palaces.find(p => p.isBodyPalace) || pMing;
             
             // 1. 命格总局
             const mingData = _getSmartStars(pMing, astrolabe);
-            let mingHTML = `<p>您当前命宫在<span class="hl-key">【${pMing.name}】</span>（${pMing.heavenlyStem}${pMing.earthlyBranch}），`;
+            let mingHTML = `<p>您当前命宫在<span class="hl-key">【${pMing.name}】</span>，`;
             
             if (mingData.isBorrowed) {
                 mingHTML += `由于本宫无主星，呈现<span class="hl-key">“借星安宫”</span>的格局。这通常意味着您的性格可塑性极强，善于适应环境，但也容易缺乏主见，早年运势波动较大，需借力方能成事。</p>`;
@@ -329,7 +321,6 @@
                 mingHTML += `主星为<span class="hl-key">${mingData.stars.map(s=>s.name).join('、')}</span>坐守。</p>`;
             }
 
-            // 命宫性格组合
             let charList = [];
             mingData.stars.forEach(s => {
                 if(STAR_CONTEXT[s.name]) charList.push(STAR_CONTEXT[s.name].ming);
@@ -338,7 +329,7 @@
             
             document.getElementById('reportMing').innerHTML = mingHTML;
 
-            // 2. 事业财运 (情境化)
+            // 2. 事业财运
             const pGuan = findPalace(astrolabe, '官');
             const pCai = findPalace(astrolabe, '财');
             const guanData = _getSmartStars(pGuan, astrolabe);
@@ -352,8 +343,6 @@
                     if(STAR_CONTEXT[s.name]) careerHTML += `<li><b>${s.name}</b>：${STAR_CONTEXT[s.name].career}</li>`;
                 });
                 careerHTML += `</ul>`;
-            } else {
-                careerHTML += `<p class="text-sm mt-2">事业宫无主星，代表工作变动可能较多，或者适合从事自由职业、副业，不宜死守一个岗位。</p>`;
             }
 
             careerHTML += `<p class="mt-4"><b>财帛宫（${caiData.isBorrowed?'借星':'本宫'}）：</b>${caiData.stars.map(s=>s.name).join('、') || '无主星'}。</p>`;
@@ -366,7 +355,7 @@
             }
             document.getElementById('reportCareer').innerHTML = careerHTML;
 
-            // 3. 婚姻情感 (情境化)
+            // 3. 婚姻情感
             const pFu = findPalace(astrolabe, '夫');
             const fuData = _getSmartStars(pFu, astrolabe);
             let loveHTML = `<p><b>夫妻宫（${fuData.isBorrowed?'借星':'本宫'}）：</b>${fuData.stars.map(s=>s.name).join('、') || '无主星'}。</p>`;
@@ -377,20 +366,18 @@
                     if(STAR_CONTEXT[s.name]) loveHTML += `<li><b>${s.name}</b>：${STAR_CONTEXT[s.name].love}</li>`;
                 });
                 loveHTML += `</ul>`;
-            } else {
-                loveHTML += `<p class="text-sm mt-2">夫妻宫无主星，通常代表缘分来得比较晚，或者两人相处模式比较像朋友/同事，平淡是福。</p>`;
             }
             document.getElementById('reportLove').innerHTML = loveHTML;
         }
 
-        // === Tab 2: 十二宫 (增加定义和富文本) ===
+        // === Tab 2: 十二宫 (增加定义) ===
         function renderPalaceDetail(astrolabe) {
             const list = document.getElementById('palacesList');
             list.innerHTML = '';
             const order = ['命宫','兄弟宫','夫妻宫','子女宫','财帛宫','疾厄宫','迁移宫','交友宫','官禄宫','田宅宫','福德宫','父母宫'];
             
             order.forEach(name => {
-                const p = findPalace(astrolabe, name.substr(0,1)); // 模糊搜索
+                const p = findPalace(astrolabe, name.substr(0,1));
                 if (!p) return;
                 
                 const data = _getSmartStars(p, astrolabe);
@@ -414,12 +401,11 @@
                     desc = data.stars.map(s => {
                         const ctx = STAR_CONTEXT[s.name];
                         if (!ctx) return `${s.name}：特质独特。`;
-                        // 根据宫位不同，取不同字段
                         if (name.includes('命')) return `<b>${s.name}</b>：${ctx.ming}`;
                         if (name.includes('财')) return `<b>${s.name}</b>：${ctx.wealth}`;
                         if (name.includes('官')) return `<b>${s.name}</b>：${ctx.career}`;
                         if (name.includes('夫')) return `<b>${s.name}</b>：${ctx.love}`;
-                        return `<b>${s.name}</b>：${ctx.base}`; // 默认显示基础特质
+                        return `<b>${s.name}</b>：${ctx.base}`;
                     }).join('<br>');
                 }
 
@@ -439,7 +425,7 @@
             });
         }
 
-        // === Tab 3: 大运流年 ===
+        // === Tab 3: 大运流年 (防崩处理) ===
         function renderDecades(astrolabe, birthYear) {
             const currentYear = new Date().getFullYear();
             const age = currentYear - birthYear + 1;
@@ -455,18 +441,22 @@
                 const data = _getSmartStars(curDecade, astrolabe);
                 const starNames = data.stars.map(s=>s.name).join('、') || '无';
                 
-                // 运势基调
+                // 运势基调 (安全获取)
                 let luckBase = "运势变动较大，需脚踏实地。";
                 if(data.stars.length > 0 && STAR_CONTEXT[data.stars[0].name]) {
                     luckBase = STAR_CONTEXT[data.stars[0].name].base;
                 }
+                
+                // 安全获取字典定义 (防substring报错)
+                const safeDef = PALACE_DEF[curDecade.name] || "人生重要阶段";
+                const shortDef = safeDef.substring(0, 15);
 
                 infoDiv.innerHTML = `
                     <div class="text-xs opacity-70 mb-1">CURRENT DECADE (${curDecade.decadal.range[0]}-${curDecade.decadal.range[1]}岁)</div>
                     <div class="text-3xl font-bold mb-2">行运【${curDecade.name}】</div>
                     <div class="text-sm border-t border-white/20 pt-3">
                         <p><b>大限主星：</b>${starNames}</p>
-                        <p class="mt-2 text-white/90 text-justify">这十年您的重点在于${curDecade.name}相关领域（${PALACE_DEF[curDecade.name].substring(0,10)}...）。<br>运势关键词：${luckBase}。</p>
+                        <p class="mt-2 text-white/90 text-justify">这十年您的重点在于${curDecade.name}相关领域（${shortDef}...）。<br>运势关键词：${luckBase}。</p>
                     </div>
                 `;
             } else {
@@ -483,6 +473,9 @@
                 const data = _getSmartStars(p, astrolabe);
                 const sName = data.stars.map(s=>s.name).join(' ') || '空';
                 
+                const safeDef = PALACE_DEF[p.name] || "宫位解析";
+                const cleanDef = safeDef.split('、')[0].replace('代表您的【','').replace('】','');
+
                 const div = document.createElement('div');
                 div.className = 'flex gap-4 border-b border-slate-100 pb-4 mb-4 last:border-0';
                 div.innerHTML = `
@@ -493,7 +486,7 @@
                     <div>
                         <div class="font-bold text-slate-800">行运【${p.name}】 <span class="text-xs font-normal text-slate-500">(${sName})</span></div>
                         <div class="text-sm text-slate-600 mt-1 text-justify">
-                            ${p.name}代表${PALACE_DEF[p.name].split('、')[0].replace('代表您的【','').replace('】','')}。
+                            ${p.name}代表${cleanDef}。
                         </div>
                     </div>
                 `;
