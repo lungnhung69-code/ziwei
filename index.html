@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 犀利实战版 V19.0</title>
+    <title>紫微斗数 - 强壮隔离版 V20.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background-color: #f1f5f9; color: #334155; }
-        
-        /* 标签栏 */
-        .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; font-size: 16px; }
+        .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; }
         .tab-inactive { color: #94a3b8; background: #f8fafc; font-weight: 500; }
         
-        /* 犀利文案风格 */
         .sharp-text { text-align: justify; line-height: 1.8; color: #475569; font-size: 15px; }
         .sharp-title { font-size: 18px; font-weight: 900; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1; }
         .keyword-tag { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 4px; }
         
-        /* 运势卡片 */
         .luck-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .decade-header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         
-        /* 警示风格 */
         .warn-box { background-color: #fff1f2; border-left: 4px solid #f43f5e; color: #9f1239; padding: 12px; font-size: 14px; margin-top: 12px; border-radius: 4px; }
         .good-box { background-color: #f0fdf4; border-left: 4px solid #22c55e; color: #14532d; padding: 12px; font-size: 14px; margin-top: 12px; border-radius: 4px; }
+        
+        /* 错误提示区 */
+        #debugInfo { display: none; margin-top: 10px; padding: 10px; background: #fee2e2; color: #b91c1c; font-size: 12px; border-radius: 8px; border: 1px solid #fca5a5; }
     </style>
 </head>
 <body class="pb-20 bg-slate-100">
@@ -33,9 +31,9 @@
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
-                <i class="fas fa-bolt text-indigo-600 mr-2"></i>紫微斗数 · 犀利实战版
+                <i class="fas fa-shield-virus text-indigo-600 mr-2"></i>紫微斗数 · 强壮版
             </h1>
-            <span class="text-xs bg-black text-white px-2 py-1 rounded font-bold">V19.0</span>
+            <span class="text-xs bg-black text-white px-2 py-1 rounded font-bold">V20.0</span>
         </div>
     </div>
 
@@ -60,11 +58,12 @@
                 <span>🚀 启动深度推演</span>
             </button>
             <div id="solarHint" class="text-xs text-center text-slate-400"></div>
+            <!-- 错误显示区 -->
+            <div id="debugInfo"></div>
         </div>
 
         <!-- 结果区 -->
         <div id="resultArea" class="hidden space-y-5 fade-in">
-            <!-- 仅保留两个核心TAB -->
             <div class="flex bg-white rounded-xl shadow-sm overflow-hidden sticky top-[75px] z-40">
                 <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-4 text-sm tab-active">大师犀利总评</button>
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-4 text-sm tab-inactive">当下运势聚焦</button>
@@ -86,7 +85,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: 当下运势 (只保留当前大运、流年、三月) -->
+            <!-- Tab 2: 当下运势 -->
             <div id="tab2" class="hidden space-y-4">
                 <!-- 当前大运 -->
                 <div class="decade-header">
@@ -114,91 +113,91 @@
     </div>
 
     <script>
-        // === 1. 犀利断语库 (不再是简单的介绍，而是分析) ===
+        // === 1. 犀利断语库 ===
         const SHARP_TEXT = {
             '紫微': {
-                ming: '您骨子里有股傲气，即便外表随和，内心也极有主见。**优点是格局大，能扛事；痛点是耳根子软，容易被亲信之人蒙蔽**。您这辈子最大的课题是“孤独”，高处不胜寒，要学会弯腰。',
-                career: '天生不适合做“螺丝钉”。您需要在能掌控全局的位置上才能发光，如管理、创业或独立项目负责人。如果屈居人下，会感到极度压抑。',
-                love: '感情上您眼光极高，潜意识里在寻找一个“能配得上自己”甚至“能仰视”的伴侣。但这往往导致婚姻变成权力的博弈，谁也不服谁。',
+                ming: '您骨子里有股傲气，即便外表随和，内心也极有主见。**优点是格局大，能扛事；痛点是耳根子软，容易被亲信之人蒙蔽**。',
+                career: '天生不适合做“螺丝钉”。您需要在能掌控全局的位置上才能发光，如管理、创业或独立项目负责人。',
+                love: '感情上您眼光极高，潜意识里在寻找一个“能配得上自己”甚至“能仰视”的伴侣。',
                 luck: '本大运利于掌权、升迁。但要注意，权力越大，责任越重，容易感到身心俱疲。'
             },
             '天机': {
-                ming: '您的脑子转得太快，这是天赋也是诅咒。**优点是机谋无双，善于解决难题；痛点是思虑过重，容易神经衰弱**。您很容易陷入“想得多做得少”的怪圈，摇摆不定是成功的大忌。',
-                career: '靠脑子吃饭的命。适合策划、设计、IT、咨询、幕后军师。千万别去干枯燥重复的体力活，那会毁了您的灵性。',
-                love: '感情上您太敏感了，对方一个眼神您能脑补出一场大戏。配偶通常聪明机灵，但你们容易在生活琐事上斗智斗勇，缺乏钝感力。',
+                ming: '您的脑子转得太快，这是天赋也是诅咒。**优点是机谋无双，善于解决难题；痛点是思虑过重，容易神经衰弱**。',
+                career: '靠脑子吃饭的命。适合策划、设计、IT、咨询、幕后军师。千万别去干枯燥重复的体力活。',
+                love: '感情上您太敏感了，对方一个眼神您能脑补出一场大戏。配偶通常聪明机灵。',
                 luck: '本大运变动极大，可能是搬家、跳槽或出差。动中求财，静守则困。'
             },
             '太阳': {
-                ming: '您是燃烧自己照亮别人的典型。**优点是博爱、大气、不记仇；痛点是死要面子活受罪，容易为别人作嫁衣裳**。您这辈子太累了，要学会自私一点。',
-                career: '名气大于财气。适合公职、教育、传播、公益。您在人群中很容易脱颖而出，但要注意“枪打出头鸟”。',
-                love: '您对伴侣付出很多，但对方往往觉得理所当然，甚至嫌您管得太宽。女命太阳坐命，有夺夫权之嫌，容易让另一半有压力。',
+                ming: '您是燃烧自己照亮别人的典型。**优点是博爱、大气；痛点是死要面子活受罪，容易为别人作嫁衣裳**。',
+                career: '名气大于财气。适合公职、教育、传播、公益。',
+                love: '您对伴侣付出很多，但对方往往觉得理所当然，甚至嫌您管得太宽。',
                 luck: '本大运名声大噪，利于考试、升职。但要注意心血管健康和眼疾。'
             },
             '武曲': {
-                ming: '您是现实主义者，信奉“手里有钱心不慌”。**优点是执行力强，做事干脆；痛点是缺乏情趣，容易给人冷酷无情的印象**。做人太刚易折，需学柔术。',
-                career: '天生的金融战士。银行、证券、实业、军警最适合您。您对数字和金钱有天然的敏锐度，适合直截了当的求财方式。',
-                love: '感情是您的短板。您容易用理性的思维去处理感性的问题，让伴侣觉得您不解风情。容易因金钱观念不同而产生争执。',
+                ming: '您是现实主义者，信奉“手里有钱心不慌”。**优点是执行力强，做事干脆；痛点是缺乏情趣，容易给人冷酷无情的印象**。',
+                career: '天生的金融战士。银行、证券、实业、军警最适合您。',
+                love: '感情是您的短板。您容易用理性的思维去处理感性的问题，让伴侣觉得您不解风情。',
                 luck: '本大运财星高照，利于投资理财。但要注意因财失义，或过于劳碌而损健康。'
             },
             '天同': {
-                ming: '您是天生的“有福之人”，但不一定是“成功人士”。**优点是乐观、不记仇；痛点是懒散、缺乏野心，容易得过且过**。您需要逆境的逼迫才能成大器。',
-                career: '适合压力较小、有人情味的工作，如服务、餐饮、旅游、心理咨询。竞争太激烈的狼性文化不适合您。',
-                love: '感情上您是被动型的，容易陷入多角恋或暧昧关系。您需要一个能主导、能照顾您的伴侣。',
+                ming: '您是天生的“有福之人”。**优点是乐观、不记仇；痛点是懒散、缺乏野心，容易得过且过**。',
+                career: '适合压力较小、有人情味的工作，如服务、餐饮、旅游、心理咨询。',
+                love: '感情上您是被动型的，容易陷入多角恋或暧昧关系。',
                 luck: '本大运平稳舒适，适合休养生息。如果要创业，需找执行力强的合伙人。'
             },
             '廉贞': {
-                ming: '您是典型的“双重性格”，既理性又感性。**优点是社交天才，手段高明；痛点是疑心病重，容易钻牛角尖，自我内耗严重**。',
-                career: '最适合跟人打交道。公关、销售、监控、精密仪器、公务员。您有那种“把死人说活”的能力，但也容易游走在灰色地带。',
-                love: '您的感情浓烈且带有占有欲。爱之欲其生，恶之欲其死。容易卷入复杂的感情纠葛，需防烂桃花。',
-                luck: '本大运机遇与风险并存。社交活动频繁，有机会接触上流圈层，但要严防官非口舌。'
+                ming: '您是典型的“双重性格”，既理性又感性。**优点是社交天才，手段高明；痛点是疑心病重，容易钻牛角尖**。',
+                career: '最适合跟人打交道。公关、销售、监控、精密仪器、公务员。',
+                love: '您的感情浓烈且带有占有欲。爱之欲其生，恶之欲其死。',
+                luck: '本大运机遇与风险并存。社交活动频繁，但要严防官非口舌。'
             },
             '天府': {
-                ming: '您是天生的“掌柜”，稳重、保守、爱面子。**优点是包容力强，善于守成；痛点是缺乏开创力，有时显得城府太深**。',
-                career: '最适合在大机构、大平台发展，如银行、国企、行政管理。您适合守江山，不适合从零开始的草莽创业。',
-                love: '您很现实，会考量伴侣的经济条件和家庭背景。婚姻通常比较稳定，因为您懂得经营和忍让。',
-                luck: '本大运财运稳步上升，利于置产、储蓄。生活安逸，体重可能会增加。'
+                ming: '您是天生的“掌柜”，稳重、保守。**优点是包容力强，善于守成；痛点是缺乏开创力，有时显得城府太深**。',
+                career: '最适合在大机构、大平台发展，如银行、国企、行政管理。',
+                love: '您很现实，会考量伴侣的经济条件和家庭背景。婚姻通常比较稳定。',
+                luck: '本大运财运稳步上升，利于置产、储蓄。'
             },
             '太阴': {
-                ming: '您外表柔和，内心固执。**优点是细腻、重情、有艺术感；痛点是洁癖（生理或精神）、情绪化、抗压能力弱**。',
-                career: '适合稳定的、环境优雅的工作，如财务、房产、设计、美容、内勤。不适合在脏乱差或高压环境下工作。',
-                love: '您对感情有完美主义倾向。男命太阴，得妻助；女命太阴，容易把老公宠坏或老公比较柔弱。',
-                luck: '本大运利于积蓄财富，利于购房装修。心情比较平和，适合沉淀内心。'
+                ming: '您外表柔和，内心固执。**优点是细腻、重情；痛点是洁癖（生理或精神）、情绪化、抗压能力弱**。',
+                career: '适合稳定的、环境优雅的工作，如财务、房产、设计、美容。',
+                love: '您对感情有完美主义倾向。男命得妻助，女命容易把老公宠坏。',
+                luck: '本大运利于积蓄财富，利于购房装修。心情比较平和。'
             },
             '贪狼': {
-                ming: '您是欲望的驱动体，永远不满足现状。**优点是多才多艺，八面玲珑；痛点是博而不精，贪多嚼不烂，容易沉迷声色**。',
-                career: '您是天生的交际花/草。娱乐、演艺、销售、公关、艺术行业是您的舞台。只要能展现个人魅力的地方，您都能如鱼得水。',
-                love: '桃花泛滥。您很有魅力，也容易招惹桃花。婚姻中最大的挑战是抵御外界的诱惑。',
-                luck: '本大运机会极多，容易发横财，但也容易因为贪婪而一夜回到解放前。见好就收是关键。'
+                ming: '您是欲望的驱动体，永远不满足现状。**优点是多才多艺，八面玲珑；痛点是博而不精，贪多嚼不烂**。',
+                career: '您是天生的交际花/草。娱乐、演艺、销售、公关、艺术行业是您的舞台。',
+                love: '桃花泛滥。您很有魅力，也容易招惹桃花。',
+                luck: '本大运机会极多，容易发横财，但也容易因为贪婪而一夜回到解放前。'
             },
             '巨门': {
                 ming: '您有一双看透阴暗面的眼睛。**优点是观察入微，口才极佳；痛点是嘴巴不饶人，容易得罪人，内心缺乏安全感**。',
-                career: '靠嘴巴吃饭是上策。律师、讲师、销售、研究、评论家。您适合在竞争激烈的环境中用专业能力服众。',
-                love: '口舌是婚姻的杀手。您容易把在外面的辩论习惯带回家。建议找年龄差距大的伴侣，或聚少离多以减少摩擦。',
-                luck: '本大运易有是非口舌，但也利于成名。适合低调钻研专业，不宜高调出风头。'
+                career: '靠嘴巴吃饭是上策。律师、讲师、销售、研究、评论家。',
+                love: '口舌是婚姻的杀手。您容易把在外面的辩论习惯带回家。',
+                luck: '本大运易有是非口舌，但也利于成名。适合低调钻研专业。'
             },
             '天相': {
-                ming: '您是标准的老好人，注重形象，谁也不得罪。**优点是公正、得体、乐于助人；痛点是缺乏主见，容易随波逐流，粉饰太平**。',
-                career: '最佳的二把手、秘书、特助、中介。您需要依附在一个强有力的领导或平台下，才能发挥最大价值。',
-                love: '您的婚姻通常是让人羡慕的，配偶多为俊男美女，或老同学同事。相处融洽，但要注意防止平淡生厌。',
-                luck: '本大运平稳顺遂，人际关系和谐。虽然没有爆发式增长，但胜在安稳无忧。'
+                ming: '您是标准的老好人，注重形象。**优点是公正、得体；痛点是缺乏主见，容易随波逐流，粉饰太平**。',
+                career: '最佳的二把手、秘书、特助、中介。',
+                love: '您的婚姻通常是让人羡慕的，配偶多为俊男美女，或老同学同事。',
+                luck: '本大运平稳顺遂，人际关系和谐。'
             },
             '天梁': {
-                ming: '您有“老灵魂”，喜欢说教，也喜欢照顾人。**优点是正直、善良、有原则；痛点是孤芳自赏，人际关系容易因为太讲原则而僵化**。',
-                career: '适合清高的职业，如医药、法律、监督、公益、宗教。不适合充满了铜臭味的纯商业投机。',
-                love: '您倾向于找成熟稳重的伴侣。在婚姻中，您往往扮演“家长”的角色，管这管那。',
-                luck: '本大运逢凶化吉。遇到困难会有贵人（或神佛）保佑。利于进修、考试、提升精神境界。'
+                ming: '您有“老灵魂”，喜欢说教。**优点是正直、善良、有原则；痛点是孤芳自赏，人际关系容易因为太讲原则而僵化**。',
+                career: '适合清高的职业，如医药、法律、监督、公益、宗教。',
+                love: '您倾向于找成熟稳重的伴侣。在婚姻中，您往往扮演“家长”的角色。',
+                luck: '本大运逢凶化吉。遇到的困难会有贵人保佑。'
             },
             '七杀': {
                 ming: '您是一把出鞘的刀。**优点是极具魄力，敢作敢当；痛点是冲动鲁莽，六亲缘薄，人生容易大起大落**。',
-                career: '适合开疆拓土。创业、外勤、业务、军警。您坐不住办公室，必须在战斗中寻找价值。',
-                love: '感情来得快去得快，轰轰烈烈。配偶个性也强，两人容易硬碰硬。建议晚婚，磨一磨性子。',
-                luck: '本大运变动极大，是人生的转折点。利于开创事业，但要注意身体损伤和交通安全。'
+                career: '适合开疆拓土。创业、外勤、业务、军警。',
+                love: '感情来得快去得快，轰轰烈烈。配偶个性也强，两人容易硬碰硬。',
+                luck: '本大运变动极大，是人生的转折点。利于开创事业。'
             },
             '破军': {
                 ming: '您是旧秩序的破坏者。**优点是创意无限，不拘一格；痛点是喜新厌旧，破坏力强，很难在一件事上坚持到底**。',
-                career: '适合破坏性、创新性的行业。设计、爆破、拆迁、前卫艺术、互联网。不适合按部就班的体制内工作。',
+                career: '适合破坏性、创新性的行业。设计、爆破、拆迁、前卫艺术。',
                 love: '感情世界丰富多彩但也波折不断。您追求新鲜感，婚姻对您来说可能是一种束缚。',
-                luck: '本大运会有巨大的变动，可能是换行业、换城市或换伴侣。不破不立，只有改变才能带来生机。'
+                luck: '本大运会有巨大的变动，不破不立，只有改变才能带来生机。'
             }
         };
 
@@ -212,13 +211,13 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
 
-        // === 核心辅助函数 ===
+        // === 2. 核心辅助函数 (超级安全版) ===
         function findPalace(astrolabe, keyword) {
+            if(!astrolabe || !astrolabe.palaces) return null;
             return astrolabe.palaces.find(p => p.name.includes(keyword));
         }
         
         function _getStars(palace) { return (palace && palace.majorStars) ? palace.majorStars : []; }
-        function _getMinors(palace) { return (palace && palace.minorStars) ? palace.minorStars : []; }
 
         // 智能获取主星（含借星逻辑）
         function _getSmartStars(palace, astrolabe) {
@@ -226,9 +225,23 @@
             const majors = _getStars(palace);
             if (majors.length > 0) return { stars: majors, isBorrowed: false, src: palace.name };
             
-            const duiIdx = (palace.index + 6) % 12;
-            const duiPalace = astrolabe.palace(duiIdx);
-            return { stars: _getStars(duiPalace), isBorrowed: true, src: duiPalace.name };
+            // 借对宫
+            try {
+                const duiIdx = (palace.index + 6) % 12;
+                const duiPalace = astrolabe.palace(duiIdx);
+                return { stars: _getStars(duiPalace), isBorrowed: true, src: duiPalace ? duiPalace.name : '对宫' };
+            } catch(e) {
+                return { stars: [], isBorrowed: false, src: '无' };
+            }
+        }
+        
+        // 安全字典读取
+        function getPalaceDesc(name) {
+            if (!name) return '人生重要领域';
+            for (let key in PALACE_INTRO) {
+                if (name.includes(key)) return PALACE_INTRO[key];
+            }
+            return '运势关键领域';
         }
 
         // 初始化
@@ -242,10 +255,17 @@
                 d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
             };
             y.onchange = m.onchange = updateD; updateD(); d.value=18;
+            
+            document.getElementById('debugInfo').style.display = 'none';
         }
 
         function calculate() {
-            if (typeof iztro === 'undefined') { alert("核心资源加载中，请稍后..."); return; }
+            document.getElementById('debugInfo').style.display = 'none';
+            
+            if (typeof iztro === 'undefined') { 
+                showError("核心算法库未加载，请检查网络或刷新页面。");
+                return; 
+            }
             
             const y = document.getElementById('selYear').value;
             const m = document.getElementById('selMonth').value.padStart(2,'0');
@@ -270,16 +290,29 @@
                 // 排盘
                 const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
 
-                renderMasterAnalysis(astrolabe);
-                renderFortuneFocus(astrolabe, parseInt(y));
+                // 分舱运行，互不干扰
+                runSafe('大师总评', () => renderMasterAnalysis(astrolabe));
+                runSafe('运势推演', () => renderFortuneFocus(astrolabe, parseInt(y)));
 
                 document.getElementById('resultArea').classList.remove('hidden');
                 switchTab('tab1');
 
             } catch(e) {
-                console.error(e);
-                alert('分析遇到问题，请尝试更换日期重试。');
+                showError('主流程错误: ' + e.message);
             }
+        }
+        
+        function runSafe(name, fn) {
+            try { fn(); } catch(e) {
+                showError(`${name} 生成失败: ${e.message}`);
+                console.error(e);
+            }
+        }
+        
+        function showError(msg) {
+            const el = document.getElementById('debugInfo');
+            el.style.display = 'block';
+            el.innerHTML += `<div>❌ ${msg}</div>`;
         }
 
         // === Tab 1: 大师犀利总评 ===
@@ -295,6 +328,8 @@
         }
 
         function renderSection(elId, palace, astrolabe, type, extraPalace = null) {
+            if(!palace) return;
+            
             const data = _getSmartStars(palace, astrolabe);
             let html = ``;
             
@@ -305,13 +340,15 @@
             
             html += `<div class="mb-3"><span class="text-lg font-bold text-indigo-900">主星：${starNames}</span>${borrowTag}</div>`;
 
-            // 2. 核心断语 (循环处理双星)
+            // 2. 核心断语
             if (data.stars.length > 0) {
                 html += `<div class="space-y-4">`;
                 data.stars.forEach(s => {
                     if (SHARP_TEXT[s.name]) {
-                        let text = SHARP_TEXT[s.name][type];
-                        if (type === 'career') text = SHARP_TEXT[s.name]['career']; // 强制读取career字段
+                        // 强制安全读取字段
+                        let text = SHARP_TEXT[s.name][type] || "特性独特，需具体分析。";
+                        // 特殊处理：如果合并了财帛宫，这里强制读 career 字段
+                        if (type === 'career' && !SHARP_TEXT[s.name][type]) text = SHARP_TEXT[s.name]['ming'];
                         
                         html += `<div><span class="keyword-tag">${s.name}</span> ${text}</div>`;
                     }
@@ -329,7 +366,7 @@
                     <div class="space-y-2">`;
                 extraData.stars.forEach(s => {
                      if (SHARP_TEXT[s.name]) {
-                        html += `<div><span class="keyword-tag">${s.name}</span> ${SHARP_TEXT[s.name].wealth}</div>`;
+                        html += `<div><span class="keyword-tag">${s.name}</span> ${SHARP_TEXT[s.name].wealth || '财运起伏。'}</div>`;
                      }
                 });
                 html += `</div></div>`;
@@ -359,12 +396,15 @@
                 if(dData.stars.length > 0 && SHARP_TEXT[dData.stars[0].name]) {
                     luckText = SHARP_TEXT[dData.stars[0].name].luck;
                 }
+                
+                // 修复点：安全获取宫位解释
+                const palaceDesc = getPalaceDef(curDecade.name);
 
                 document.getElementById('decadeTitle').innerText = `行运【${curDecade.name}】 (${curDecade.decadal.range[0]}-${curDecade.decadal.range[1]}岁)`;
                 document.getElementById('decadeContent').innerHTML = `
                     <p class="mb-2"><b>大限主星：</b>${starName} ${dData.isBorrowed?'(借星)':''}</p>
                     <p class="text-justify"><b>大师断语：</b>${luckText}</p>
-                    <p class="mt-2 text-xs opacity-80">注：此十年您的人生重心在${PALACE_DEF[curDecade.name]?.split('、')[0].replace('【','').replace('】','')||'该宫位'}相关事务。</p>
+                    <p class="mt-2 text-xs opacity-80">注：此十年您的人生重心在${palaceDesc}相关事务。</p>
                 `;
             } else {
                 document.getElementById('decadeTitle').innerText = "大运数据计算中...";
