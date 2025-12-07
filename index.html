@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 综合推演版 V30.0 (全息扩容)</title>
+    <title>紫微斗数 - 综合推演版 V29.0 (旗舰流年)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -19,7 +19,7 @@
         .card-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .card-title { font-size: 18px; font-weight: 900; color: #1e293b; }
         
-        /* Tab 1: 全息画像 (内容增强) */
+        /* Tab 1: 全息画像 (V23 经典样式) */
         .infer-text { font-size: 15px; line-height: 1.8; color: #475569; text-align: justify; }
         .infer-text p { margin-bottom: 12px; }
         .keyword { color: #4338ca; font-weight: bold; background: #e0e7ff; padding: 0 4px; border-radius: 3px; }
@@ -33,20 +33,23 @@
         .yt-purple { background: #f3e8ff; color: #6b21a8; }
         .yt-blue { background: #dbeafe; color: #1e40af; }
         
-        .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
+        .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; position: relative; overflow: hidden; transition: transform 0.2s; }
+        .moon-card:active { transform: scale(0.99); }
         .moon-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         
+        /* 状态标签样式 */
         .moon-status { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
-        .st-safe { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-        .st-busy { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
-        .st-social { background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8; }
-        .st-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-        .st-good { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .st-safe { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; } /* 平稳 */
+        .st-busy { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; } /* 忙碌/奔波 */
+        .st-social { background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8; } /* 社交/桃花 */
+        .st-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; } /* 警惕 */
+        .st-good { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; } /* 吉运 */
 
         .pattern-box { background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 15px; border-left: 3px solid #cbd5e1; }
         .pattern-title { font-weight: bold; color: #334155; font-size: 13px; margin-bottom: 4px; display: block; }
         .pattern-desc { font-size: 13px; color: #64748b; line-height: 1.5; }
 
+        /* 星星胶囊 */
         .star-pill { font-size: 12px; padding: 3px 8px; border-radius: 6px; font-weight: 500; display: inline-flex; align-items: center; margin-right: 6px; margin-bottom: 6px; }
         .pill-good { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
         .pill-bad { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
@@ -64,7 +67,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 全息推演
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V30.0</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V29.0</span>
         </div>
     </div>
 
@@ -97,7 +100,7 @@
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-4 text-sm tab-inactive">流年流月</button>
             </div>
 
-            <!-- Tab 1: 全息画像 (内容大幅扩充) -->
+            <!-- Tab 1: 全息画像 (V23 经典) -->
             <div id="tab1" class="space-y-4">
                 <div class="synthesis-card">
                     <div class="card-header">
@@ -124,18 +127,25 @@
 
             <!-- Tab 2: 流年流月 (V29 旗舰) -->
             <div id="tab2" class="hidden space-y-5">
+                
+                <!-- 流年卡片 (内容大幅扩充) -->
                 <div class="synthesis-card year-card relative overflow-hidden">
-                    <div class="absolute right-[-10px] top-[-10px] text-8xl text-purple-900 opacity-5 rotate-12 pointer-events-none"><i class="fas fa-dragon"></i></div>
+                    <div class="absolute right-[-10px] top-[-10px] text-8xl text-purple-900 opacity-5 rotate-12 pointer-events-none">
+                        <i class="fas fa-dragon"></i>
+                    </div>
                     <div class="mb-4">
                         <div class="text-xs font-bold text-purple-600 mb-1">YEARLY FORTUNE</div>
                         <h2 id="yearTitle" class="text-2xl font-black text-slate-800"></h2>
                         <div id="yearSub" class="text-sm text-slate-500 mt-1"></div>
                     </div>
+                    
                     <div id="yearTags" class="mb-4"></div>
+
                     <div class="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-purple-100 mb-4">
                         <div class="font-bold text-purple-900 mb-2"><i class="fas fa-star mr-1"></i>流年重点</div>
                         <div id="yearCoreText" class="text-sm text-slate-700 leading-relaxed text-justify"></div>
                     </div>
+
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div class="bg-white p-3 rounded border border-slate-100">
                             <div class="font-bold text-slate-400 mb-1">四化飞星</div>
@@ -147,92 +157,58 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="flex items-center gap-2 px-2">
                     <div class="w-1 h-5 bg-indigo-600 rounded-full"></div>
                     <h3 class="font-bold text-lg text-slate-800">未来三个月指引</h3>
                 </div>
+
+                <!-- 流月列表 (更敏感的算法) -->
                 <div id="monthlyForecast" class="space-y-4"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // === 1. 深度内容数据库 (大幅扩容) ===
+        // === 1. 数据逻辑库 ===
         
-        // 14主星通用解释库 (用于组合没有命中时的 Fallback)
-        const STAR_DETAILS = {
-            '紫微': { desc: '您天生自带贵气和领导欲，自尊心强，耳根子略软，喜欢被尊重的感觉。', career: '适合管理、创业、或在大型机构任职，不宜从事过于琐碎的基础工作。', love: '眼光较高，另一半通常能力强或有气场，但双方脾气可能都比较硬。' },
-            '天机': { desc: '您是足智多谋的军师，反应敏捷，但思虑过重，容易失眠或神经紧张。', career: '适合策划、设计、IT技术、咨询等动脑的工作。变动越大，机会越多。', love: '感情细腻但多变，容易钻牛角尖，另一半最好聪明且能包容您的情绪。' },
-            '太阳': { desc: '您像太阳一样博爱，热心公益，但容易“因公忘私”，在外生龙活虎，在家沉默寡言。', career: '名气大于财气，适合公职、教育、传播、外交等“发光发热”的行业。', love: '因为太顾及外人，容易冷落伴侣。另一半往往比较独立或甚至有点泼辣。' },
-            '武曲': { desc: '您性格刚毅，执行力强，对金钱敏感，有时会显得不近人情或过于现实。', career: '天生的金融、财务、军警或重工业人才。靠执行力和专业技术赚钱。', love: '感情上比较木讷，不够浪漫，容易出现冷战。适合晚婚。' },
-            '天同': { desc: '您是知足常乐的福星，性格温和，人缘极佳，但有时会显得慵懒，缺乏开创力。', career: '适合服务业、行政、文化休闲产业。工作环境通常比较舒适。', love: '感情丰富，容易早恋或有多段感情。另一半通常长相不错或性格温柔。' },
-            '廉贞': { desc: '您心思深沉，观察力强，公关能力出色，但也容易有些“邪气”或不按常理出牌。', career: '适合公关、艺术、设计、或带有监控性质的工作（如审计、监察）。', love: '桃花旺，占有欲强，感情中容易出现第三者或复杂的纠葛。' },
-            '天府': { desc: '您稳重保守，善于守成，像库房管理员一样精打细算，不喜欢冒险。', career: '适合财库管理、行政主管、置业顾问。利于在稳定中求发展。', love: '选择伴侣非常务实，看重对方的经济基础和家庭背景。' },
-            '太阴': { desc: '您性格内敛，细腻温柔，对美有独特的鉴赏力，比较注重精神生活。', career: '适合房地产、美容、设计、财务护理等行业。财运多为慢慢积累。', love: '对感情要求高，喜欢浪漫。男命易得贤妻，女命易嫁贵夫。' },
-            '贪狼': { desc: '您多才多艺，长袖善舞，欲望较强，无论是对物质还是感情都有很高的追求。', career: '适合娱乐、演艺、销售、公关等需要与人打交道的行业。', love: '桃花极旺，异性缘好，但这在婚姻中可能是个考验。' },
-            '巨门': { desc: '您口才好，观察力敏锐，但也容易多疑，有时说话太直容易得罪人。', career: '靠嘴吃饭第一名。适合律师、讲师、销售、研究员。', love: '沟通是婚姻中最大的问题，容易因言语误会而争吵，或者甚至冷暴力。' },
-            '天相': { desc: '您外表斯文，待人热心，喜欢做中间人，非常有服务精神和正义感。', career: '适合秘书、助理、服务、中介、人力资源。是完美的“二把手”。', love: '容易遇到老同学或旧识结合。婚姻通常比较平稳，但配偶可能较强势。' },
-            '天梁': { desc: '您少年老成，有长者风范，喜欢照顾人，也喜欢说教，比较清高。', career: '适合医药、法律、公益、教育、保险等“解决麻烦”的行业。', love: '配偶年龄差距可能较大，或者您像照顾孩子一样照顾对方。' },
-            '七杀': { desc: '您性格刚烈，冲劲十足，做事果断，不喜欢拖泥带水，适合开疆拓土。', career: '适合军警、重工业、外勤销售、或自己创业做老板。宜动不宜静。', love: '感情来得快去得也快，容易一见钟情，也容易闪婚闪离。' },
-            '破军': { desc: '您不按常理出牌，喜欢创新和破坏旧秩序，是天生的改革者，但也容易大起大落。', career: '适合设计、装修、拆迁、或是走在时代前沿的新兴行业。', love: '感情变动大，容易爱上不该爱的人，或者婚后生活波折较多。' }
+        // 星曜解释
+        const STAR_TRAITS = {
+            '紫微': '尊贵/掌权', '天机': '变动/思考', '太阳': '付出/名声', '武曲': '执行/求财',
+            '天同': '福气/享乐', '廉贞': '交际/次桃', '天府': '守成/库藏', '太阴': '富足/内敛',
+            '贪狼': '欲望/社交', '巨门': '口舌/暗昧', '天相': '辅助/印星', '天梁': '清高/解厄',
+            '七杀': '肃杀/冲刺', '破军': '破坏/先锋', 
+            '左辅': '助力', '右弼': '辅佐', '文昌': '文书', '文曲': '口才',
+            '天魁': '男性贵人', '天钺': '女性贵人', '禄存': '真财',
+            '擎羊': '刑伤/冲动', '陀罗': '拖延/纠结', '火星': '突发/焦躁', '铃星': '隐忍/暗火',
+            '地空': '得不偿失', '地劫': '半途而废', '化忌': '波折/亏欠', '化禄': '机缘/顺遂',
+            '化权': '掌控/劳碌', '化科': '名声/面子', '天马': '奔波/变动', '红鸾': '桃花/喜庆'
         };
 
-        // 核心组合逻辑 (特定组合优先匹配，包括用户提供的天同天梁)
+        // V23 核心逻辑 (保持不变)
         const COMBO_LOGIC = {
-            '天同+天梁': {
-                base: '这是标准的【机月同梁】格局的变格，也称“福荫聚”。<br><b>性格画像：</b>您兼具天同的“福气”和天梁的“荫庇”。为人随和，心地善良，外表往往比实际年龄年轻。您不喜欢激烈的竞争，更倾向于在稳定的环境中按部就班。虽略显慵懒，但总有贵人相助，逢凶化吉。',
-                career: '<b>事业建议：</b>您不适合高风险的创业或血腥的商战。最适合<b>行政管理、人力资源、社会福利、教育、中医养生</b>等服务性质或“照顾人”的工作。',
-                love: '<b>情感特质：</b>夫妻宫通常坐巨门。这意味着另一半口才极好，但也可能比较唠叨，或者你们之间容易发生口角。相处之道在于“少说多听”，或者通过聚少离多来化解口舌。'
-            },
-            '天机+太阴': {
-                base: '这是【水木清华】的格局。心思极为细腻，异性缘佳，有洁癖或特定的生活习惯。',
-                career: '适合在公职或大型企业发展，也适合从事设计、策划等需要审美和脑力的工作。',
-                love: '配偶长相俊美，但性格可能比较柔弱或情绪化。'
-            },
-            '紫微+贪狼': {
-                base: '“桃花犯主”格。您不仅有领导力，更有极强的社交手腕和个人魅力，生活品味高。',
-                career: '天生的公关、娱乐业、或服务业的领袖。适合与人打交道赚大钱。',
-                love: '桃花太旺，婚姻容易受干扰。需要晚婚或找一个能玩到一起的伴侣。'
-            },
-            '武曲+七杀': {
-                base: '“刚毅”之极。您执行力爆棚，吃苦耐劳，为了目标可以不惜一切代价，甚至显得冷酷。',
-                career: '适合军警、外科医生、重工业、或金融实业。必须掌握一门硬技术。',
-                love: '刑克较重，伴侣由于受不了您的强势或冷漠而离开。建议找年龄差距大的。'
-            },
-             '太阳+天梁': {
-                base: '【阳梁昌禄】格的雏形。为人正派，热心公益，爱管闲事，有长者风范。',
-                career: '名气大于财气。适合公职、教育、传播、医药法律。',
-                love: '配偶像家长一样管着你，相处模式是“被照顾”。'
-            }
+            '天机': { base: '善于谋略的智多星，心思细腻，但也容易思虑过重。', empty: '命无正曜借天机：性格可塑性极强，易受环境影响，适合做幕后军师。' },
+            '太阳+天梁': { base: '【阳梁昌禄】格雏形。为人正派，热心公益，爱管闲事。', love: '配偶像家长一样管着你，相处模式是“被照顾”。' },
+            '天同+巨门': { base: '内心有隐忧，易有口舌，但也主才华横溢。', love: '感情容易有难以言说的苦衷，需防是非。' }
         };
 
-        const STAR_TRAITS_SIMPLE = {
-            '紫微': '尊贵', '天机': '变动', '太阳': '博爱', '武曲': '财星',
-            '天同': '福气', '廉贞': '交际', '天府': '库藏', '太阴': '富足',
-            '贪狼': '欲望', '巨门': '口舌', '天相': '印星', '天梁': '荫庇',
-            '七杀': '肃杀', '破军': '破坏', '左辅': '助力', '右弼': '辅佐', 
-            '文昌': '科甲', '文曲': '才艺', '天魁': '阳贵', '天钺': '阴贵', 
-            '禄存': '真财', '擎羊': '刑伤', '陀罗': '拖延', '火星': '暴躁', 
-            '铃星': '隐忍', '地空': '虚耗', '地劫': '破失', '化忌': '阻碍', 
-            '化禄': '顺遂', '化权': '掌控', '化科': '名声'
-        };
-
-        // 流年相关库 (V29)
+        // 流年/流月 具体运势文案库
         const TIME_LOGIC = {
             '紫微': { text: '今年是“掌权年”。事业心极强，利于争取领导职位或创业，但需防刚愎自用。', tag: '权利·领导' },
-            '天机': { text: '今年是“变动年”。适合策划、学习、短途差旅。思绪活跃但容易失眠。', tag: '思考·变动' },
-            '太阳': { text: '今年是“付出年”。奔波劳碌为他人作嫁衣，但利于建立口碑。', tag: '名声·奔波' },
-            '武曲': { text: '今年是“求财年”。执行力爆棚，利于搞钱，但人情味淡薄。', tag: '执行·搞钱' },
-            '天同': { text: '今年是“享受年”。心态平和，适合吃喝玩乐、调养身体。', tag: '福气·慵懒' },
-            '廉贞': { text: '今年是“人际年”。社交活动频繁，但需防烂桃花和行政是非。', tag: '社交·公关' },
-            '天府': { text: '今年是“积淀年”。适合守成、储蓄、置业，不宜盲目扩张。', tag: '稳健·守成' },
-            '太阴': { text: '今年是“内修年”。利于理财、美容、家居生活。男性异性缘佳。', tag: '财富·内务' },
-            '贪狼': { text: '今年是“欲望年”。利于学习才艺、交际应酬，但忌投机。', tag: '应酬·欲望' },
-            '巨门': { text: '今年是“口舌年”。利于演讲、教学、谈判。否则易招惹是非。', tag: '口才·是非' },
-            '天相': { text: '今年是“辅助年”。适合做副手、中间人。能得贵人提拔。', tag: '辅助·人缘' },
-            '天梁': { text: '今年是“解厄年”。先难后易，适合通过解决麻烦来体现价值。', tag: '清高·解难' },
-            '七杀': { text: '今年是“冲刺年”。宜动不宜静，压力大，但突破也大。注意受伤。', tag: '魄力·突破' },
-            '破军': { text: '今年是“破立年”。不破不立，可能会换工作或大额消费。', tag: '创新·消耗' }
+            '天机': { text: '今年是“变动年”。适合策划、学习、短途差旅。思绪活跃但容易失眠，忌钻牛角尖。', tag: '思考·变动' },
+            '太阳': { text: '今年是“付出年”。名气大于财气，奔波劳碌为他人作嫁衣，但利于建立口碑。', tag: '名声·奔波' },
+            '武曲': { text: '今年是“求财年”。执行力爆棚，利于搞钱，但人情味淡薄，注意不要因钱伤感情。', tag: '执行·搞钱' },
+            '天同': { text: '今年是“享受年”。心态平和，适合吃喝玩乐、调养身体，进取心稍弱。', tag: '福气·慵懒' },
+            '廉贞': { text: '今年是“人际年”。社交活动频繁，机会多在人脉中，但需防烂桃花和行政是非。', tag: '社交·公关' },
+            '天府': { text: '今年是“积淀年”。适合守成、储蓄、置业，不宜盲目扩张，稳中求胜。', tag: '稳健·守成' },
+            '太阴': { text: '今年是“内修年”。利于理财、美容、家居生活。男性异性缘佳，女性则更注重内心。', tag: '财富·内务' },
+            '贪狼': { text: '今年是“欲望年”。机会与诱惑并存，利于学习才艺、交际应酬，但忌投机。', tag: '应酬·欲望' },
+            '巨门': { text: '今年是“口舌年”。利于演讲、教学、谈判。若无此类工作，则易招惹是非误会。', tag: '口才·是非' },
+            '天相': { text: '今年是“辅助年”。适合做副手、中间人、服务性质工作。人缘好，能得贵人提拔。', tag: '辅助·人缘' },
+            '天梁': { text: '今年是“解厄年”。先难后易，适合通过解决麻烦来体现价值。利于学术、医药、公益。', tag: '清高·解难' },
+            '七杀': { text: '今年是“冲刺年”。宜动不宜静，适合大刀阔斧改革。压力大，但突破也大。注意受伤。', tag: '魄力·突破' },
+            '破军': { text: '今年是“破立年”。不破不立，可能会换工作、搬家或大额消费。旧的不去新的不来。', tag: '创新·消耗' },
+            'empty': { text: '今年是“环境年”。自身主见不强，容易受大环境或他人影响。宜随遇而安，借力使力。', tag: '随缘·借力' }
         };
 
         const SI_HUA_MAP = {
@@ -249,6 +225,8 @@
         };
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65};
+
+        // 吉凶星分类
         const LUCKY_STARS = ['紫微','天府','太阳','太阴','天相','天梁','天同','左辅','右弼','天魁','天钺','文昌','文曲','化禄','化权','化科','禄存'];
         const UNLUCKY_STARS = ['擎羊','陀罗','火星','铃星','地空','地劫','化忌','七杀','破军','廉贞','贪狼','巨门'];
 
@@ -256,61 +234,29 @@
 
         function _getStars(p) { return p?.majorStars || []; }
         function _getMinors(p) { return p?.minorStars || []; }
-        
         function _analyzeStars(palace, astrolabe) {
             if (!palace) return { stars: [], type: 'error', starStr: '未知' };
             const majors = _getStars(palace);
             if (majors.length > 0) {
                 const names = majors.map(s => s.name);
-                return { stars: majors, type: 'solid', key: names.join('+'), starStr: names.join('、') };
+                return { stars: majors, type: 'solid', key: names.length > 1 ? names.join('+') : names[0], starStr: names.join('、') };
             }
-            // 借对宫
             const duiIdx = (palace.index + 6) % 12;
             const duiPalace = astrolabe.palace(duiIdx);
             const duiMajors = _getStars(duiPalace);
             const names = duiMajors.map(s => s.name);
-            const comboKey = names.join('+') || '无主星';
+            const comboKey = names.length > 1 ? names.join('+') : (names[0] || '无主星');
             return { stars: duiMajors, type: 'empty', key: comboKey, starStr: names.join('、'), duiName: duiPalace.name };
         }
 
-        // V30 智能文案生成器 (核心逻辑更新)
+        // V23 文本生成器 (Tab 1 专用)
         function synthesize(data, category) {
             let text = "";
-            
-            // 1. 精确匹配组合 (如天同+天梁)
-            if (COMBO_LOGIC[data.key]) {
-                if (COMBO_LOGIC[data.key][category]) return COMBO_LOGIC[data.key][category];
-                if (COMBO_LOGIC[data.key]['base']) return COMBO_LOGIC[data.key]['base'];
-            }
-            
-            // 2. 智能拼接 (针对未收录的组合，如太阳+巨门)
-            // 遍历所有主星，提取对应类别的描述
-            let descriptions = [];
-            data.stars.forEach(s => {
-                const info = STAR_DETAILS[s.name];
-                if (info) {
-                    if (category === 'base' && info.desc) descriptions.push(`<b>${s.name}：</b>${info.desc}`);
-                    else if (category === 'career' && info.career) descriptions.push(`<b>${s.name}：</b>${info.career}`);
-                    else if (category === 'love' && info.love) descriptions.push(`<b>${s.name}：</b>${info.love}`);
-                }
-            });
-
-            if (descriptions.length > 0) {
-                text = descriptions.join('<br>');
-            } else {
-                // 3. 兜底逻辑
-                data.stars.forEach(s => {
-                    const trait = STAR_TRAITS_SIMPLE[s.name];
-                    if (trait) text += `<b>${s.name}</b>主${trait}。`;
-                });
-            }
-
-            if (data.type === 'empty') {
-                text = `(本宫无主星，借对宫【${data.starStr}】) <br>` + text;
-                text += `<br><span class="text-xs text-slate-500">注：借星安宫意味着该领域力量较弱，更容易受外部环境或对方（对宫）的影响。</span>`;
-            }
-            
-            return text || "星象组合较为复杂，建议结合具体四化分析。";
+            if (COMBO_LOGIC[data.key] && COMBO_LOGIC[data.key][category]) text += COMBO_LOGIC[data.key][category];
+            else if (COMBO_LOGIC[data.key] && COMBO_LOGIC[data.key]['base']) text += COMBO_LOGIC[data.key]['base'];
+            else data.stars.forEach(s => { if (STAR_TRAITS[s.name]) text += `<b>${s.name}</b>：${STAR_TRAITS[s.name].split('/')[0]}。`; });
+            if (data.type === 'empty') text = `(本宫无主星，借对宫【${data.starStr}】) ` + text;
+            return text;
         }
 
         function calculate() {
@@ -342,7 +288,7 @@
             } catch(e) { console.error(e); alert('排盘错误: ' + e.message); }
         }
 
-        // === Tab 1: 全息画像 (内容增强版) ===
+        // === Tab 1: 全息画像 (V23) ===
         function renderProfile(astrolabe) {
             const pMing = astrolabe.palaces.find(p=>p.name==='命宫');
             const pGuan = astrolabe.palaces.find(p=>p.name==='官禄');
@@ -354,42 +300,31 @@
             const dCai = _analyzeStars(pCai, astrolabe);
             const dFu = _analyzeStars(pFu, astrolabe);
 
-            // 1. 命宫
             let mingHTML = `<p>您是<span class="keyword">${dMing.starStr}</span>坐命。`;
-            mingHTML += `<div class="mt-2">${synthesize(dMing, 'base')}</div>`;
-            
-            // 动态建议生成
-            let advice = "发挥您的主星优势，扬长避短。";
-            if(dMing.key.includes('机')) advice = "思维太快易焦虑，建议多冥想，注意神经系统保养。";
-            else if(dMing.key.includes('同')) advice = "福气虽好但易懒散，逼自己一把，将人缘转化为资源。";
-            else if(dMing.key.includes('杀')||dMing.key.includes('破')) advice = "一生变动大，宜动不宜静，学一门过硬的技术傍身。";
-            else if(dMing.type === 'empty') advice = "多听取他人建议，不要固执己见，找一个强大的平台依附。";
-
-            mingHTML += `<div class="suggestion-box">💡 <b>发展建议：</b>${advice}</div>`;
+            if (dMing.type === 'empty') mingHTML += `命无正曜，这意味着您的性格像水一样，容器是什么形状，您就是什么形状。您非常善于适应环境，但也容易感到迷茫。<b>您的真实性格往往体现在迁移宫上。</b></p>`;
+            else mingHTML += `核心特质：${synthesize(dMing, 'base')}</p>`;
+            mingHTML += `<div class="suggestion-box">💡 <b>发展建议：</b>${dMing.key.includes('机') ? '您的思维太快，身体跟不上。建议多做冥想，或从事策划类工作。' : '发挥您的主星优势，扬长避短，不要试图模仿他人。'}</div>`;
             document.getElementById('logicMing').innerHTML = mingHTML;
 
-            // 2. 财官
             let careerHTML = `<p><b>格局判断：</b>您的事业宫（${dGuan.starStr}）与财帛宫（${dCai.starStr}）互动。</p>`;
-            if (dGuan.type === 'empty' && dCai.type === 'empty') careerHTML += `<p><b>“双空”格局：</b>事业财富变数大，适合自由职业、中介或依附大平台。</p>`;
-            else careerHTML += `<div class="mt-2">${synthesize(dCai, 'career')}</div>`; // 使用career库
-            
-            if (_getMinors(pCai).some(s=>s.name==='擎羊')) careerHTML += `<p class="highlight mt-2">注意：财帛宫有擎羊，代表赚的都是辛苦钱，或易因冲动投资破财。</p>`;
+            if (dGuan.type === 'empty' && dCai.type === 'empty') careerHTML += `<p><b>“双空”格局：</b>这代表您的财富和事业变数大，适合<b>自由职业、中介、或依附大平台</b>。变动是您的财源，不宜按部就班。</p>`;
+            else if (dCai.key.includes('同') || dCai.key.includes('巨')) careerHTML += `<p><b>“白手起家”格局：</b>天同主福，巨门主口舌。您适合靠<b>嘴巴（销售、讲师）、技术、或服务业</b>赚钱。初期可能较辛苦，需积少成多。</p>`;
+            else careerHTML += `<p>财运特质：${synthesize(dCai, 'base')}</p>`;
+            if (_getMinors(pCai).some(s=>s.name==='擎羊')) careerHTML += `<p class="highlight">注意：财帛宫有擎羊，代表赚的都是辛苦钱，或者容易因冲动投资而破财。</p>`;
             document.getElementById('logicCareer').innerHTML = careerHTML;
 
-            // 3. 婚姻
             let loveHTML = `<p><b>缘分逻辑：</b>夫妻宫坐${dFu.starStr}。</p>`;
-            loveHTML += `<div class="mt-2">${synthesize(dFu, 'love')}</div>`;
-            if (dFu.key.includes('阳') && dFu.key.includes('梁')) loveHTML += `<div class="special-tip"><b>提示：</b>阳梁在夫妻，配偶正直有名望，但感情像亲情，少浪漫。</div>`;
-            else if (dFu.stars.some(s=>s.name==='巨门')) loveHTML += `<div class="special-tip"><b>提示：</b>巨门入夫妻，口舌是非多，相处之道在于少说多做，或聚少离多。</div>`;
+            loveHTML += `<p>${synthesize(dFu, 'love')}</p>`;
+            if (dFu.key.includes('阳') && dFu.key.includes('梁')) loveHTML += `<div class="special-tip"><b>特别提示：</b>阳梁在夫妻，配偶正直有名望，但感情可能像“亲情”或“师生情”，少了点浪漫。</div>`;
             document.getElementById('logicLove').innerHTML = loveHTML;
         }
 
-        // === Tab 2: 流年与流月 (V29 逻辑保持不变) ===
+        // === Tab 2: 流年与流月 (V29 旗舰版) ===
         function renderFortune(astrolabe, birthYear) {
             const now = new Date();
             const currentYear = now.getFullYear();
             
-            // 流年
+            // --- 流年 ---
             const yearStr = currentYear + '-06-01 12:00:00'; 
             let yearlyScope; try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
 
@@ -399,22 +334,30 @@
                 const yPalace = astrolabe.palace(yIndex);
                 const yStars = _analyzeStars(yPalace, astrolabe);
 
+                // 1. 流年标题
                 document.getElementById('yearTitle').innerText = `${currentYear} ${yearStem}${yearlyScope.yearly.earthlyBranch}年`;
                 document.getElementById('yearSub').innerText = `流年命宫 · ${yPalace.name}`;
 
+                // 2. 流年关键词标签
                 let tagHtml = '';
                 const starKey = yStars.type==='empty'?'empty': (yStars.stars[0]?.name || 'empty');
-                const yearLogic = TIME_LOGIC[starKey] || {text:'运势平稳，按部就班。', tag:'平稳·积累'};
+                const yearLogic = TIME_LOGIC[starKey] || {text:'今年运势平稳，按部就班。重点在于利用三方资源。', tag:'平稳·积累'};
+                
                 tagHtml += `<span class="year-tag yt-purple">${yearLogic.tag}</span>`;
+                // 附加标签
                 if(yStars.key.includes('杀')||yStars.key.includes('破')) tagHtml += `<span class="year-tag yt-blue">变动</span>`;
                 if(yStars.key.includes('桃')||yStars.key.includes('红')) tagHtml += `<span class="year-tag yt-blue">桃花</span>`;
                 document.getElementById('yearTags').innerHTML = tagHtml;
 
+                // 3. 流年核心解读
                 let coreText = yearLogic.text;
+                // 煞星修正
                 const minors = _getMinors(yPalace).map(s=>s.name);
-                if(minors.includes('化忌')) coreText += " <br><b>注意：</b>流年化忌，凡事多阻碍，宜守不宜攻。";
+                if(minors.includes('化忌')) coreText += " <br><b>特别注意：</b>流年化忌入命，凡事多阻碍，心态易纠结，宜守不宜攻，切勿冲动决策。";
+                else if(minors.includes('擎羊') || minors.includes('火星')) coreText += " <br><b>特别注意：</b>煞星入命，今年脾气较大或突发状况多，注意防受伤和口舌。";
                 document.getElementById('yearCoreText').innerHTML = coreText;
 
+                // 4. 四化与三方
                 const sihua = SI_HUA_MAP[yearStem] || {};
                 let sihuaHTML = '';
                 astrolabe.palaces.forEach(p => {
@@ -422,26 +365,32 @@
                         if (sihua[star.name]) {
                             const type = sihua[star.name];
                             if(type==='忌' || [0,4,8,6].includes((p.index - yIndex + 12)%12)) {
+                                const flowNames = ['命','父','福','田','官','友','迁','疾','财','子','夫','兄'];
                                 const idx = (p.index - yIndex + 12) % 12;
-                                const names = ['命','父','福','田','官','友','迁','疾','财','子','夫','兄'];
                                 const color = type==='忌'?'text-red-500 font-bold':'text-green-600';
-                                sihuaHTML += `<div>${star.name}化${type} <span class="${color}">入${names[idx]}</span></div>`;
+                                sihuaHTML += `<div>${star.name}化${type} <span class="${color}">入${flowNames[idx]}</span></div>`;
                             }
                         }
                     });
                 });
-                document.getElementById('yearSiHua').innerHTML = sihuaHTML || '无重要四化';
+                document.getElementById('yearSiHua').innerHTML = sihuaHTML || '无重要四化入三方';
                 document.getElementById('yearSanFang').innerHTML = `<div>财：${_analyzeStars(astrolabe.palace((yIndex+4)%12),astrolabe).starStr}</div><div>官：${_analyzeStars(astrolabe.palace((yIndex+8)%12),astrolabe).starStr}</div>`;
             }
 
-            // 流月
+            // --- 流月 (敏感算法) ---
             const container = document.getElementById('monthlyForecast');
             container.innerHTML = '';
+            
+            // 农历映射表 (iztro 0=Jan)
             const LUNAR_MAP = ["正","二","三","四","五","六","七","八","九","十","十一","十二"];
 
             for (let i = 0; i < 3; i++) {
                 const fDate = new Date(); fDate.setMonth(now.getMonth() + i);
-                const fStr = `${fDate.getFullYear()}-${String(fDate.getMonth()+1).padStart(2,'0')}-15 12:00:00`;
+                const year = fDate.getFullYear();
+                const month = fDate.getMonth() + 1;
+                // 确保日期有效，设为15日
+                const fStr = `${year}-${String(month).padStart(2,'0')}-15 12:00:00`;
+                
                 let scope; try { scope = astrolabe.horoscope(fStr); } catch(e) { continue; }
 
                 if (scope && scope.monthly) {
@@ -449,15 +398,49 @@
                     const allStars = [...mPalace.majorStars, ...mPalace.minorStars];
                     const names = allStars.map(s => s.name);
                     
+                    // 1. 状态判定算法 (大幅提高敏感度)
                     let st = { label: '平稳过渡', css: 'st-safe', icon: '<i class="fas fa-coffee"></i>' };
-                    if (names.includes('化忌')) st = { label: '严阵以待', css: 'st-danger', icon: '<i class="fas fa-exclamation-triangle"></i>' };
-                    else if (names.some(n=>['火星','铃星','擎羊','陀罗'].includes(n))) st = { label: '忙碌焦躁', css: 'st-busy', icon: '<i class="fas fa-fire"></i>' };
-                    else if (names.some(n=>['紫微','天府','化禄'].includes(n))) st = { label: '吉星高照', css: 'st-good', icon: '<i class="fas fa-star"></i>' };
+                    
+                    // 优先级：忌 > 煞 > 动 > 桃 > 吉
+                    if (names.includes('化忌') || (names.includes('地空') && names.includes('地劫'))) {
+                        st = { label: '严阵以待', css: 'st-danger', icon: '<i class="fas fa-exclamation-triangle"></i>' };
+                    } else if (names.some(n=>['火星','铃星','擎羊','陀罗'].includes(n))) {
+                        if (names.includes('火星') || names.includes('擎羊')) st = { label: '忙碌焦躁', css: 'st-busy', icon: '<i class="fas fa-fire"></i>' };
+                        else st = { label: '纠结拖延', css: 'st-busy', icon: '<i class="fas fa-spinner"></i>' };
+                    } else if (names.some(n=>['七杀','破军','天马'].includes(n))) {
+                        st = { label: '奔波变动', css: 'st-busy', icon: '<i class="fas fa-running"></i>' };
+                    } else if (names.some(n=>['贪狼','廉贞','红鸾','天喜'].includes(n))) {
+                        st = { label: '社交桃花', css: 'st-social', icon: '<i class="fas fa-glass-cheers"></i>' };
+                    } else if (names.some(n=>['紫微','天府','化禄','化权'].includes(n))) {
+                        st = { label: '吉星高照', css: 'st-good', icon: '<i class="fas fa-star"></i>' };
+                    }
 
+                    // 2. 动态评语
+                    let patternTitle = "本月格局";
+                    let patternDesc = "运势平稳，按部就班。";
+                    if (names.includes('化忌')) { patternTitle = "化忌冲守"; patternDesc = "阻碍较多，心情郁闷，宜守不宜攻，凡事看开。"; }
+                    else if (names.includes('擎羊')) { patternTitle = "擎羊入命"; patternDesc = "容易冲动、发火，或有皮肉小伤，开车小心。"; }
+                    else if (names.includes('陀罗')) { patternTitle = "陀罗纠缠"; patternDesc = "办事效率低，好事多磨，心里像长草一样纠结。"; }
+                    else if (names.includes('天马')) { patternTitle = "天马行空"; patternDesc = "在外奔波多，身体累但心情不错，利于出差旅游。"; }
+                    else if (names.includes('巨门')) { patternTitle = "巨门主事"; patternDesc = "说话要注意分寸，容易引起误会或争执，少说多做。"; }
+                    else if (names.includes('红鸾')) { patternTitle = "红鸾星动"; patternDesc = "异性缘好，聚会多，单身者有机会，已婚者利人缘。"; }
+                    else if (mPalace.majorStars.length === 0) { patternTitle = "命无正曜"; patternDesc = "心绪不宁，容易受环境左右，建议不要做重大决定。"; }
+
+                    // 3. 农历显示 (修复Bug)
                     let lunarText = "未知";
-                    if (scope.lunarDate) lunarText = LUNAR_MAP[scope.lunarDate.month - 1] || scope.lunarDate.month;
+                    if (scope.lunarDate) {
+                        // iztro return month number usually
+                        const mIndex = scope.lunarDate.month - 1;
+                        if(LUNAR_MAP[mIndex]) lunarText = LUNAR_MAP[mIndex];
+                        else lunarText = scope.lunarDate.month;
+                    }
 
-                    const renderPills = (list, css) => list.map(n => `<span class="star-pill ${css}">${n} <span class="star-sub">${(STAR_TRAITS_SIMPLE[n]||'').split('/')[0]}</span></span>`).join('');
+                    // 4. 星曜胶囊
+                    const renderPills = (list, css) => list.map(n => {
+                        const trait = STAR_TRAITS[n] || '';
+                        return `<span class="star-pill ${css}">${n} <span class="star-sub">${trait.split('/')[0]}</span></span>`;
+                    }).join('');
+                    
                     const goods = names.filter(n => LUCKY_STARS.some(ls=>n.includes(ls)));
                     const bads = names.filter(n => UNLUCKY_STARS.some(us=>n.includes(us)));
 
@@ -466,18 +449,22 @@
                     card.innerHTML = `
                         <div class="moon-header">
                             <div>
-                                <h2 class="text-lg font-bold text-slate-800">${fDate.getFullYear()}年${fDate.getMonth()+1}月</h2>
+                                <h2 class="text-lg font-bold text-slate-800">${year}年${month}月</h2>
                                 <div class="text-xs text-slate-400">农历${lunarText}月 · ${mPalace.name}</div>
                             </div>
                             <div class="moon-status ${st.css}">${st.icon} ${st.label}</div>
                         </div>
+                        <div class="pattern-box">
+                            <span class="pattern-title">${patternTitle}</span>
+                            <span class="pattern-desc">${patternDesc}</span>
+                        </div>
                         <div class="mb-2">
                             <div class="text-xs font-bold text-emerald-600 mb-1">吉象</div>
-                            <div>${renderPills(goods, 'pill-good') || '<span class="text-xs text-gray-300">无</span>'}</div>
+                            <div>${renderPills(goods, 'pill-good') || '<span class="text-xs text-gray-300">无明显吉星</span>'}</div>
                         </div>
                         <div>
                             <div class="text-xs font-bold text-rose-600 mb-1">凶象</div>
-                            <div>${renderPills(bads, 'pill-bad') || '<span class="text-xs text-gray-300">无</span>'}</div>
+                            <div>${renderPills(bads, 'pill-bad') || '<span class="text-xs text-gray-300">无明显凶星</span>'}</div>
                         </div>
                         <div class="action-grid">
                             <div class="act-item"><div class="act-icon bg-emerald-500"><i class="fas fa-check"></i></div>宜：${getAdvice(names, 'yi')}</div>
@@ -489,10 +476,18 @@
             }
         }
 
+        // 简易宜忌生成
         function getAdvice(stars, type) {
-            const DICT = { '天机':{yi:'策划',ji:'纠结'}, '太阳':{yi:'社交',ji:'过劳'}, '武曲':{yi:'理财',ji:'借钱'}, '天同':{yi:'聚餐',ji:'懒散'}, '廉贞':{yi:'公关',ji:'官非'}, '贪狼':{yi:'应酬',ji:'投机'}, '巨门':{yi:'演讲',ji:'吵架'}, '七杀':{yi:'冲刺',ji:'受伤'}, '破军':{yi:'创新',ji:'破财'}, '天马':{yi:'出差',ji:'安逸'}, '擎羊':{yi:'果断',ji:'发火'}, '化忌':{yi:'低调',ji:'逞强'}, '化禄':{yi:'投资',ji:'浪费'} };
+            const DICT = {
+                '天机':{yi:'策划',ji:'纠结'}, '太阳':{yi:'社交',ji:'过劳'}, '武曲':{yi:'理财',ji:'借钱'},
+                '天同':{yi:'聚餐',ji:'懒散'}, '廉贞':{yi:'公关',ji:'官非'}, '贪狼':{yi:'应酬',ji:'投机'},
+                '巨门':{yi:'演讲',ji:'吵架'}, '七杀':{yi:'冲刺',ji:'受伤'}, '破军':{yi:'创新',ji:'破财'},
+                '天马':{yi:'出差',ji:'安逸'}, '擎羊':{yi:'果断',ji:'发火'}, '陀罗':{yi:'研究',ji:'拖延'},
+                '化忌':{yi:'低调',ji:'逞强'}, '化禄':{yi:'投资',ji:'浪费'}
+            };
             for(let s of stars) {
                 if(DICT[s]) return DICT[s][type];
+                // 模糊匹配
                 const key = Object.keys(DICT).find(k => s.includes(k));
                 if(key) return DICT[key][type];
             }
