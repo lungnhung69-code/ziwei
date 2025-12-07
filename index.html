@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 实战指引版 V24.0</title>
+    <title>紫微斗数 - 丝滑运行版 V25.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -33,7 +33,7 @@
         .timeline-dot { position: absolute; left: -6px; top: 0; width: 10px; height: 10px; background: #6366f1; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 2px #6366f1; }
         
         /* 流月标签 */
-        .month-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+        .month-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 4px; margin-right: 4px; }
         .tag-wealth { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
         .tag-warn { background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }
     </style>
@@ -43,9 +43,9 @@
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
-                <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 实战指引版
+                <i class="fas fa-magic text-indigo-600 mr-2"></i>紫微斗数 · 实战指引版
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V24.0</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V25.0</span>
         </div>
     </div>
 
@@ -293,11 +293,12 @@
             const pFu = findPalace(astrolabe, '夫');
             const pQian = findPalace(astrolabe, '迁');
 
+            // ！！！修正点：这里原来是 dQian = _analyzeStars(dQian...)，已修正为 pQian ！！！
             const dMing = _analyzeStars(pMing, astrolabe);
             const dGuan = _analyzeStars(pGuan, astrolabe);
             const dCai = _analyzeStars(pCai, astrolabe);
             const dFu = _analyzeStars(pFu, astrolabe);
-            const dQian = _analyzeStars(dQian, astrolabe);
+            const dQian = _analyzeStars(pQian, astrolabe); 
 
             let mingHTML = `<p>您是<span class="keyword">${dMing.starStr}</span>坐命。`;
             if (dMing.type === 'empty') {
@@ -336,6 +337,7 @@
             const currentYear = now.getFullYear();
             const age = currentYear - birthYear + 1;
             
+            // 1. 找大限
             let curDecade = null;
             astrolabe.palaces.forEach(p => {
                 if (p.decadal && age >= p.decadal.range[0] && age <= p.decadal.range[1]) curDecade = p;
@@ -356,6 +358,7 @@
                 document.getElementById('logicDecade').innerHTML = content;
             }
 
+            // 2. 找流年
             const yearStr = currentYear + '-01-01 12:00:00';
             let yearlyScope;
             try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
@@ -373,7 +376,7 @@
                 document.getElementById('logicYear').innerHTML = yText;
             }
 
-            // 3. 未来三月 (增强版)
+            // 3. 未来三月 (实战指引增强版)
             const forecastDiv = document.getElementById('monthlyForecast');
             forecastDiv.innerHTML = '';
             for(let i=0; i<3; i++) {
@@ -388,7 +391,7 @@
                     // 获取建议
                     const advice = generateMonthlyAdvice(mData, mPalace.name);
                     
-                    // 修复 undefined 农历
+                    // 农历显示
                     const lunarM = (scope.lunarDate && scope.lunarDate.month) ? scope.lunarDate.month : '未知';
 
                     const item = document.createElement('div');
