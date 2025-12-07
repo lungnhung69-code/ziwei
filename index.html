@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 综合推演完全版 V31.1 (修复版)</title>
+    <title>紫微斗数 - 综合推演完全版 V31.2 (数学修正)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #f8fafc; font-weight: 500; }
 
-        /* === Tab 1: 全息画像样式 (V30) === */
+        /* === Tab 1: 全息画像样式 === */
         .synthesis-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1; }
         .card-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
@@ -33,7 +33,7 @@
         .group-title { font-size: 18px; font-weight: 800; color: #333; margin: 30px 0 15px 0; display: flex; align-items: center; }
         .group-title::before { content: ''; width: 4px; height: 18px; background: #4f46e5; margin-right: 10px; border-radius: 2px; }
 
-        /* === Tab 2: 流年流月样式 (V29) === */
+        /* === Tab 2: 流年流月样式 === */
         .year-card { background: linear-gradient(145deg, #ffffff 0%, #fefaff 100%); border-left: 5px solid #7c3aed; }
         .year-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 6px; margin-bottom: 6px; }
         .yt-purple { background: #f3e8ff; color: #6b21a8; }
@@ -42,7 +42,6 @@
         .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
         .moon-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         
-        /* 状态标签 */
         .moon-status { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
         .st-safe { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
         .st-busy { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
@@ -54,7 +53,6 @@
         .pattern-title { font-weight: bold; color: #334155; font-size: 13px; margin-bottom: 4px; display: block; }
         .pattern-desc { font-size: 13px; color: #64748b; line-height: 1.5; }
 
-        /* 星星胶囊 */
         .star-pill { font-size: 12px; padding: 3px 8px; border-radius: 6px; font-weight: 500; display: inline-flex; align-items: center; margin-right: 6px; margin-bottom: 6px; }
         .pill-good { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
         .pill-bad { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
@@ -75,7 +73,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 综合推演
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V31.1</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V31.2</span>
         </div>
     </div>
 
@@ -123,7 +121,6 @@
 
             <!-- Tab 2: 流年流月 -->
             <div id="tab2" class="hidden space-y-5">
-                 <!-- 流年卡片 -->
                  <div class="synthesis-card year-card relative overflow-hidden">
                     <div class="absolute right-[-10px] top-[-10px] text-8xl text-purple-900 opacity-5 rotate-12 pointer-events-none">
                         <i class="fas fa-dragon"></i>
@@ -158,7 +155,6 @@
                     <h3 class="font-bold text-lg text-slate-800">未来三个月指引</h3>
                 </div>
 
-                <!-- 流月列表 -->
                 <div id="monthlyForecast" class="space-y-4"></div>
             </div>
         </div>
@@ -166,40 +162,10 @@
 
     <script>
         // === 1. 数据逻辑库 ===
-
-        const PALACE_DEFS = {
-            '命宫': { icon: 'fa-user-astronaut', group: 'core', desc: '性格核心、命运总格局、外在形象' },
-            '兄弟': { icon: 'fa-user-friends', group: 'people', desc: '兄弟姐妹、合作伙伴、资金周转' },
-            '夫妻': { icon: 'fa-heart', group: 'people', desc: '感情模式、配偶特质、婚姻质量' },
-            '子女': { icon: 'fa-baby', group: 'people', desc: '子女缘分、性生活、下属晚辈、合伙' },
-            '财帛': { icon: 'fa-coins', group: 'core', desc: '理财能力、赚钱模式、现金流' },
-            '疾厄': { icon: 'fa-notes-medical', group: 'body', desc: '深层潜意识、身体健康、体质' },
-            '迁移': { icon: 'fa-plane', group: 'core', desc: '外出机遇、社会评价、人际印象' },
-            '交友': { icon: 'fa-users', group: 'people', desc: '众生缘、粉丝客户、朋友助力' },
-            '官禄': { icon: 'fa-briefcase', group: 'core', desc: '事业方向、工作表现、学业运' },
-            '田宅': { icon: 'fa-home', group: 'body', desc: '不动产、居住环境、家庭氛围、藏财' },
-            '福德': { icon: 'fa-spa', group: 'body', desc: '精神享受、内心嗜好、前世福报' },
-            '父母': { icon: 'fa-user-tie', group: 'people', desc: '长辈缘、文书证件、遗传基因' }
-        };
-
-        const GROUP_NAMES = {
-            'core': '命运核心架构 (命/财/官/迁)',
-            'people': '人际情感网络 (夫/父/兄/子/友)',
-            'body': '物质与身心 (田/福/疾)'
-        };
-
-        const STAR_TRAITS = {
-            '紫微': '尊贵/掌权', '天机': '变动/思考', '太阳': '付出/名声', '武曲': '执行/求财',
-            '天同': '福气/享乐', '廉贞': '交际/次桃', '天府': '守成/库藏', '太阴': '富足/内敛',
-            '贪狼': '欲望/社交', '巨门': '口舌/暗昧', '天相': '辅助/印星', '天梁': '清高/解厄',
-            '七杀': '肃杀/冲刺', '破军': '破坏/先锋', 
-            '左辅': '助力', '右弼': '辅佐', '文昌': '文书', '文曲': '口才',
-            '天魁': '男性贵人', '天钺': '女性贵人', '禄存': '真财',
-            '擎羊': '刑伤/冲动', '陀罗': '拖延/纠结', '火星': '突发/焦躁', '铃星': '隐忍/暗火',
-            '地空': '得不偿失', '地劫': '半途而废', '化忌': '波折/亏欠', '化禄': '机缘/顺遂',
-            '化权': '掌控/劳碌', '化科': '名声/面子', '天马': '奔波/变动', '红鸾': '桃花/喜庆'
-        };
-
+        const PALACE_DEFS = { '命宫': { icon: 'fa-user-astronaut', group: 'core', desc: '性格核心、命运总格局' }, '兄弟': { icon: 'fa-user-friends', group: 'people', desc: '兄弟姐妹、资金周转' }, '夫妻': { icon: 'fa-heart', group: 'people', desc: '感情模式、配偶特质' }, '子女': { icon: 'fa-baby', group: 'people', desc: '子女缘分、晚辈合伙' }, '财帛': { icon: 'fa-coins', group: 'core', desc: '理财能力、赚钱模式' }, '疾厄': { icon: 'fa-notes-medical', group: 'body', desc: '深层潜意识、身体健康' }, '迁移': { icon: 'fa-plane', group: 'core', desc: '外出机遇、社会评价' }, '交友': { icon: 'fa-users', group: 'people', desc: '众生缘、粉丝客户' }, '官禄': { icon: 'fa-briefcase', group: 'core', desc: '事业方向、工作表现' }, '田宅': { icon: 'fa-home', group: 'body', desc: '不动产、居住环境' }, '福德': { icon: 'fa-spa', group: 'body', desc: '精神享受、前世福报' }, '父母': { icon: 'fa-user-tie', group: 'people', desc: '长辈缘、文书证件' } };
+        const GROUP_NAMES = { 'core': '命运核心架构 (命/财/官/迁)', 'people': '人际情感网络 (夫/父/兄/子/友)', 'body': '物质与身心 (田/福/疾)' };
+        const STAR_TRAITS = { '紫微': '尊贵/掌权', '天机': '变动/思考', '太阳': '付出/名声', '武曲': '执行/求财', '天同': '福气/享乐', '廉贞': '交际/次桃', '天府': '守成/库藏', '太阴': '富足/内敛', '贪狼': '欲望/社交', '巨门': '口舌/暗昧', '天相': '辅助/印星', '天梁': '清高/解厄', '七杀': '肃杀/冲刺', '破军': '破坏/先锋', '左辅': '助力', '右弼': '辅佐', '文昌': '文书', '文曲': '口才', '天魁': '男性贵人', '天钺': '女性贵人', '禄存': '真财', '擎羊': '刑伤/冲动', '陀罗': '拖延/纠结', '火星': '突发/焦躁', '铃星': '隐忍/暗火', '地空': '得不偿失', '地劫': '半途而废', '化忌': '波折/亏欠', '化禄': '机缘/顺遂', '化权': '掌控/劳碌', '化科': '名声/面子', '天马': '奔波/变动', '红鸾': '桃花/喜庆' };
+        
         const TIME_LOGIC = {
             '紫微': { text: '今年是“掌权年”。事业心极强，利于争取领导职位或创业，但需防刚愎自用。', tag: '权利·领导' },
             '天机': { text: '今年是“变动年”。适合策划、学习、短途差旅。思绪活跃但容易失眠，忌钻牛角尖。', tag: '思考·变动' },
@@ -355,13 +321,7 @@
         }
 
         function getContextKey(pName) {
-            const map = {
-                '命宫': 'core', '迁移': 'core', 
-                '财帛': 'wealth', '田宅': 'wealth',
-                '官禄': 'career',
-                '夫妻': 'love', '子女': 'love',
-                '疾厄': 'health', '福德': 'health'
-            };
+            const map = { '命宫': 'core', '迁移': 'core', '财帛': 'wealth', '田宅': 'wealth', '官禄': 'career', '夫妻': 'love', '子女': 'love', '疾厄': 'health', '福德': 'health' };
             return map[pName] || 'base';
         }
 
@@ -405,22 +365,17 @@
                 // 2. 排盘
                 const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
 
-                // 3. 修复核心：精准获取生年天干 (解决1983癸年变成甲年的Bug)
-                let birthStem = '甲'; 
-                try {
-                    const yearlyVal = astrolabe.chineseDate.yearly; // 可能是 ['癸', '亥'] 或 "癸亥"
-                    if (Array.isArray(yearlyVal)) {
-                        birthStem = yearlyVal[0]; // 数组取第一个
-                    } else if (typeof yearlyVal === 'string') {
-                        birthStem = yearlyVal.charAt(0); // 字符串取第一个
-                    }
-                    // 显示调试信息
-                    const fullYearStr = Array.isArray(yearlyVal) ? yearlyVal.join('') : yearlyVal;
-                    document.getElementById('birthStemDisplay').innerText = `本命生年：${fullYearStr} (${birthStem}干)`;
-                } catch(e) {
-                    console.error("天干获取失败", e);
-                    birthStem = '甲';
-                }
+                // === 修复核心：完全放弃库返回的年干，使用纯数学计算 ===
+                // 公式：(年份 - 3) % 10。 0=癸, 1=甲...
+                const stems = ['癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬'];
+                const yearInt = parseInt(y);
+                const stemIndex = (yearInt - 3) % 10;
+                // 处理负数情况（虽然1940+不会出现，但为了严谨）
+                const finalStemIndex = stemIndex < 0 ? stemIndex + 10 : stemIndex;
+                const birthStem = stems[finalStemIndex];
+                
+                // 显示调试信息
+                document.getElementById('birthStemDisplay').innerText = `本命生年：${y}年 (${birthStem}干)`;
 
                 // 4. 渲染
                 renderFullProfile(astrolabe, birthStem); // Tab 1
@@ -432,7 +387,7 @@
             } catch(e) { console.error(e); alert('排盘错误: ' + e.message); }
         }
 
-        // Tab 1: 全12宫位深度解析
+        // Tab 1
         function renderFullProfile(astrolabe, birthStem) {
             const container = document.getElementById('profileContent');
             container.innerHTML = '';
@@ -492,12 +447,10 @@
             }
         }
 
-        // Tab 2: V29 旗舰流年
+        // Tab 2
         function renderFortuneV29(astrolabe) {
             const now = new Date();
             const currentYear = now.getFullYear();
-            
-            // --- 流年 ---
             const yearStr = currentYear + '-06-01 12:00:00'; 
             let yearlyScope; try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
 
@@ -557,7 +510,6 @@
                 `;
             }
 
-            // --- 流月 ---
             const container = document.getElementById('monthlyForecast');
             container.innerHTML = '';
             
