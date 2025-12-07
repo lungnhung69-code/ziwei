@@ -39,9 +39,9 @@
         .group-title { font-size: 18px; font-weight: 800; color: #333; margin: 30px 0 15px 0; display: flex; align-items: center; }
         .group-title::before { content: ''; width: 4px; height: 18px; background: #4f46e5; margin-right: 10px; border-radius: 2px; }
 
-        /* Tab 2 样式保持精简，此处省略重复定义 */
-        .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; }
-        .st-safe { background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        /* 动画 */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="pb-20 bg-slate-100">
@@ -87,7 +87,7 @@
             <!-- Tab 1: 全息画像 (深度版) -->
             <div id="tab1" class="space-y-6">
                 <div id="introBox" class="bg-indigo-50 p-4 rounded-lg text-sm text-indigo-900 border border-indigo-100">
-                    <i class="fas fa-info-circle mr-1"></i> 系统已综合排盘，结合<b>本宫星曜、对宫投影、三合方局、生年四化</b>进行全方位解读。
+                    <i class="fas fa-info-circle mr-1"></i> 系统已综合排盘，结合<b>本宫星曜、对宫投影、三方格局、生年四化</b>进行全方位解读。
                 </div>
                 <div id="profileContent"></div>
             </div>
@@ -124,7 +124,7 @@
             'body': '物质与身心 (田/福/疾)'
         };
 
-        // 星曜在不同宫位的深度含义 (简化版，实际应用可无限扩充)
+        // 星曜在不同宫位的深度含义
         const INTERPRETATION_DB = {
             '紫微': {
                 base: '帝王星，主尊贵、掌权、爱面子。',
@@ -262,6 +262,7 @@
 
         // 获取四化描述
         function getSiHuaDesc(starName, stem) {
+            if (!stem || !starName) return null;
             const map = SI_HUA_MAP[stem];
             if (!map) return null;
             for (let [key, val] of Object.entries(map)) {
@@ -276,10 +277,12 @@
 
         // 核心分析函数
         function analyzePalaceFull(palace, astrolabe, birthYearStem) {
+            if (!palace) return { text: '宫位数据错误', tags: [], stars: [], sihua: [], sfText: '' };
+
             const majorStars = _getStars(palace);
             const minorStars = _getMinors(palace);
-            const isBodyPalace = palace.name === astrolabe.bodyPalace.name;
-            const isLifePalace = palace.name === astrolabe.lifePalace.name;
+            const isBodyPalace = astrolabe.bodyPalace && palace.name === astrolabe.bodyPalace.name;
+            const isLifePalace = astrolabe.lifePalace && palace.name === astrolabe.lifePalace.name;
             
             // 1. 三方四正获取
             const idx = palace.index;
@@ -313,7 +316,7 @@
 
             // 借星逻辑
             let activeStars = majorStars;
-            if (analysis.isEmpty) {
+            if (analysis.isEmpty && pDui) {
                 activeStars = _getStars(pDui);
                 analysis.borrowed = true;
                 analysis.stars = activeStars.map(s => s.name);
@@ -389,6 +392,9 @@
                 let lng = 120; for(let c in CITY_LONGITUDES) if(loc.includes(c)) lng=CITY_LONGITUDES[c];
                 const offset = (lng - 120) * 4;
                 const dateObj = new Date(`${y}-${m}-${d}T${t}:00`);
+                
+                if (isNaN(dateObj.getTime())) throw new Error("日期无效，请检查输入");
+
                 dateObj.setMinutes(dateObj.getMinutes() + offset);
                 let timeIndex = Math.floor((dateObj.getHours()+1)/2); if(timeIndex>=12) timeIndex=0;
                 
@@ -396,8 +402,16 @@
 
                 const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
 
-                // 获取生年天干 (用于四化)
-                const birthStem = astrolabe.chineseDate.yearly[0]; // 甲乙丙丁...
+                // --- 安全获取生年天干 ---
+                let birthStem = '甲'; 
+                try {
+                    // 尝试从 iztro 对象中获取年干
+                    if (astrolabe?.chineseDate?.yearly) {
+                        // 兼容不同版本的返回格式 (可能是字符串 '甲子' 或数组 ['甲','子'])
+                        const yVal = astrolabe.chineseDate.yearly;
+                        birthStem = Array.isArray(yVal) ? yVal[0] : yVal.charAt(0);
+                    }
+                } catch(e) { console.warn('获取生年四化失败，使用默认值'); }
 
                 renderFullProfile(astrolabe, birthStem);
                 renderYearlyFortune(astrolabe, parseInt(y));
@@ -417,16 +431,20 @@
             
             // 遍历所有宫位并分组
             astrolabe.palaces.forEach(p => {
-                const def = PALACE_DEFS[p.name] || { group: 'body', icon: 'fa-star' };
+                const def = PALACE_DEFS[p.name] || { group: 'body', icon: 'fa-star', desc: '其他宫位' };
                 const data = analyzePalaceFull(p, astrolabe, birthStem);
-                groups[def.group].push({ p, def, data });
+                if (groups[def.group]) {
+                    groups[def.group].push({ p, def, data });
+                }
             });
 
             // 渲染分组
             for (const [gKey, items] of Object.entries(groups)) {
+                if (items.length === 0) continue;
+                
                 const groupTitle = document.createElement('div');
                 groupTitle.className = 'group-title';
-                groupTitle.innerHTML = GROUP_NAMES[gKey];
+                groupTitle.innerHTML = GROUP_NAMES[gKey] || '其他';
                 container.appendChild(groupTitle);
 
                 items.forEach(item => {
@@ -475,7 +493,7 @@
             }
         }
 
-        // 渲染 Tab 2: 保持流年功能 (简化演示)
+        // 渲染 Tab 2: 简易流年
         function renderYearlyFortune(astrolabe, birthYear) {
             const now = new Date();
             const currentYear = now.getFullYear();
@@ -485,13 +503,13 @@
             if (yearlyScope && yearlyScope.yearly) {
                  const yIndex = yearlyScope.yearly.index;
                  const yPalace = astrolabe.palace(yIndex);
-                 const stars = yPalace.majorStars.map(s=>s.name).join('、') || '无主星';
+                 const stars = (yPalace.majorStars || []).map(s=>s.name).join('、') || '无主星';
                  
                  document.getElementById('yearContent').innerHTML = `
                     <div class="synthesis-card bg-gradient-to-r from-purple-50 to-white">
                         <h2 class="text-xl font-bold mb-2">${currentYear} 流年运势</h2>
                         <p class="text-sm text-slate-600 mb-4">流年命宫落在<b>${yPalace.name}</b>，主星：<b>${stars}</b></p>
-                        <div class="infer-text">此处显示简略流年（详细流年请见全息画像中的运限盘分析，本版本重点展示命盘全貌）。建议关注流年四化对本命盘的引动。</div>
+                        <div class="infer-text">这里展示简要的流年信息。您可以点击“全息画像”标签页查看您本命盘所有12宫位的深度解析。</div>
                     </div>
                  `;
             }
