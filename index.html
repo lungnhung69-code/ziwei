@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 综合推演版 V24.0 (流年加强版)</title>
+    <title>紫微斗数 - 综合推演版 V25.0 (完美融合版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,23 +13,24 @@
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #f8fafc; font-weight: 500; }
 
-        /* 综合报告卡片 */
+        /* V23 & V24 通用卡片样式 */
         .synthesis-card { background: white; border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #cbd5e1; }
         .card-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .card-title { font-size: 18px; font-weight: 900; color: #1e293b; }
         
-        /* 推演文本样式 */
+        /* V23 核心样式 (全息画像专用) */
         .infer-text { font-size: 15px; line-height: 1.8; color: #475569; text-align: justify; }
         .infer-text p { margin-bottom: 12px; }
         .keyword { color: #4338ca; font-weight: bold; background: #e0e7ff; padding: 0 4px; border-radius: 3px; }
         .highlight { color: #b91c1c; font-weight: bold; }
-        .good-luck { color: #059669; font-weight: bold; }
         
-        /* 建议模块 */
+        /* 建议模块 (V23样式) */
         .suggestion-box { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px; margin-top: 10px; border-radius: 6px; font-size: 14px; color: #92400e; line-height: 1.6; }
+        .special-tip { background: #fdf2f8; border-left: 4px solid #db2777; padding: 14px; margin-top: 10px; border-radius: 6px; font-size: 14px; color: #9d174d; line-height: 1.6; }
         
-        /* 运势时间轴 */
+        /* V24 运势样式 (流年专用) */
+        .good-luck { color: #059669; font-weight: bold; }
         .timeline-box { position: relative; padding-left: 24px; border-left: 2px solid #e2e8f0; margin-top: 15px; padding-bottom: 10px; }
         .timeline-dot { position: absolute; left: -6px; top: 6px; width: 10px; height: 10px; background: #6366f1; border-radius: 50%; box-shadow: 0 0 0 4px #e0e7ff; }
         .tag-bad { background: #fef2f2; color: #b91c1c; padding: 2px 6px; border-radius: 4px; font-size: 12px; border: 1px solid #fecaca; }
@@ -41,9 +42,9 @@
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
-                <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度推演
+                <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 综合推演
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V24.0</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V25.0</span>
         </div>
     </div>
 
@@ -77,7 +78,7 @@
                 <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-4 text-sm tab-inactive">当下流年</button>
             </div>
 
-            <!-- Tab 1: 全息画像 -->
+            <!-- Tab 1: 全息画像 (恢复V23样式) -->
             <div id="tab1" class="space-y-4">
                 <div class="synthesis-card">
                     <div class="card-header">
@@ -104,9 +105,9 @@
                 </div>
             </div>
 
-            <!-- Tab 2: 当下运势 (重构版) -->
+            <!-- Tab 2: 当下流年 (保持V24深度逻辑) -->
             <div id="tab2" class="hidden space-y-4">
-                <!-- 2025 流年卡片 -->
+                <!-- 流年卡片 -->
                 <div class="synthesis-card border-l-4 border-l-purple-600 relative overflow-hidden">
                     <div class="absolute right-[-20px] top-[-20px] text-9xl text-slate-50 opacity-10 pointer-events-none rotate-12">
                         <i class="fas fa-dragon"></i>
@@ -114,7 +115,7 @@
                     <div class="card-header border-none mb-0 pb-0">
                          <div class="card-icon bg-purple-600"><i class="fas fa-calendar-alt"></i></div>
                          <div>
-                            <span id="yearLabel" class="card-title block">2025乙巳流年</span>
+                            <span id="yearLabel" class="card-title block">流年运势</span>
                             <span id="yearGanzhi" class="text-xs text-slate-500 font-normal"></span>
                          </div>
                     </div>
@@ -128,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- 未来三月流月卡片 -->
+                <!-- 流月预测 -->
                 <div class="synthesis-card">
                     <div class="card-header">
                         <div class="card-icon bg-indigo-500"><i class="fas fa-moon"></i></div>
@@ -141,7 +142,41 @@
     </div>
 
     <script>
-        // === 1. 扩充的逻辑数据库 ===
+        // === 1. V23 核心逻辑库 (恢复全息画像的丰富性) ===
+        const COMBO_LOGIC = {
+            '天机': {
+                base: '善于谋略的智多星，心思细腻。',
+                empty: '命无正曜借天机：性格更显不稳定性，易受环境影响，适合做幕后或副手。',
+                rich: '天机入财官：靠脑力、技术、变动生财。',
+                love: '天机入夫妻：感情易变，配偶聪明但心思重。'
+            },
+            '太阳+天梁': {
+                base: '【阳梁昌禄】格的雏形。为人正派，热心公益，有长者风范。',
+                career: '名气大于财气。适合公职、教育、传播、医药法律。利名不利利。',
+                love: '配偶像家长一样管着你，或者年龄差距大。相处模式是“被照顾”或“由于太正经而缺乏情趣”。'
+            },
+            '天同+巨门': {
+                base: '【明珠出海】的暗格（若在未宫）。但也主内心有隐忧，易有口舌。',
+                career: '适合靠嘴巴吃饭，或服务行业。早年辛苦，晚年安逸。',
+                love: '感情容易有难以言说的苦衷，或陷入三角关系，需防是非。'
+            },
+            '天同': {
+                base: '知足常乐的福星，略显慵懒但人缘极佳。',
+                career: '不喜竞争，适合行政、服务、文化类工作。',
+                love: '感情丰富，容易早恋或多情。'
+            },
+            '巨门': {
+                base: '心思深沉，观察力锐利，口才好但也易惹是非。',
+                career: '靠嘴吃饭（律师、讲师、销售）或学术研究。',
+                love: '沟通是最大的障碍，容易因言语误会而生波折。'
+            },
+            '无主星': {
+                base: '宫位空虚，力量不足。',
+                handle: '必须借对宫星曜来看，但力量减半。这也意味着该领域变数大，您对该领域的掌控力较弱，多受外部环境牵制。'
+            }
+        };
+
+        // === 2. V24 辅助逻辑库 (用于流年推演) ===
         const SI_HUA_MAP = {
             '甲': { '廉贞': '禄', '破军': '权', '武曲': '科', '太阳': '忌' },
             '乙': { '天机': '禄', '天梁': '权', '紫微': '科', '太阴': '忌' },
@@ -156,56 +191,66 @@
         };
 
         const STAR_TRAITS = {
-            '紫微': '尊贵、领导、孤高', '天机': '智慧、变动、焦虑', '太阳': '博爱、名声、奔波', '武曲': '刚毅、求财、孤克',
-            '天同': '福气、慵懒、协调', '廉贞': '交际、次桃花、囚星', '天府': '库星、稳重、保守', '太阴': '内敛、富足、女性缘',
-            '贪狼': '欲望、桃花、才艺', '巨门': '口舌、是非、研究', '天相': '辅助、公正、粉饰', '天梁': '清高、解厄、长者',
-            '七杀': '肃杀、变动、冲劲', '破军': '破坏、创新、消耗'
+            '紫微': '尊贵、领导', '天机': '智慧、变动', '太阳': '博爱、付出', '武曲': '刚毅、求财',
+            '天同': '福气、慵懒', '廉贞': '交际、囚星', '天府': '库星、稳重', '太阴': '内敛、富足',
+            '贪狼': '欲望、桃花', '巨门': '口舌、是非', '天相': '辅助、公正', '天梁': '清高、解厄',
+            '七杀': '肃杀、变动', '破军': '破坏、创新'
         };
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65};
 
-        // === 2. 核心分析引擎 ===
+        // === 3. 核心工具函数 ===
 
         function findPalace(astrolabe, keyword) {
             return astrolabe.palaces.find(p => p.name.includes(keyword));
         }
         
-        // 改进：提取三方四正
         function getSanFangSiZheng(astrolabe, centerIndex) {
             return {
                 self: astrolabe.palace(centerIndex),
-                money: astrolabe.palace((centerIndex + 4) % 12), // 财帛（官禄的官禄，或者命宫的财帛，顺数5）这里逻辑：紫微盘逆时针排宫，三合是+4和+8
+                money: astrolabe.palace((centerIndex + 4) % 12),
                 career: astrolabe.palace((centerIndex + 8) % 12),
                 travel: astrolabe.palace((centerIndex + 6) % 12)
             };
         }
-
+        
         function _getStars(palace) { return (palace && palace.majorStars) ? palace.majorStars : []; }
         function _getMinors(palace) { return (palace && palace.minorStars) ? palace.minorStars : []; }
 
         function _analyzeStars(palace, astrolabe) {
             if (!palace) return { stars: [], type: 'error', starStr: '未知' };
             const majors = _getStars(palace);
+            
             if (majors.length > 0) {
                 const names = majors.map(s => s.name);
-                return { stars: majors, type: 'solid', key: names.join('+'), starStr: names.join('、') };
+                return { stars: majors, type: 'solid', key: names.length > 1 ? names.join('+') : names[0], starStr: names.join('、') };
             }
-            // 借对宫
+            
             const duiIdx = (palace.index + 6) % 12;
             const duiPalace = astrolabe.palace(duiIdx);
             const duiMajors = _getStars(duiPalace);
             const names = duiMajors.map(s => s.name);
-            return { stars: duiMajors, type: 'empty', key: names.join('+'), starStr: names.join('、'), duiName: duiPalace.name };
+            const comboKey = names.length > 1 ? names.join('+') : (names[0] || '无主星');
+            
+            return { stars: duiMajors, type: 'empty', key: comboKey, starStr: names.join('、'), duiName: duiPalace.name };
         }
 
-        // 核心：综合画像生成 (保持全息画像逻辑不变)
+        // V23 核心文本生成器 (恢复查找逻辑)
         function synthesize(data, category) {
-            // 这里保留原有的基础逻辑，简化展示
             let text = "";
-            if(data.type === 'empty') text += "(借星) ";
-            data.stars.forEach(s => {
-                if(STAR_TRAITS[s.name]) text += `<b>${s.name}</b>：${STAR_TRAITS[s.name]}。`;
-            });
+            // 优先匹配组合逻辑
+            if (COMBO_LOGIC[data.key]) {
+                text += COMBO_LOGIC[data.key][category] || COMBO_LOGIC[data.key]['base'];
+            } else {
+                // 单星逻辑叠加
+                data.stars.forEach(s => {
+                    if (STAR_TRAITS[s.name]) text += `<b>${s.name}</b>：${STAR_TRAITS[s.name]}。`;
+                });
+            }
+            // 空宫修正
+            if (data.type === 'empty') {
+                text = `(本宫无主星，借对宫【${data.starStr}】) ` + text;
+            }
             return text;
         }
 
@@ -213,7 +258,7 @@
         function init() {
             const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
             for(let i=new Date().getFullYear(); i>=1940; i--) y.add(new Option(i+'年', i));
-            y.value = 1990; for(let i=1; i<=12; i++) m.add(new Option(i+'月', i));
+            y.value = 1991; for(let i=1; i<=12; i++) m.add(new Option(i+'月', i));
             const updateD = () => {
                 const days = new Date(y.value, m.value, 0).getDate();
                 d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
@@ -243,14 +288,10 @@
 
                 document.getElementById('solarHint').innerText = matchedCity ? `✅ 真太阳时已校准 (${matchedCity})` : "ℹ️ 默认北京时间";
 
-                // 生成星盘
                 const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
 
-                // 渲染 Tab 1 全息画像 (沿用旧逻辑)
-                renderHolographicReport(astrolabe);
-                
-                // 渲染 Tab 2 流年流月 (全新逻辑)
-                renderFocusFortune(astrolabe, parseInt(y));
+                renderHolographicReport(astrolabe); // Tab 1: V23 样式
+                renderFocusFortune(astrolabe, parseInt(y)); // Tab 2: V24 深度算法
 
                 document.getElementById('resultArea').classList.remove('hidden');
                 switchTab('tab1');
@@ -261,39 +302,68 @@
             }
         }
 
-        // === Tab 1: 全息画像 (复用) ===
+        // === Tab 1: 全息画像 (完全恢复 V23 样式逻辑) ===
         function renderHolographicReport(astrolabe) {
             const pMing = findPalace(astrolabe, '命');
             const pGuan = findPalace(astrolabe, '官');
             const pCai = findPalace(astrolabe, '财');
             const pFu = findPalace(astrolabe, '夫');
+            const pQian = findPalace(astrolabe, '迁'); 
+
             const dMing = _analyzeStars(pMing, astrolabe);
             const dGuan = _analyzeStars(pGuan, astrolabe);
             const dCai = _analyzeStars(pCai, astrolabe);
             const dFu = _analyzeStars(pFu, astrolabe);
+            const dQian = _analyzeStars(pQian, astrolabe);
 
-            // 简化的全息画像逻辑
-            let mingHTML = `<p>您是<span class="keyword">${dMing.starStr}</span>坐命。${dMing.type==='empty'?'命宫无主星，性格可塑性极强，易受环境影响。':''}</p>`;
-            mingHTML += `<p>核心特质：${synthesize(dMing, 'base')}</p>`;
+            // 1. 命宫逻辑 (恢复黄色建议框)
+            let mingHTML = `<p>您是<span class="keyword">${dMing.starStr}</span>坐命。`;
+            if (dMing.type === 'empty') {
+                mingHTML += `命无正曜，这意味着您的性格像水一样，容器是什么形状，您就是什么形状。您非常善于适应环境，但也容易感到迷茫。<b>真实性格往往体现在迁移宫（对外表现）上。</b></p>`;
+                mingHTML += `<p class="mt-2">核心特质参考：${synthesize(dQian, 'base')}</p>`;
+            } else {
+                mingHTML += `核心特质：${synthesize(dMing, 'base')}</p>`;
+            }
+            mingHTML += `<div class="suggestion-box">💡 <b>发展建议：</b>${dMing.key.includes('机') ? '您的思维太快，身体跟不上。建议多做冥想，或从事策划类工作。' : '发挥您的主星优势，扬长避短，不要试图模仿他人。'}</div>`;
             document.getElementById('logicMing').innerHTML = mingHTML;
 
-            let careerHTML = `<p>财官线格局：财帛宫${dCai.starStr}，官禄宫${dGuan.starStr}。</p>`;
-            if(dCai.type==='empty' && dGuan.type==='empty') careerHTML += `<p class="highlight">命财官三方皆空或弱，适合依附大平台或从事中介、自由职业。</p>`;
-            else careerHTML += `<p>${synthesize(dGuan, 'career')}</p>`;
+            // 2. 事业财运 (恢复 V23 组合判断)
+            let careerHTML = `<p><b>格局判断：</b>您的事业宫（${dGuan.starStr}）与财帛宫（${dCai.starStr}）形成了`;
+            
+            if (dGuan.type === 'empty' && dCai.type === 'empty') {
+                careerHTML += `<b>“双空”格局</b>。这并不代表没钱，而是代表您的财富和事业往往不是通过“按部就班”得来的。您非常适合<b>自由职业、中介、咨询、或依附于大平台</b>。变动是您的财源。`;
+            } else if (dCai.key.includes('同') || dCai.key.includes('巨')) {
+                careerHTML += `<b>“白手起家”格局</b>。天同主福，巨门主口舌。您适合靠<b>嘴巴（销售、讲师）、技术、或服务业</b>赚钱。初期可能较辛苦，需积少成多。`;
+            } else {
+                careerHTML += `<b>标准格局</b>。${synthesize(dGuan, 'career')}`;
+            }
+            
+            // 恢复煞星提醒
+            const caiMinors = _getMinors(pCai);
+            if (caiMinors.some(s=>s.name==='擎羊')) {
+                careerHTML += `<br><span class="highlight">注意：</span>财帛宫有擎羊，代表赚的都是辛苦钱，或者容易因冲动投资而破财。建议钱到手就转为固定资产。`;
+            }
             document.getElementById('logicCareer').innerHTML = careerHTML;
 
-            let loveHTML = `<p>夫妻宫坐${dFu.starStr}。</p><p>${synthesize(dFu, 'love')}</p>`;
+            // 3. 情感婚姻 (恢复 V23 的特别提示框)
+            let loveHTML = `<p><b>缘分逻辑：</b>夫妻宫坐${dFu.starStr}。</p>`;
+            loveHTML += `<p>${synthesize(dFu, 'love')}</p>`;
+            
+            if (dFu.type === 'empty') {
+                loveHTML += `<p class="mt-2">空宫代表您对伴侣的要求其实很模糊，或者缘分比较淡薄（聚少离多反而是好事）。</p>`;
+            }
+            if ((dFu.key.includes('阳') && dFu.key.includes('梁')) || (dFu.key.includes('天梁'))) {
+                 loveHTML += `<div class="special-tip"><b>特别提示：</b>阳梁或天梁在夫妻，通常代表配偶正直、有名望，或者年龄差距较大。但“天梁”也是孤独之星，你们的感情可能更像“亲情”或“师生情”，少了点浪漫，多了点管束。</div>`;
+            }
             document.getElementById('logicLove').innerHTML = loveHTML;
         }
 
-        // === Tab 2: 深度流年逻辑 (重点修改) ===
+        // === Tab 2: 当下流年 (保留 V24 深度算法) ===
         function renderFocusFortune(astrolabe, birthYear) {
             const now = new Date();
             const currentYear = now.getFullYear();
             
-            // 1. 获取流年 (Liu Nian)
-            // iztro 的 horoscope 方法可以获取流年信息
-            // 构造流年时间点
+            // 构造流年时间
             const yearStr = currentYear + '-06-01 12:00:00'; 
             let yearlyScope = astrolabe.horoscope(yearStr);
             
@@ -302,16 +372,12 @@
                 return;
             }
 
-            // 获取流年天干 (用于四化)
-            // iztro yearlyScope.yearly.heavenlyStem 是索引还是字符？iztro通常返回字符
-            // 如果 iztro 版本返回的是索引，需转换。假设 iztro 返回字符。
-            const yearStem = yearlyScope.yearly.heavenlyStem; // e.g., '乙'
-            const yearBranch = yearlyScope.yearly.earthlyBranch; // e.g., '巳'
+            const yearStem = yearlyScope.yearly.heavenlyStem; 
+            const yearBranch = yearlyScope.yearly.earthlyBranch;
             
             document.getElementById('yearLabel').innerText = `${currentYear} ${yearStem}${yearBranch}流年`;
             document.getElementById('yearGanzhi').innerText = `本命${astrolabe.palaces[0].heavenlyStem}${astrolabe.palaces[0].earthlyBranch} · 流年行至${yearlyScope.yearly.name}`;
 
-            // 获取三方四正
             const yIndex = yearlyScope.yearly.index;
             const sf = getSanFangSiZheng(astrolabe, yIndex);
             
@@ -320,136 +386,82 @@
             const yCareerData = _analyzeStars(sf.career, astrolabe);
             const yTravelData = _analyzeStars(sf.travel, astrolabe);
 
-            // 1. 核心运势判定 (命迁线)
+            // 流年核心判定
             let coreText = `<p>今年命宫在<span class="font-bold">${sf.self.name}</span>，主星<span class="keyword">${yMingData.starStr}</span>。`;
-            
             if (yMingData.type === 'empty') {
-                coreText += `流年命宫为空，意味着今年<span class="highlight">"环境主导人"</span>。您对局势的掌控力较弱，容易产生迷茫感或随波逐流。外在环境（迁移宫${yTravelData.starStr}）对您的影响巨大，宜动不宜静，走出去才有机会。`;
+                coreText += `流年空宫，<span class="highlight">"环境决定论"</span>的一年。您容易感到迷茫，需依赖外出（迁移宫${yTravelData.starStr}）寻找机会。`;
             } else if (yMingData.key.includes('杀') || yMingData.key.includes('破') || yMingData.key.includes('狼')) {
-                coreText += `流年遇"杀破狼"，这是<span class="highlight">大破大立、剧烈变动</span>的一年。无论是主动求变还是被动调整，现状都难以维持。必须拿出魄力来应对挑战。`;
-            } else if (yMingData.key.includes('机') || yMingData.key.includes('阴') || yMingData.key.includes('同') || yMingData.key.includes('梁')) {
-                coreText += `流年遇"机月同梁"，今年是<span class="good-luck">平稳积淀、按部就班</span>的一年。适合做策划、辅佐、公务或享受生活，不宜盲目激进创业。`;
+                coreText += `流年遇"杀破狼"，<span class="highlight">变动剧烈</span>。宜动不宜静，只有改变才能破局。`;
             } else {
-                coreText += `运势相对中平，重点在于如何利用三方的资源。`;
+                coreText += `运势相对平稳，重点在于三方资源的整合。`;
             }
             document.getElementById('logicYearCore').innerHTML = coreText;
 
-            // 2. 四化飞星分析 (根据流年天干)
+            // 流年四化
             const sihua = SI_HUA_MAP[yearStem] || {};
-            let sihuaHTML = `<div class="font-bold text-indigo-700 mb-2">🌪️ 流年四化能量场</div>`;
+            let sihuaHTML = `<div class="font-bold text-indigo-700 mb-2">🌪️ 四化能量</div>`;
             
-            // 检查四化落入的宫位 (需要遍历12宫看星星在哪里)
             astrolabe.palaces.forEach(p => {
                 p.majorStars.forEach(star => {
                     if (sihua[star.name]) {
-                        const type = sihua[star.name]; // 禄权科忌
+                        const type = sihua[star.name];
                         const isMyPalace = [sf.self.index, sf.money.index, sf.career.index, sf.travel.index].includes(p.index);
-                        const highlightClass = type === '忌' ? 'text-red-600' : 'text-green-600';
-                        const icon = type === '忌' ? '⚠️' : (type === '禄' ? '💰' : '✨');
+                        const flowIdx = (p.index - yIndex + 12) % 12;
+                        const flowNames = ['命','父','福','田','官','友','迁','疾','财','子','夫','兄'];
+                        const flowName = flowNames[flowIdx];
                         
-                        // 只显示三方四正的，或者特别重要的忌冲
                         if (isMyPalace || type === '忌') {
-                            let effect = '';
-                            if (type === '禄') effect = '机缘、财禄、顺遂';
-                            if (type === '权') effect = '掌控、劳碌、升迁';
-                            if (type === '科') effect = '名声、贵人、解厄';
-                            if (type === '忌') effect = '阻碍、纠结、变数';
-
-                            // 这里的 p.name 是本命盘宫位名，在流年中需要转换为流年宫位名
-                            // 计算流年宫位名称: (p.index - yIndex + 12) % 12
-                            const flowIdx = (p.index - yIndex + 12) % 12;
-                            const flowNames = ['流年命宫','流年父母','流年福德','流年田宅','流年官禄','流年交友','流年迁移','流年疾厄','流年财帛','流年子女','流年夫妻','流年兄弟'];
-                            const flowName = flowNames[flowIdx];
-
-                            sihuaHTML += `<div class="mb-1"><span class="${highlightClass} font-bold">${icon} ${star.name}化${type}</span> 入 <span class="bg-slate-200 px-1 rounded text-xs">${flowName}</span> <span class="text-xs text-slate-500">(${effect})</span></div>`;
+                            const icon = type === '忌' ? '⚠️' : (type === '禄' ? '💰' : '✨');
+                            const color = type === '忌' ? 'text-red-600' : 'text-green-600';
+                            sihuaHTML += `<div class="mb-1 text-xs"><span class="${color} font-bold">${icon} ${star.name}化${type}</span> 入流年${flowName}</div>`;
                             
-                            // 针对忌的特别警示
-                            if (type === '忌' && flowName === '流年命宫') coreText += `<br><span class="tag-bad">化忌入命</span> 今年容易自我纠结，钻牛角尖，凡事看开点。`;
-                            if (type === '忌' && flowName === '流年迁移') coreText += `<br><span class="tag-bad">忌冲命宫</span> 出外注意交通安全，人际关系易有冲突。`;
+                            if (type === '忌' && flowName === '命') coreText += `<br><span class="tag-bad">化忌入命</span> 今年容易钻牛角尖，凡事看开。`;
                         }
                     }
                 });
             });
             document.getElementById('yearSiHua').innerHTML = sihuaHTML;
 
-            // 3. 三方资源 (财官)
-            let sanfangHTML = `<div class="font-bold text-indigo-700 mb-2">🏗️ 三方四正格局</div>`;
-            sanfangHTML += `<div class="mb-1"><b>财帛位：</b>${yMoneyData.starStr}。${yMoneyData.key.includes('武')||yMoneyData.key.includes('阴')?'<span class="tag-good">财星坐守</span>':'求财需动脑。'}</div>`;
-            sanfangHTML += `<div class="mb-1"><b>官禄位：</b>${yCareerData.starStr}。${yCareerData.key.includes('紫')||yCareerData.key.includes('阳')?'<span class="tag-good">贵星坐守</span>':'事业平稳。'}</div>`;
-            sanfangHTML += `<div class="mb-1"><b>迁移位：</b>${yTravelData.starStr}。${yTravelData.type==='empty'?'外在环境变数大。':'外出机缘。'}</div>`;
+            // 流年三方
+            let sanfangHTML = `<div class="font-bold text-indigo-700 mb-2">🏗️ 三方格局</div>`;
+            sanfangHTML += `<div class="mb-1 text-xs"><b>财：</b>${yMoneyData.starStr}</div>`;
+            sanfangHTML += `<div class="mb-1 text-xs"><b>官：</b>${yCareerData.starStr}</div>`;
+            sanfangHTML += `<div class="mb-1 text-xs"><b>迁：</b>${yTravelData.starStr}</div>`;
             document.getElementById('yearSanFang').innerHTML = sanfangHTML;
-            
-            // 更新核心文本（加入忌冲判断后）
-            document.getElementById('logicYearCore').innerHTML = coreText;
+            document.getElementById('logicYearCore').innerHTML = coreText; 
 
             // 建议
             let advice = "💡 <b>流年锦囊：</b>";
-            if (sihua[Object.keys(sihua).find(k=>sihua[k]=='忌')] === '流年财帛') advice += "今年财运有破耗，切勿大额投资，宜储蓄。";
-            else if (yMingData.type === 'empty') advice += "空宫之年，也是修心之年。多听取他人建议，不要独断专行。";
+            if (yMingData.type === 'empty') advice += "空宫之年，修心为上。多听取他人建议，切勿独断专行。";
             else advice += "顺势而为，在变动中寻找机会。保持心态平稳是破局关键。";
             document.getElementById('logicYearAdvice').innerHTML = advice;
 
-            // === 3. 未来三月流月 (逻辑增强) ===
+            // 未来流月
             const forecastDiv = document.getElementById('monthlyForecast');
             forecastDiv.innerHTML = '';
-            
-            // 从当前月份开始推演3个月
             for(let i=0; i<3; i++) {
-                let fDate = new Date();
-                fDate.setMonth(now.getMonth() + i);
-                // 构造月中时间以确保落在该月
+                let fDate = new Date(); fDate.setMonth(now.getMonth() + i);
                 let fStr = `${fDate.getFullYear()}-${String(fDate.getMonth()+1).padStart(2,'0')}-15 12:00:00`;
-                
-                let mScope; 
-                try { mScope = astrolabe.horoscope(fStr); } catch(e){}
+                let mScope; try { mScope = astrolabe.horoscope(fStr); } catch(e){}
 
                 if(mScope && mScope.monthly) {
-                    const mIndex = mScope.monthly.index;
-                    const mPalace = astrolabe.palace(mIndex); // 流月命宫
+                    const mPalace = astrolabe.palace(mScope.monthly.index);
                     const mData = _analyzeStars(mPalace, astrolabe);
-                    
-                    // 流月四化 (iztro 2.x 计算流月飞星比较复杂，这里简化使用流年四化叠合或本命四化)
-                    // 为了简化且保证准确性，我们主要看流月宫位的主星性质 + 三合情况
-                    
                     const lunarMonth = mScope.lunarDate.month;
-                    const lunarStr = ["正","二","三","四","五","六","七","八","九","十","十一","十二"][lunarMonth-1] + "月";
-
-                    // 判断吉凶 tag
-                    let tag = '';
-                    let tagClass = 'bg-slate-200 text-slate-600';
                     
-                    if (mData.key.includes('禄') || mData.key.includes('紫') || mData.key.includes('府')) {
-                        tag = '吉运'; tagClass = 'tag-good';
-                    } else if (mData.key.includes('忌') || _getMinors(mPalace).some(s=>['擎羊','陀罗','火星','铃星'].includes(s.name))) {
-                        tag = '谨慎'; tagClass = 'tag-bad';
-                    } else {
-                        tag = '平稳';
-                    }
-
-                    // 生成解释
-                    let desc = `主星${mData.starStr}。`;
-                    if (mData.type === 'empty') desc += "本月运势起伏，心绪不宁，建议保守。";
-                    else if (tag === '吉运') desc += "贵人运旺，利于开展新计划。";
-                    else if (tag === '谨慎') desc += "煞星干扰，注意口舌是非或小破财。";
-                    else desc += "无大风大浪，按部就班即可。";
+                    let tag = '平稳', tagClass = 'bg-slate-200 text-slate-600';
+                    if (mData.key.includes('禄') || mData.key.includes('紫')) { tag = '吉运'; tagClass = 'tag-good'; }
+                    else if (mData.key.includes('忌')) { tag = '谨慎'; tagClass = 'tag-bad'; }
 
                     const item = document.createElement('div');
                     item.className = 'timeline-box';
                     item.innerHTML = `
                         <div class="timeline-dot"></div>
                         <div class="flex justify-between items-center">
-                            <div>
-                                <span class="font-bold text-indigo-700 text-base">${fDate.getMonth()+1}月</span>
-                                <span class="text-xs text-slate-500 ml-1">(农历${lunarStr})</span>
-                            </div>
+                            <span class="font-bold text-indigo-700 text-sm">${fDate.getMonth()+1}月 (农历${lunarMonth}月)</span>
                             <span class="${tagClass} text-xs font-bold px-2 py-0.5 rounded">${tag}</span>
                         </div>
-                        <div class="text-sm font-bold text-slate-700 mt-1">
-                            流月命宫：${mPalace.name}
-                        </div>
-                        <div class="text-sm text-slate-600 mt-1 leading-relaxed">
-                            ${desc}
-                        </div>
+                        <div class="text-xs text-slate-600 mt-1">流月命宫：${mPalace.name} (${mData.starStr})</div>
                     `;
                     forecastDiv.appendChild(item);
                 }
