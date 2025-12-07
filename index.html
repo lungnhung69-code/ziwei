@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 综合推演版 V23.1 (2025乙巳特别版)</title>
+    <title>紫微斗数 - 综合推演版 V23.2 (修复增强版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -40,7 +40,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 综合推演
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V23.1</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V23.2</span>
         </div>
     </div>
 
@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: 当下运势 (已修复) -->
+            <!-- Tab 2: 运势 (修复版) -->
             <div id="tab2" class="hidden space-y-4">
                 <div class="synthesis-card border-l-4 border-l-purple-500">
                     <div class="font-bold text-lg text-indigo-900 mb-2">📅 当前十年大限</div>
@@ -127,8 +127,8 @@
     <script>
         // === 1. 基础配置与逻辑库 ===
         
-        // 城市经度库
-        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65,'深圳':114.05,'长沙':112.59};
+        // 城市经度库 (扩展版)
+        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'天津':117.20,'重庆':106.55,'哈尔滨':126.63,'沈阳':123.43,'西安':108.95,'南京':118.78,'杭州':120.19,'武汉':114.31,'广州':113.23,'成都':104.06,'香港':114.17,'台北':121.50,'周口':114.65,'郑州':113.65,'深圳':114.05,'长沙':112.59,'昆明':102.83,'乌鲁木齐':87.62};
 
         // 星性基础特质
         const STAR_TRAITS = {
@@ -153,10 +153,6 @@
             '天梁': { type: '化权', desc: '<b>【掌权管理】</b> 话语权增加，但也容易固执己见。利于考证、升职、管事。' },
             '紫微': { type: '化科', desc: '<b>【名声大噪】</b> 易得贵人赏识，利于建立名声，遇到困难有人解围。' },
             '太阴': { type: '化忌', desc: '<b>【情绪/财损】</b> 需防情绪化消费，投资失误。男命需注意婆媳或妻子健康/情绪。' }
-        };
-
-        const FORTUNE_DICT = {
-            'neutral': ['平稳过渡', '韬光养晦', '按部就班']
         };
 
         // === 3. 核心工具函数 ===
@@ -188,11 +184,19 @@
             return text;
         }
 
+        // 辅助：日期格式化 YYYY-MM-DD
+        function formatDate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         // === 4. 主程序 ===
         function init() {
             const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
             for(let i=new Date().getFullYear(); i>=1950; i--) y.add(new Option(i+'年', i));
-            y.value = 1995; 
+            y.value = 1990; 
             for(let i=1; i<=12; i++) m.add(new Option(i+'月', i));
             const updateD = () => {
                 const days = new Date(y.value, m.value, 0).getDate();
@@ -204,40 +208,63 @@
         function calculate() {
             if (typeof iztro === 'undefined') { alert("核心组件加载中，请稍后..."); return; }
             
-            const y = document.getElementById('selYear').value;
-            const m = document.getElementById('selMonth').value.padStart(2,'0');
-            const d = document.getElementById('selDay').value.padStart(2,'0');
+            const y = parseInt(document.getElementById('selYear').value);
+            const m = parseInt(document.getElementById('selMonth').value) - 1; 
+            const d = parseInt(document.getElementById('selDay').value);
             const t = document.getElementById('birthTime').value;
+            const [hour, minute] = t.split(':').map(Number);
             const gender = document.getElementById('gender').value;
             const loc = document.getElementById('location').value;
 
             try {
-                let longitude = 120, matchedCity = '';
+                // --- 核心修复：真太阳时日期进位处理 ---
+                let longitude = 120;
+                let matchedCity = '';
                 for (let city in CITY_LONGITUDES) {
                     if (loc.includes(city)) { longitude = CITY_LONGITUDES[city]; matchedCity = city; break; }
                 }
-                const offset = (longitude - 120) * 4;
-                const dateObj = new Date(`${y}-${m}-${d}T${t}:00`);
-                dateObj.setMinutes(dateObj.getMinutes() + offset);
-                let timeIndex = Math.floor((dateObj.getHours()+1)/2); if(timeIndex>=12) timeIndex=0;
 
-                document.getElementById('solarHint').innerText = matchedCity ? `✅ 真太阳时已校准 (${matchedCity})` : "ℹ️ 未匹配城市，使用默认北京时间";
+                // 计算时间偏差 (1度=4分钟)
+                const timeOffsetMinutes = (longitude - 120) * 4;
 
-                // 排盘
-                const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
+                // 创建日期对象（用户输入的表盘时间）
+                let solarDate = new Date(y, m, d, hour, minute);
+                
+                // 加上偏差，JS Date会自动处理日期加减（比如23:50+20分变成第二天00:10）
+                solarDate.setMinutes(solarDate.getMinutes() + timeOffsetMinutes);
+
+                const finalYear = solarDate.getFullYear();
+                const finalMonth = solarDate.getMonth() + 1; 
+                const finalDay = solarDate.getDate();
+                const finalHour = solarDate.getHours();
+
+                // 简单的时辰计算 (早子夜子均视为0)
+                let timeIndex = Math.floor((finalHour + 1) / 2);
+                if (timeIndex >= 12) timeIndex = 0; 
+
+                const hint = matchedCity 
+                    ? `✅ 已校准 ${matchedCity} 真太阳时：${finalMonth}月${finalDay}日 ${String(finalHour).padStart(2,'0')}:${String(solarDate.getMinutes()).padStart(2,'0')}` 
+                    : "ℹ️ 未匹配城市，使用默认北京时间";
+                document.getElementById('solarHint').innerText = hint;
+
+                // 传入处理后的正确日期字符串
+                const solarDateStr = `${finalYear}-${String(finalMonth).padStart(2,'0')}-${String(finalDay).padStart(2,'0')}`;
+                
+                const astrolabe = iztro.astro.bySolar(solarDateStr, timeIndex, gender, true, 'zh-CN');
 
                 renderHolographicReport(astrolabe);
-                renderFocusFortune(astrolabe, parseInt(y)); // 重点修复部分
+                renderFocusFortune(astrolabe, y);
 
                 document.getElementById('resultArea').classList.remove('hidden');
                 switchTab('tab1');
 
             } catch(e) {
                 console.error(e);
-                alert('推演运算发生错误: ' + e.message);
+                alert('推演运算发生错误，请检查输入日期是否有效。\n错误详情: ' + e.message);
             }
         }
 
+        // === Tab 1: 全息画像 ===
         function renderHolographicReport(astrolabe) {
             const pMing = findPalace(astrolabe, '命');
             const pGuan = findPalace(astrolabe, '官');
@@ -274,13 +301,13 @@
             document.getElementById('logicLove').innerHTML = loveHTML;
         }
 
-        // === 重点修复区域：运势逻辑 ===
+        // === Tab 2: 运势修复 (修复宫位与日期) ===
         function renderFocusFortune(astrolabe, birthYear) {
             const now = new Date();
             const currentYear = now.getFullYear(); // 2025
             const age = currentYear - birthYear + 1;
 
-            // 1. 大限
+            // 1. 大限 (Decade)
             let curDecade = null;
             astrolabe.palaces.forEach(p => {
                 if (p.decadal && age >= p.decadal.range[0] && age <= p.decadal.range[1]) curDecade = p;
@@ -290,6 +317,7 @@
                 const dData = _analyzeStars(curDecade, astrolabe);
                 let content = `<p><b>本大限（${curDecade.decadal.range[0]}-${curDecade.decadal.range[1]}岁）行运至【${curDecade.name}】。</b></p>`;
                 content += `<p>大限主星：<span class="keyword">${dData.starStr}</span></p>`;
+                
                 if (dData.key.includes('破') || dData.key.includes('杀')) {
                     content += `<p class="highlight">⚠️ 动荡变化的十年。破旧立新，宜动不宜静，人生跑道可能发生重大切换。</p>`;
                 } else if (dData.type === 'empty') {
@@ -312,7 +340,6 @@
                 let yText = `<div class="flex items-center gap-2 mb-2"><span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-bold">流年命宫在${yPalace.name}</span><span class="text-sm font-bold">${yData.starStr} 坐守</span></div>`;
 
                 let sihuaInfo = [];
-                // 检查流年三方四正是否有四化
                 const allStarsInPalace = [..._getStars(yPalace), ..._getMinors(yPalace)];
                 allStarsInPalace.forEach(s => {
                     if (YEAR_2025_SIHUA[s.name]) {
@@ -322,7 +349,7 @@
                 });
 
                 if (yData.type === 'empty') {
-                    yText += `<p class="text-gray-600 mb-2">今年是<b>“借力打力”</b>的一年。命宫无主星，意味着您今年缺乏掌控感，容易被推着走。切忌冲动辞职或盲目投资。</p>`;
+                    yText += `<p class="text-gray-600 mb-2">今年是<b>“借力打力”</b>的一年。流年命宫无主星，意味着您今年缺乏掌控感，容易被推着走。切忌冲动辞职或盲目投资。</p>`;
                 } else if (yData.key.includes('七杀') || yData.key.includes('破军')) {
                     yText += `<p class="text-gray-600 mb-2"><b>大开大合之年。</b>变动极大，可能是工作、居住地的变动。虽然辛苦，但机会往往在变动中产生。</p>`;
                 } else {
@@ -330,30 +357,38 @@
                 }
 
                 if (sihuaInfo.length > 0) {
-                    yText += `<div class="bg-red-50 p-3 rounded-lg mt-2 border border-red-100"><span class="text-red-800 font-bold text-xs block mb-1">🔥 2025 乙巳年关键影响：</span><ul class="list-disc pl-4 space-y-1">${sihuaInfo.join('')}</ul></div>`;
+                    yText += `<div class="bg-red-50 p-3 rounded-lg mt-2 border border-red-100"><span class="text-red-800 font-bold text-xs block mb-1">🔥 2025 乙巳年四化影响：</span><ul class="list-disc pl-4 space-y-1">${sihuaInfo.join('')}</ul></div>`;
                 } else {
-                    yText += `<div class="bg-slate-50 p-2 rounded mt-2 text-xs text-slate-500">注：今年太阴化忌，需注意财务上的情绪化消费。</div>`;
+                    yText += `<div class="bg-slate-50 p-2 rounded mt-2 text-xs text-slate-500">注：今年太阴化忌（乙干），需注意财务上的情绪化消费。</div>`;
                 }
 
                 document.getElementById('logicYear').innerHTML = yText;
             }
 
-            // 3. 未来三月 (增强版逻辑)
+            // 3. 未来三月 (修复 undefined)
             const forecastDiv = document.getElementById('monthlyForecast');
             forecastDiv.innerHTML = '';
             
             for(let i=0; i<3; i++) {
-                let fDate = new Date(); 
-                fDate.setDate(now.getDate() + (i * 30)); 
-                let dateStr = fDate.getFullYear() + '-' + String(fDate.getMonth()+1).padStart(2,'0') + '-' + String(fDate.getDate()).padStart(2,'0');
+                // 动态生成日期
+                let fDate = new Date();
+                fDate.setMonth(now.getMonth() + i);
+                
+                // 格式化为 YYYY-MM-DD 字符串
+                let dateStr = formatDate(fDate);
                 
                 let scope; 
-                try { scope = astrolabe.horoscope(dateStr); } catch(e){ continue; }
+                try { 
+                    scope = astrolabe.horoscope(dateStr); 
+                } catch(e){ continue; }
 
                 if(scope && scope.monthly) {
                     const mPalace = astrolabe.palace(scope.monthly.index);
                     const mData = _analyzeStars(mPalace, astrolabe);
                     const minors = _getMinors(mPalace).map(s => s.name);
+                    
+                    // 修复农历显示 undefined：直接从 lunarDate 对象获取 month
+                    const lunarM = scope.lunarDate.month; 
                     
                     const badStars = minors.filter(s => ['擎羊', '陀罗', '火星', '铃星', '地空', '地劫'].includes(s));
                     const isBad = badStars.length > 0;
@@ -378,9 +413,10 @@
 
                     let desc = "";
                     if (isBad) {
-                        desc = `需防范<b>${badStars.join('、')}</b>的影响。`;
+                        desc = `需防范<b>${badStars.join('、')}</b>。`;
                         if (badStars.includes('地空') || badStars.includes('地劫')) desc += " 财运波动，易冲动消费。";
-                        else desc += " 心态急躁，宜柔不宜刚。";
+                        else if (badStars.includes('擎羊')) desc += " 容易有争执或小伤，宜柔不宜刚。";
+                        else desc += " 心态急躁，建议放慢节奏。";
                     } else {
                         desc = mData.type === 'empty' ? "运势起伏，适合休养生息。" : `主星${mData.starStr}坐守，局面可控。`;
                     }
@@ -391,8 +427,8 @@
                         <div class="timeline-dot" style="background:${dotColor}"></div>
                         <div class="flex justify-between items-center mb-1">
                             <div>
-                                <span class="font-bold text-gray-800 text-sm">农历${scope.lunarDate.month}月</span>
-                                <span class="text-xs text-gray-400 ml-1">(${dateStr.slice(5,7)}月)</span>
+                                <span class="font-bold text-gray-800 text-sm">农历${lunarM}月</span>
+                                <span class="text-xs text-gray-400 ml-1">(公历${fDate.getMonth()+1}月)</span>
                             </div>
                             <span class="text-xs font-bold px-2 py-1 rounded ${isBad ? 'bg-red-100 text-red-700' : (theme.includes('机遇')?'bg-green-100 text-green-700':'bg-gray-100 text-gray-600')}">${theme}</span>
                         </div>
