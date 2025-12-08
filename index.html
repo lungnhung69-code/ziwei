@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 深度解盘全功能版 V33.1</title>
+    <title>紫微斗数 - 深度全能版 V33.3 (最终稳定版)</title>
     <!-- 样式库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -37,7 +37,7 @@
         .ds-advice { border-left-color: #10b981; background: #ecfdf5; }
         .ds-advice .ds-title { color: #047857; }
 
-        /* 流年流月样式 (找回) */
+        /* 流年流月样式 */
         .year-card { background: linear-gradient(145deg, #ffffff 0%, #fefaff 100%); border-left: 5px solid #7c3aed; }
         .year-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 6px; margin-bottom: 6px; }
         .yt-purple { background: #f3e8ff; color: #6b21a8; }
@@ -47,11 +47,6 @@
         .moon-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         
         .moon-status { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
-        .st-safe { background: #eff6ff; color: #2563eb; }
-        .st-busy { background: #fff7ed; color: #c2410c; }
-        .st-social { background: #fdf2f8; color: #db2777; }
-        .st-danger { background: #fef2f2; color: #dc2626; }
-        .st-good { background: #f0fdf4; color: #16a34a; }
 
         /* 标签与高亮 */
         .keyword-box { display: inline-block; background: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #475569; margin-right: 5px; border: 1px solid #e2e8f0; }
@@ -66,7 +61,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度全能版
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.1</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.3</span>
         </div>
     </div>
 
@@ -210,7 +205,24 @@
             }
         };
 
-        // 找回流年逻辑
+        // 月运规则库
+        const MONTH_RULES = {
+            '紫微': { w:'正财稳健', c:'贵人提拔', l:'略显强势', h:'精神饱满' },
+            '天机': { w:'投机生财', c:'变动频繁', l:'心思多变', h:'注意失眠' },
+            '太阳': { w:'花销增大', c:'奔波劳碌', l:'热情主动', h:'注意眼目' },
+            '武曲': { w:'进财良机', c:'执行力强', l:'缺乏情调', h:'注意外伤' },
+            '天同': { w:'被动进财', c:'安逸舒适', l:'温和甜蜜', h:'易胖乏力' },
+            '廉贞': { w:'偏财运佳', c:'交际应酬', l:'桃花朵朵', h:'上火发炎' },
+            '天府': { w:'积蓄增加', c:'稳步上升', l:'稳定平淡', h:'肠胃养护' },
+            '太阴': { w:'理财获利', c:'内务整洁', l:'温柔体贴', h:'注意湿气' },
+            '贪狼': { w:'应酬破费', c:'八面玲珑', l:'欲望强烈', h:'肝胆保养' },
+            '巨门': { w:'靠嘴生财', c:'口舌是非', l:'易生误会', h:'呼吸系统' },
+            '天相': { w:'合作生财', c:'辅助得力', l:'旧情复燃', h:'皮肤过敏' },
+            '天梁': { w:'长辈馈赠', c:'逢凶化吉', l:'长者缘佳', h:'筋骨酸痛' },
+            '七杀': { w:'大进大出', c:'突破现状', l:'争执摩擦', h:'防跌打伤' },
+            '破军': { w:'破财消灾', c:'大破大立', l:'分分合合', h:'身心俱疲' }
+        };
+
         const TIME_LOGIC = {
             '紫微': { text: '今年是“掌权年”。事业心极强，利于争取领导职位或创业，但需防刚愎自用。', tag: '权利·领导' },
             '天机': { text: '今年是“变动年”。适合策划、学习、短途差旅。思绪活跃但容易失眠，忌钻牛角尖。', tag: '思考·变动' },
@@ -237,8 +249,7 @@
         };
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65,'杭州':120.15,'重庆':106.55,'天津':117.20,'南京':118.79};
-        const LUNAR_MAP = ["正","二","三","四","五","六","七","八","九","十","十一","十二"];
-
+        
         // === 2. 核心算法工具 ===
         function _getStars(p) { return p?.majorStars || []; }
         function _getMinors(p) { return p?.minorStars || []; }
@@ -398,14 +409,67 @@
                 // 4. 渲染 Tab 1 (深度报告)
                 renderDeepReport(astrolabe, dateData.zwYearStem);
                 
-                // === 5. 升级版：流年与流月多维运势 (V33.2) ===
+                // 5. 渲染 Tab 2 (流年运势)
+                renderFortune(astrolabe);
+
+                document.getElementById('resultArea').classList.remove('hidden');
+                switchTab('tab1'); // 默认切回 Tab 1
+
+            } catch(e) { console.error(e); alert('排盘失败，请检查输入'); }
+        }
+
+        function renderDeepReport(astrolabe, birthStem) {
+            const container = document.getElementById('profileContent');
+            container.innerHTML = '';
+            const focusPalaces = ['命宫', '财帛', '官禄', '迁移', '夫妻', '疾厄', '福德'];
+            
+            focusPalaces.forEach(pName => {
+                const palace = astrolabe.palaces.find(p => p.name === pName);
+                if (!palace) return;
+                const config = PALACE_CONFIG[pName];
+                const analysis = analyzePalaceDeeply(palace, astrolabe, birthStem);
+                const card = document.createElement('div');
+                card.className = 'synthesis-card fade-in';
+                
+                let starBadges = analysis.stars.map(s => `<span class="keyword-box">${s}</span>`).join('');
+                if (analysis.isBorrowed) starBadges = `<span class="text-xs text-gray-400 mr-2">(借对宫)</span>` + starBadges;
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas ${config.icon}"></i></div>
+                        <div>
+                            <div class="card-title">${pName} <span class="text-sm font-normal text-slate-400">(${palace.earthlyBranch})</span></div>
+                            <div class="text-xs text-slate-500">${config.label}</div>
+                        </div>
+                        <div class="ml-auto flex flex-col items-end gap-1">
+                            <div>${starBadges}</div>
+                            <div class="flex gap-1">${analysis.sihuaTags.join('')}</div>
+                        </div>
+                    </div>
+                    <div class="deep-section ds-core">
+                        <div class="ds-title"><i class="fas fa-gem"></i> 核心特质</div>
+                        <div class="ds-content">${analysis.core}</div>
+                    </div>
+                    <div class="deep-section ds-pattern">
+                        <div class="ds-title"><i class="fas fa-chess-board"></i> 格局分析</div>
+                        <div class="ds-content">${analysis.pattern}</div>
+                    </div>
+                    <div class="deep-section ds-advice">
+                        <div class="ds-title"><i class="fas fa-lightbulb"></i> 运势建议</div>
+                        <div class="ds-content">${analysis.advice}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         function renderFortune(astrolabe) {
             const now = new Date();
             const currentYear = now.getFullYear();
             const yearStr = currentYear + '-06-01 12:00:00'; 
             let yearlyScope; try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
 
-            // --- 1. 渲染流年卡片 (保持原样，仅做微调) ---
+            // --- 1. 流年卡片 ---
             if (yearlyScope && yearlyScope.yearly) {
                 const yearStem = yearlyScope.yearly.heavenlyStem; 
                 const yIndex = yearlyScope.yearly.index;
@@ -466,24 +530,6 @@
             const container = document.getElementById('monthlyForecast');
             container.innerHTML = '';
             
-            // 定义月运规则库 (Logic Base)
-            const MONTH_RULES = {
-                '紫微': { w:'正财稳健', c:'贵人提拔', l:'略显强势', h:'精神饱满' },
-                '天机': { w:'投机生财', c:'变动频繁', l:'心思多变', h:'注意失眠' },
-                '太阳': { w:'花销增大', c:'奔波劳碌', l:'热情主动', h:'注意眼目' },
-                '武曲': { w:'进财良机', c:'执行力强', l:'缺乏情调', h:'注意外伤' },
-                '天同': { w:'被动进财', c:'安逸舒适', l:'温和甜蜜', h:'易胖乏力' },
-                '廉贞': { w:'偏财运佳', c:'交际应酬', l:'桃花朵朵', h:'上火发炎' },
-                '天府': { w:'积蓄增加', c:'稳步上升', l:'稳定平淡', h:'肠胃养护' },
-                '太阴': { w:'理财获利', c:'内务整洁', l:'温柔体贴', h:'注意湿气' },
-                '贪狼': { w:'应酬破费', c:'八面玲珑', l:'欲望强烈', h:'肝胆保养' },
-                '巨门': { w:'靠嘴生财', c:'口舌是非', l:'易生误会', h:'呼吸系统' },
-                '天相': { w:'合作生财', c:'辅助得力', l:'旧情复燃', h:'皮肤过敏' },
-                '天梁': { w:'长辈馈赠', c:'逢凶化吉', l:'长者缘佳', h:'筋骨酸痛' },
-                '七杀': { w:'大进大出', c:'突破现状', l:'争执摩擦', h:'防跌打伤' },
-                '破军': { w:'破财消灾', c:'大破大立', l:'分分合合', h:'身心俱疲' }
-            };
-
             for (let i = 0; i < 3; i++) {
                 const fDate = new Date(); fDate.setMonth(now.getMonth() + i);
                 const year = fDate.getFullYear();
@@ -508,7 +554,7 @@
                     
                     const rule = MONTH_RULES[mainStar] || { w:'平稳', c:'平稳', l:'平稳', h:'平稳' };
                     
-                    // 2. 煞星修正逻辑 (Rule Modifier)
+                    // 2. 煞星修正逻辑
                     let warning = null;
                     let modW = rule.w, modC = rule.c, modL = rule.l, modH = rule.h;
                     
@@ -524,8 +570,7 @@
                         modC = '压力大';
                     }
 
-                    // 3. 修复 Bug: 农历月份显示
-                    // 使用 Lunar 库重新计算一次，确保准确
+                    // 3. 农历计算 (修复版)
                     const lunarObj = Solar.fromYmd(year, month, 15).getLunar();
                     const lunarText = lunarObj.getMonthInChinese(); 
 
@@ -578,3 +623,28 @@
                 }
             }
         }
+
+        function switchTab(id) {
+            ['tab1','tab2'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            ['btn-tab1','btn-tab2'].forEach(b => { 
+                const btn = document.getElementById(b);
+                btn.className = b==='btn-'+id ? 'flex-1 py-4 text-sm tab-active' : 'flex-1 py-4 text-sm tab-inactive'; 
+            });
+        }
+
+        // 初始化函数：修复下拉框空白问题
+        (function init() {
+            const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
+            for(let i=new Date().getFullYear(); i>=1950; i--) y.add(new Option(i+'年', i));
+            y.value = 1995; 
+            for(let i=1; i<=12; i++) m.add(new Option(i+'月', i));
+            const updateD = () => {
+                const days = new Date(y.value, m.value, 0).getDate();
+                d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
+            };
+            y.onchange = m.onchange = updateD; updateD(); d.value=15;
+        })();
+    </script>
+</body>
+</html>
