@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 综合推演完全版 V31.2 (数学修正)</title>
+    <title>紫微斗数 - 综合推演完全版 V32.0 (历法修正版)</title>
+    <!-- 样式库 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- 核心算法库 -->
+    <!-- 1. Lunar: 专业历法库，处理农历、八字、节气、真太阳时 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
+    <!-- 2. Iztro: 紫微斗数排盘库 -->
+    <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
+
     <style>
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background-color: #f0f2f5; color: #333; }
         
@@ -73,7 +80,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 综合推演
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V31.2</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V32.0</span>
         </div>
     </div>
 
@@ -90,13 +97,13 @@
                 <select id="gender" class="border p-3 rounded-lg text-sm outline-none bg-slate-50"><option value="女">女</option><option value="男">男</option></select>
             </div>
             <div class="relative">
-                <input type="text" id="location" value="河南周口" placeholder="出生地" class="border p-3 rounded-lg text-sm w-full pl-10 outline-none bg-slate-50">
+                <input type="text" id="location" value="河南周口" placeholder="出生地 (影响真太阳时)" class="border p-3 rounded-lg text-sm w-full pl-10 outline-none bg-slate-50">
                 <i class="fas fa-map-marker-alt absolute left-3 top-3.5 text-slate-400"></i>
             </div>
             <button onclick="calculate()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-xl font-bold shadow-lg transition flex justify-center items-center gap-2 text-base">
                 <span>🚀 启动推演 (深度全息 + 旗舰流年)</span>
             </button>
-            <div id="solarHint" class="text-xs text-center text-slate-400"></div>
+            <div id="solarHint" class="text-xs text-center text-slate-500 font-mono"></div>
         </div>
 
         <!-- 结果区 -->
@@ -111,9 +118,8 @@
                 <div id="introBox" class="bg-indigo-50 p-4 rounded-lg text-sm text-indigo-900 border border-indigo-100 flex items-start gap-2">
                     <i class="fas fa-info-circle mt-0.5"></i>
                     <div>
-                        <div class="font-bold">生年四化说明</div>
+                        <div class="font-bold">生辰信息解析</div>
                         <div id="birthStemDisplay"></div>
-                        <div class="mt-1 opacity-75">系统已结合本宫、对宫、三方及生年四化进行深度解读。</div>
                     </div>
                 </div>
                 <div id="profileContent"></div>
@@ -214,12 +220,12 @@
             '癸': { '破军': '禄', '巨门': '权', '太阴': '科', '贪狼': '忌' }
         };
 
-        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65};
+        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65,'杭州':120.15,'重庆':106.55,'天津':117.20,'南京':118.79,'沈阳':123.43,'哈尔滨':126.63,'长沙':112.93,'乌鲁木齐':87.61,'昆明':102.71};
         const LUNAR_MAP = ["正","二","三","四","五","六","七","八","九","十","十一","十二"];
         const LUCKY_STARS = ['紫微','天府','太阳','太阴','天相','天梁','天同','左辅','右弼','天魁','天钺','文昌','文曲','化禄','化权','化科','禄存'];
         const UNLUCKY_STARS = ['擎羊','陀罗','火星','铃星','地空','地劫','化忌','七杀','破军','廉贞','贪狼','巨门'];
 
-        // === 2. 核心函数 ===
+        // === 2. 核心函数与算法重构 ===
 
         function _getStars(p) { return p?.majorStars || []; }
         function _getMinors(p) { return p?.minorStars || []; }
@@ -238,7 +244,57 @@
             return null;
         }
 
-        // V30: 核心分析函数
+        // 真太阳时计算
+        function getTrueSolarDate(ymdhm, locationName) {
+            let lng = 120.0; // 默认北京时间
+            for (let c in CITY_LONGITUDES) {
+                if (locationName.includes(c)) lng = CITY_LONGITUDES[c];
+            }
+            const date = new Date(ymdhm + ":00");
+            if (isNaN(date.getTime())) throw new Error("无效日期");
+            
+            // 经度每差1度，时间差4分钟。东经120度为基准。
+            const offsetMinutes = (lng - 120) * 4;
+            date.setMinutes(date.getMinutes() + offsetMinutes);
+            
+            return { date, offset: offsetMinutes, lng };
+        }
+
+        // 精准历法转换 (Lunar -> BaZi/Ziwei)
+        function calculateBaZiData(solarDate) {
+            // 初始化 Solar 对象 (Lunar库)
+            const solar = Solar.fromYmdHms(
+                solarDate.getFullYear(),
+                solarDate.getMonth() + 1,
+                solarDate.getDate(),
+                solarDate.getHours(),
+                solarDate.getMinutes(),
+                solarDate.getSeconds()
+            );
+
+            const lunar = solar.getLunar();
+            const baZi = lunar.getEightChar();
+            
+            return {
+                lunarYear: lunar.getYear(),
+                lunarMonth: lunar.getMonth(),
+                lunarDay: lunar.getDay(),
+                lunarMonthStr: lunar.getMonthInChinese() + "月",
+                lunarDayStr: lunar.getDayInChinese(),
+                zodiac: lunar.getYearShengXiao(),
+                
+                // 八字 (立春换年)
+                yearGanZhi: baZi.getYear(),
+                monthGanZhi: baZi.getMonth(),
+                dayGanZhi: baZi.getDay(),
+                hourGanZhi: baZi.getTime(),
+
+                // 紫微斗数年干 (正月初一换年)
+                zwYearStem: lunar.getYearGan() 
+            };
+        }
+
+        // 宫位分析
         function analyzePalaceFull(palace, astrolabe, birthYearStem) {
             if (!palace) return { text: '宫位数据错误', tags: [], stars: [], sihua: [], sfText: '' };
 
@@ -252,13 +308,8 @@
             const pSan1 = astrolabe.palace((idx + 4) % 12); 
             const pSan2 = astrolabe.palace((idx + 8) % 12); 
             
-            const sanFangStars = [
-                ..._getStars(pDui), ..._getStars(pSan1), ..._getStars(pSan2)
-            ].map(s => s.name);
-            
-            const sanFangMinors = [
-                 ..._getMinors(pDui), ..._getMinors(pSan1), ..._getMinors(pSan2)
-            ].map(s => s.name);
+            const sanFangStars = [..._getStars(pDui), ..._getStars(pSan1), ..._getStars(pSan2)].map(s => s.name);
+            const sanFangMinors = [..._getMinors(pDui), ..._getMinors(pSan1), ..._getMinors(pSan2)].map(s => s.name);
 
             let analysis = {
                 palaceName: palace.name,
@@ -271,8 +322,8 @@
                 sfText: ''
             };
 
-            if (isBodyPalace) analysis.tags.push('身宫所在');
-            if (isLifePalace) analysis.tags.push('命宫所在');
+            if (isBodyPalace) analysis.tags.push('身宫');
+            if (isLifePalace) analysis.tags.push('命宫');
 
             let activeStars = majorStars;
             if (analysis.isEmpty && pDui) {
@@ -304,15 +355,15 @@
             analysis.text = mainDesc;
 
             let pattern = [];
-            if (sanFangStars.includes('左辅') || sanFangStars.includes('右弼')) pattern.push('辅弼拱照(有人帮)');
-            if (sanFangStars.includes('文昌') || sanFangStars.includes('文曲')) pattern.push('昌曲拱照(利文书)');
-            if (sanFangStars.includes('天魁') || sanFangStars.includes('天钺')) pattern.push('魁钺拱照(遇贵人)');
-            if (sanFangMinors.some(s=>['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s))) pattern.push('煞星冲照(有隐患)');
+            if (sanFangStars.includes('左辅') || sanFangStars.includes('右弼')) pattern.push('辅弼(人和)');
+            if (sanFangStars.includes('文昌') || sanFangStars.includes('文曲')) pattern.push('昌曲(文采)');
+            if (sanFangStars.includes('天魁') || sanFangStars.includes('天钺')) pattern.push('魁钺(贵人)');
+            if (sanFangMinors.some(s=>['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s))) pattern.push('煞星冲照');
             
             sanFangStars.forEach(sName => {
                 const sh = getSiHuaDesc(sName, birthYearStem);
-                if(sh && sh.type === '忌') pattern.push(`对宫/三合${sName}化忌冲入`);
-                if(sh && sh.type === '禄') pattern.push(`对宫/三合${sName}化禄照入`);
+                if(sh && sh.type === '忌') pattern.push(`${sName}化忌冲`);
+                if(sh && sh.type === '禄') pattern.push(`${sName}化禄照`);
             });
 
             analysis.sfText = pattern.length > 0 ? pattern.join(' · ') : '三方四正格局平稳';
@@ -344,7 +395,9 @@
         // === 3. 主程序逻辑 ===
 
         function calculate() {
-            if (typeof iztro === 'undefined') { alert("资源加载中，请稍候..."); return; }
+            if (typeof iztro === 'undefined') { alert("排盘库加载中，请稍候..."); return; }
+            if (typeof Solar === 'undefined') { alert("历法库加载中，请稍候..."); return; }
+
             const y = document.getElementById('selYear').value;
             const m = document.getElementById('selMonth').value.padStart(2,'0');
             const d = document.getElementById('selDay').value.padStart(2,'0');
@@ -353,33 +406,40 @@
             const loc = document.getElementById('location').value;
 
             try {
-                // 1. 太阳时计算
-                let lng = 120; for(let c in CITY_LONGITUDES) if(loc.includes(c)) lng=CITY_LONGITUDES[c];
-                const offset = (lng - 120) * 4;
-                const dateObj = new Date(`${y}-${m}-${d}T${t}:00`);
-                if (isNaN(dateObj.getTime())) throw new Error("日期无效");
-                dateObj.setMinutes(dateObj.getMinutes() + offset);
-                let timeIndex = Math.floor((dateObj.getHours()+1)/2); if(timeIndex>=12) timeIndex=0;
-                document.getElementById('solarHint').innerText = `✅ 真太阳时: ${loc} (${lng>120?'+':''}${Math.round(offset)}分)`;
+                // 1. 获取真太阳时
+                const inputTimeStr = `${y}-${m}-${d} ${t}`;
+                const tstResult = getTrueSolarDate(inputTimeStr, loc);
+                const tstDate = tstResult.date;
 
-                // 2. 排盘
-                const astrolabe = iztro.astro.bySolar(`${y}-${m}-${d}`, timeIndex, gender, true, 'zh-CN');
+                // UI 反馈
+                const offsetSign = tstResult.offset >= 0 ? '+' : '';
+                document.getElementById('solarHint').innerHTML = 
+                    `<i class="fas fa-clock"></i> 真太阳时: ${tstDate.getHours()}:${String(tstDate.getMinutes()).padStart(2,'0')} ` + 
+                    `<span class="opacity-60">(${loc} ${offsetSign}${Math.round(tstResult.offset)}分)</span>`;
 
-                // === 修复核心：完全放弃库返回的年干，使用纯数学计算 ===
-                // 公式：(年份 - 3) % 10。 0=癸, 1=甲...
-                const stems = ['癸', '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬'];
-                const yearInt = parseInt(y);
-                const stemIndex = (yearInt - 3) % 10;
-                // 处理负数情况（虽然1940+不会出现，但为了严谨）
-                const finalStemIndex = stemIndex < 0 ? stemIndex + 10 : stemIndex;
-                const birthStem = stems[finalStemIndex];
-                
-                // 显示调试信息
-                document.getElementById('birthStemDisplay').innerText = `本命生年：${y}年 (${birthStem}干)`;
+                // 2. 计算精准数据
+                const data = calculateBaZiData(tstDate);
 
-                // 4. 渲染
-                renderFullProfile(astrolabe, birthStem); // Tab 1
-                renderFortuneV29(astrolabe); // Tab 2
+                // 3. 排盘 (传入真太阳时)
+                // iztro需要公历日期，我们给它修正后的时间
+                const tstY = tstDate.getFullYear();
+                const tstM = String(tstDate.getMonth()+1).padStart(2,'0');
+                const tstD = String(tstDate.getDate()).padStart(2,'0');
+                const timeIndex = Math.floor((tstDate.getHours() + 1) / 2) % 12;
+
+                const astrolabe = iztro.astro.bySolar(`${tstY}-${tstM}-${tstD}`, timeIndex, gender, true, 'zh-CN');
+
+                // 4. 显示头部信息
+                document.getElementById('birthStemDisplay').innerHTML = `
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-2 text-xs text-slate-600">
+                        <div><span class="font-bold text-indigo-700">农历：</span>${data.zodiac}年 ${data.lunarMonthStr}${data.lunarDayStr}</div>
+                        <div><span class="font-bold text-indigo-700">八字：</span>${data.yearGanZhi} / ${data.monthGanZhi} / ${data.dayGanZhi} / ${data.hourGanZhi}</div>
+                    </div>
+                `;
+
+                // 5. 渲染
+                renderFullProfile(astrolabe, data.zwYearStem); 
+                renderFortuneV29(astrolabe); 
 
                 document.getElementById('resultArea').classList.remove('hidden');
                 switchTab('tab1');
@@ -433,13 +493,13 @@
                             </div>
                         </div>
                         <div class="infer-section">
-                            <div class="infer-label">格局配置</div>
+                            <div class="infer-label text-xs font-bold text-slate-400 mb-1">格局配置</div>
                             <div class="mb-2">${starsHtml}</div>
                             <div class="infer-text">${data.text}</div>
                             ${sihuaHtml}
                         </div>
                         <div class="sanfang-box">
-                            <i class="fas fa-network-wired mr-1"></i> <b>三方四正互动：</b>${data.sfText}
+                            <i class="fas fa-network-wired mr-1"></i> <b>三方互动：</b>${data.sfText}
                         </div>
                     `;
                     container.appendChild(card);
