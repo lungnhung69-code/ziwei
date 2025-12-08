@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 深度解盘专家版 V33.0</title>
+    <title>紫微斗数 - 深度解盘全功能版 V33.1</title>
     <!-- 样式库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #f8fafc; font-weight: 500; }
 
-        /* 卡片样式 */
+        /* 卡片通用样式 */
         .synthesis-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
         .card-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -29,22 +29,32 @@
         .ds-title { font-weight: 800; font-size: 13px; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .ds-content { font-size: 14px; line-height: 1.6; color: #334155; text-align: justify; }
         
-        /* 特殊标记 */
+        /* 特殊标记颜色 */
         .ds-core { border-left-color: #6366f1; background: #eef2ff; }
         .ds-core .ds-title { color: #4338ca; }
-        
         .ds-pattern { border-left-color: #0ea5e9; background: #f0f9ff; }
         .ds-pattern .ds-title { color: #0369a1; }
-        
         .ds-advice { border-left-color: #10b981; background: #ecfdf5; }
         .ds-advice .ds-title { color: #047857; }
 
-        /* 标签与高亮 */
-        .keyword-box { display: inline-block; background: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #475569; margin-right: 5px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .highlight-good { color: #059669; font-weight: bold; }
-        .highlight-bad { color: #dc2626; font-weight: bold; }
+        /* 流年流月样式 (找回) */
+        .year-card { background: linear-gradient(145deg, #ffffff 0%, #fefaff 100%); border-left: 5px solid #7c3aed; }
+        .year-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 6px; margin-bottom: 6px; }
+        .yt-purple { background: #f3e8ff; color: #6b21a8; }
+        .yt-blue { background: #dbeafe; color: #1e40af; }
         
-        /* 动画 */
+        .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
+        .moon-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        
+        .moon-status { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .st-safe { background: #eff6ff; color: #2563eb; }
+        .st-busy { background: #fff7ed; color: #c2410c; }
+        .st-social { background: #fdf2f8; color: #db2777; }
+        .st-danger { background: #fef2f2; color: #dc2626; }
+        .st-good { background: #f0fdf4; color: #16a34a; }
+
+        /* 标签与高亮 */
+        .keyword-box { display: inline-block; background: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #475569; margin-right: 5px; border: 1px solid #e2e8f0; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -54,9 +64,9 @@
     <div class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
         <div class="max-w-2xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
-                <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度解盘
+                <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度全能版
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.0</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.1</span>
         </div>
     </div>
 
@@ -77,7 +87,7 @@
                 <i class="fas fa-map-marker-alt absolute left-3 top-3.5 text-slate-400"></i>
             </div>
             <button onclick="calculate()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-xl font-bold shadow-lg transition flex justify-center items-center gap-2 text-base">
-                <span>🚀 启动 AI 深度推演</span>
+                <span>🚀 启动全能推演 (本命 + 运势)</span>
             </button>
             <div id="solarHint" class="text-xs text-center text-slate-500 font-mono"></div>
         </div>
@@ -90,17 +100,60 @@
                 <div id="birthStemDisplay" class="text-xs text-slate-600 space-y-1"></div>
             </div>
 
+            <!-- 切换 Tab -->
+            <div class="flex bg-white rounded-xl shadow-sm overflow-hidden sticky top-[75px] z-40 border-b">
+                <button onclick="switchTab('tab1')" id="btn-tab1" class="flex-1 py-4 text-sm tab-active">深度画像 (本命)</button>
+                <button onclick="switchTab('tab2')" id="btn-tab2" class="flex-1 py-4 text-sm tab-inactive">流年流月 (运势)</button>
+            </div>
+
             <!-- Tab 1: 深度画像 -->
             <div id="tab1" class="space-y-6">
                 <div id="profileContent"></div>
+            </div>
+
+            <!-- Tab 2: 流年流月 -->
+            <div id="tab2" class="hidden space-y-5">
+                 <div class="synthesis-card year-card relative overflow-hidden">
+                    <div class="absolute right-[-10px] top-[-10px] text-8xl text-purple-900 opacity-5 rotate-12 pointer-events-none">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-xs font-bold text-purple-600 mb-1">YEARLY FORTUNE</div>
+                        <h2 id="yearTitle" class="text-2xl font-black text-slate-800"></h2>
+                        <div id="yearSub" class="text-sm text-slate-500 mt-1"></div>
+                    </div>
+                    
+                    <div id="yearTags" class="mb-4"></div>
+
+                    <div class="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-purple-100 mb-4">
+                        <div class="font-bold text-purple-900 mb-2"><i class="fas fa-star mr-1"></i>流年重点</div>
+                        <div id="yearCoreText" class="text-sm text-slate-700 leading-relaxed text-justify"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-white p-3 rounded border border-slate-100">
+                            <div class="font-bold text-slate-400 mb-1">流年四化</div>
+                            <div id="yearSiHua" class="space-y-1"></div>
+                        </div>
+                        <div class="bg-white p-3 rounded border border-slate-100">
+                            <div class="font-bold text-slate-400 mb-1">三方支援</div>
+                            <div id="yearSanFang" class="space-y-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 px-2">
+                    <div class="w-1 h-5 bg-indigo-600 rounded-full"></div>
+                    <h3 class="font-bold text-lg text-slate-800">未来三个月指引</h3>
+                </div>
+
+                <div id="monthlyForecast" class="space-y-4"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // === 1. 深度推理知识库 (Knowledge Graph) ===
-        
-        // 宫位定义
+        // === 1. 数据定义库 ===
         const PALACE_CONFIG = {
             '命宫': { icon: 'fa-user-circle', type: 'personality', label: '命格总览' },
             '财帛': { icon: 'fa-coins', type: 'wealth', label: '财富运势' },
@@ -116,7 +169,6 @@
             '兄弟': { icon: 'fa-user-friends', type: 'peer', label: '兄弟闺蜜' }
         };
 
-        // 星曜核心特质 (Context: Base)
         const STAR_BASE = {
             '紫微': { title: '尊贵之星', trait: '气场强大，喜掌权，耳根软，爱面子。' },
             '天机': { title: '智慧之星', trait: '反应敏捷，善策划，思虑多，易失眠。' },
@@ -134,7 +186,6 @@
             '破军': { title: '消耗之星', trait: '喜新厌旧，破坏力强，不破不立，大起大落。' }
         };
 
-        // 智能分析模板 (Context: Specific)
         const SMART_ANALYSIS = {
             'wealth': {
                 '武曲': '正财星坐守，适合经商或金融，对钱财敏感。',
@@ -159,6 +210,25 @@
             }
         };
 
+        // 找回流年逻辑
+        const TIME_LOGIC = {
+            '紫微': { text: '今年是“掌权年”。事业心极强，利于争取领导职位或创业，但需防刚愎自用。', tag: '权利·领导' },
+            '天机': { text: '今年是“变动年”。适合策划、学习、短途差旅。思绪活跃但容易失眠，忌钻牛角尖。', tag: '思考·变动' },
+            '太阳': { text: '今年是“付出年”。名气大于财气，奔波劳碌为他人作嫁衣，但利于建立口碑。', tag: '名声·奔波' },
+            '武曲': { text: '今年是“求财年”。执行力爆棚，利于搞钱，但人情味淡薄，注意不要因钱伤感情。', tag: '执行·搞钱' },
+            '天同': { text: '今年是“享受年”。心态平和，适合吃喝玩乐、调养身体，进取心稍弱。', tag: '福气·慵懒' },
+            '廉贞': { text: '今年是“人际年”。社交活动频繁，机会多在人脉中，但需防烂桃花和行政是非。', tag: '社交·公关' },
+            '天府': { text: '今年是“积淀年”。适合守成、储蓄、置业，不宜盲目扩张，稳中求胜。', tag: '稳健·守成' },
+            '太阴': { text: '今年是“内修年”。利于理财、美容、家居生活。男性异性缘佳，女性则更注重内心。', tag: '财富·内务' },
+            '贪狼': { text: '今年是“欲望年”。机会与诱惑并存，利于学习才艺、交际应酬，但忌投机。', tag: '应酬·欲望' },
+            '巨门': { text: '今年是“口舌年”。利于演讲、教学、谈判。若无此类工作，则易招惹是非误会。', tag: '口才·是非' },
+            '天相': { text: '今年是“辅助年”。适合做副手、中间人、服务性质工作。人缘好，能得贵人提拔。', tag: '辅助·人缘' },
+            '天梁': { text: '今年是“解厄年”。先难后易，适合通过解决麻烦来体现价值。利于学术、医药、公益。', tag: '清高·解难' },
+            '七杀': { text: '今年是“冲刺年”。宜动不宜静，适合大刀阔斧改革。压力大，但突破也大。注意受伤。', tag: '魄力·突破' },
+            '破军': { text: '今年是“破立年”。不破不立，可能会换工作、搬家或大额消费。旧的不去新的不来。', tag: '创新·消耗' },
+            'empty': { text: '今年是“环境年”。自身主见不强，容易受大环境或他人影响。宜随遇而安，借力使力。', tag: '随缘·借力' }
+        };
+
         const SI_HUA_DICT = {
             '禄': { label: '化禄 (机缘)', color: 'text-green-600', effect: '增强正面特质，带来财富与顺遂。' },
             '权': { label: '化权 (掌控)', color: 'text-blue-600', effect: '增强执行力与权力，但也更加劳碌霸道。' },
@@ -166,12 +236,13 @@
             '忌': { label: '化忌 (波折)', color: 'text-red-600', effect: '引发阻碍、纠结或亏欠，需低调行事。' }
         };
 
-        // 城市经度库
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65,'杭州':120.15,'重庆':106.55,'天津':117.20,'南京':118.79};
+        const LUNAR_MAP = ["正","二","三","四","五","六","七","八","九","十","十一","十二"];
 
         // === 2. 核心算法工具 ===
+        function _getStars(p) { return p?.majorStars || []; }
+        function _getMinors(p) { return p?.minorStars || []; }
 
-        // 真太阳时计算
         function getTrueSolarDate(ymdhm, locationName) {
             let lng = 120.0; 
             for (let c in CITY_LONGITUDES) { if (locationName.includes(c)) lng = CITY_LONGITUDES[c]; }
@@ -181,7 +252,6 @@
             return { date, offset: offsetMinutes, lng };
         }
 
-        // 历法转换
         function calculateBaZiData(solarDate) {
             const solar = Solar.fromYmdHms(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate(), solarDate.getHours(), solarDate.getMinutes(), solarDate.getSeconds());
             const lunar = solar.getLunar();
@@ -189,11 +259,10 @@
             return {
                 lunarStr: `${lunar.getYearShengXiao()}年 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
                 baziStr: `${baZi.getYear()} / ${baZi.getMonth()} / ${baZi.getDay()} / ${baZi.getTime()}`,
-                zwYearStem: lunar.getYearGan() // 紫微年干
+                zwYearStem: lunar.getYearGan() 
             };
         }
 
-        // 获取四化状态
         const SI_HUA_MAP = {
             '甲': { '廉贞': '禄', '破军': '权', '武曲': '科', '太阳': '忌' },
             '乙': { '天机': '禄', '天梁': '权', '紫微': '科', '太阴': '忌' },
@@ -216,15 +285,13 @@
             return null;
         }
 
-        // === 3. 深度分析推理引擎 (Deep Analysis Engine) ===
-        // 这是本次升级的核心：基于规则的文本生成
+        // === 3. 深度分析推理引擎 (Tab 1) ===
         function analyzePalaceDeeply(palace, astrolabe, birthStem) {
             const pConfig = PALACE_CONFIG[palace.name] || { type: 'general', label: palace.name };
             const majors = palace.majorStars.map(s => s.name);
             const minors = palace.minorStars.map(s => s.name);
             const borrow = majors.length === 0;
             
-            // 对宫、三方
             const pDui = astrolabe.palace((palace.index + 6) % 12);
             const activeStars = borrow ? pDui.majorStars.map(s => s.name) : majors;
             const sanFangStars = [
@@ -233,7 +300,6 @@
                 ...pDui.majorStars
             ].map(s => s.name);
 
-            // 1. 生成【核心特质】
             let coreText = "";
             let starTraits = [];
             
@@ -247,17 +313,14 @@
                 coreText = `主星坐守【${activeStars.join('、')}】，呈现${starTraits.join('、')}之象。`;
                 if (borrow) coreText = `(借对宫)${coreText}`;
                 
-                // 结合具体宫位生成描述
                 const specificDesc = activeStars.map(s => (SMART_ANALYSIS[pConfig.type] || {})[s]).filter(Boolean);
                 if (specificDesc.length > 0) coreText += specificDesc.join(' ');
                 else activeStars.forEach(s => { if(STAR_BASE[s]) coreText += STAR_BASE[s].trait; });
             }
 
-            // 2. 生成【格局分析】(考虑四化与吉凶)
             let patternText = "";
             let sihuaTags = [];
             
-            // 检查四化
             activeStars.forEach(star => {
                 const type = getSiHua(star, birthStem);
                 if (type) {
@@ -267,16 +330,13 @@
                 }
             });
 
-            // 检查吉煞混杂
             const lucky = sanFangStars.filter(s => ['左辅','右弼','天魁','天钺','文昌','文曲'].includes(s));
             const unlucky = minors.filter(s => ['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s));
             
             if (lucky.length > 0) patternText += `三方会照【${lucky.slice(0,2).join('+')}】，外力支援强，有人脉助力。<br>`;
             if (unlucky.length > 0) patternText += `本宫或对宫见【${unlucky.join('、')}】干扰，需防突发阻碍或小人破坏。`;
-            
             if (!patternText) patternText = "格局相对平稳，无剧烈吉凶冲照，按部就班发展即可。";
 
-            // 3. 生成【运势建议】
             let adviceText = "";
             const hasJi = activeStars.some(s => getSiHua(s, birthStem) === '忌');
             const hasLu = activeStars.some(s => getSiHua(s, birthStem) === '禄');
@@ -316,7 +376,7 @@
             const loc = document.getElementById('location').value;
 
             try {
-                // 1. 真太阳时修正
+                // 1. 真太阳时
                 const tstRes = getTrueSolarDate(`${y}-${m}-${d} ${t}`, loc);
                 document.getElementById('solarHint').innerHTML = `<i class="fas fa-clock"></i> 真太阳时：${tstRes.date.getHours()}:${String(tstRes.date.getMinutes()).padStart(2,'0')} (经度修正)`;
 
@@ -335,9 +395,14 @@
                 
                 const astrolabe = iztro.astro.bySolar(`${tstY}-${tstM}-${tstD}`, timeIndex, gender, true, 'zh-CN');
 
-                // 4. 渲染深度报告
+                // 4. 渲染 Tab 1 (深度报告)
                 renderDeepReport(astrolabe, dateData.zwYearStem);
+                
+                // 5. 渲染 Tab 2 (流年运势) - 找回的功能
+                renderFortune(astrolabe);
+
                 document.getElementById('resultArea').classList.remove('hidden');
+                switchTab('tab1'); // 默认切回 Tab 1
 
             } catch(e) { console.error(e); alert('排盘失败，请检查输入'); }
         }
@@ -345,18 +410,13 @@
         function renderDeepReport(astrolabe, birthStem) {
             const container = document.getElementById('profileContent');
             container.innerHTML = '';
-
-            // 定义想要展示的重点宫位顺序
             const focusPalaces = ['命宫', '财帛', '官禄', '迁移', '夫妻', '疾厄', '福德'];
             
             focusPalaces.forEach(pName => {
                 const palace = astrolabe.palaces.find(p => p.name === pName);
                 if (!palace) return;
-
                 const config = PALACE_CONFIG[pName];
                 const analysis = analyzePalaceDeeply(palace, astrolabe, birthStem);
-
-                // 构建卡片 HTML
                 const card = document.createElement('div');
                 card.className = 'synthesis-card fade-in';
                 
@@ -375,17 +435,14 @@
                             <div class="flex gap-1">${analysis.sihuaTags.join('')}</div>
                         </div>
                     </div>
-                    
                     <div class="deep-section ds-core">
                         <div class="ds-title"><i class="fas fa-gem"></i> 核心特质</div>
                         <div class="ds-content">${analysis.core}</div>
                     </div>
-
                     <div class="deep-section ds-pattern">
                         <div class="ds-title"><i class="fas fa-chess-board"></i> 格局分析</div>
                         <div class="ds-content">${analysis.pattern}</div>
                     </div>
-
                     <div class="deep-section ds-advice">
                         <div class="ds-title"><i class="fas fa-lightbulb"></i> 运势建议</div>
                         <div class="ds-content">${analysis.advice}</div>
@@ -395,7 +452,125 @@
             });
         }
 
-        // 初始化
+        function renderFortune(astrolabe) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const yearStr = currentYear + '-06-01 12:00:00'; 
+            let yearlyScope; try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
+
+            if (yearlyScope && yearlyScope.yearly) {
+                const yearStem = yearlyScope.yearly.heavenlyStem; 
+                const yIndex = yearlyScope.yearly.index;
+                const yPalace = astrolabe.palace(yIndex);
+                
+                const mStars = _getStars(yPalace);
+                const dStars = _getStars(astrolabe.palace((yIndex+6)%12));
+                const finalStars = mStars.length > 0 ? mStars : dStars;
+                const starKey = finalStars.length > 0 ? finalStars[0].name : 'empty';
+                
+                document.getElementById('yearTitle').innerText = `${currentYear} ${yearStem}${yearlyScope.yearly.earthlyBranch}年`;
+                document.getElementById('yearSub').innerText = `流年命宫 · ${yPalace.name}`;
+
+                const yearLogic = TIME_LOGIC[starKey] || {text:'今年运势平稳，按部就班。重点在于利用三方资源。', tag:'平稳·积累'};
+                let tagHtml = `<span class="year-tag yt-purple">${yearLogic.tag}</span>`;
+                const allNames = finalStars.map(s=>s.name);
+                if(allNames.some(n=>n.includes('杀')||n.includes('破'))) tagHtml += `<span class="year-tag yt-blue">变动</span>`;
+                if(allNames.some(n=>n.includes('桃')||n.includes('红'))) tagHtml += `<span class="year-tag yt-blue">桃花</span>`;
+                document.getElementById('yearTags').innerHTML = tagHtml;
+
+                let coreText = yearLogic.text;
+                const minors = _getMinors(yPalace).map(s=>s.name);
+                if(minors.includes('化忌')) coreText += " <br><b>⚠️ 特别注意：</b>流年化忌入命，凡事多阻碍，心态易纠结，宜守不宜攻。";
+                else if(minors.includes('擎羊') || minors.includes('火星')) coreText += " <br><b>⚠️ 特别注意：</b>煞星入命，脾气较大或突发状况多，注意防受伤和口舌。";
+                document.getElementById('yearCoreText').innerHTML = coreText;
+
+                const sihua = SI_HUA_MAP[yearStem] || {};
+                let sihuaHTML = '';
+                astrolabe.palaces.forEach(p => {
+                    p.majorStars.forEach(star => {
+                        if (sihua[star.name]) {
+                            const type = sihua[star.name];
+                            const flowNames = ['命','父','福','田','官','友','迁','疾','财','子','夫','兄'];
+                            const relIdx = (p.index - yIndex + 12) % 12;
+                            if(type==='忌' || type==='禄') {
+                                const color = type==='忌'?'text-red-600 font-bold':'text-green-600';
+                                sihuaHTML += `<div>${star.name}化${type} <span class="${color}">入流年${flowNames[relIdx]}</span></div>`;
+                            }
+                        }
+                    });
+                });
+                document.getElementById('yearSiHua').innerHTML = sihuaHTML || '无重要四化入三方';
+                
+                const cai = astrolabe.palace((yIndex+4)%12);
+                const guan = astrolabe.palace((yIndex+8)%12);
+                const getStarStr = (p) => {
+                    const s = _getStars(p);
+                    if(s.length>0) return s.map(x=>x.name).join('');
+                    return '借'+_getStars(astrolabe.palace((p.index+6)%12)).map(x=>x.name).join('');
+                }
+                document.getElementById('yearSanFang').innerHTML = `
+                    <div>流财：${getStarStr(cai)}</div>
+                    <div>流官：${getStarStr(guan)}</div>
+                `;
+            }
+
+            const container = document.getElementById('monthlyForecast');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 3; i++) {
+                const fDate = new Date(); fDate.setMonth(now.getMonth() + i);
+                const year = fDate.getFullYear();
+                const month = fDate.getMonth() + 1;
+                const fStr = `${year}-${String(month).padStart(2,'0')}-15 12:00:00`;
+                
+                let scope; try { scope = astrolabe.horoscope(fStr); } catch(e) { continue; }
+
+                if (scope && scope.monthly) {
+                    const mPalace = astrolabe.palace(scope.monthly.index);
+                    const allStars = [...mPalace.majorStars, ...mPalace.minorStars];
+                    const names = allStars.map(s => s.name);
+                    
+                    let st = { label: '平稳过渡', css: 'st-safe', icon: '<i class="fas fa-coffee"></i>' };
+                    if (names.includes('化忌') || (names.includes('地空') && names.includes('地劫'))) {
+                        st = { label: '严阵以待', css: 'st-danger', icon: '<i class="fas fa-exclamation-triangle"></i>' };
+                    } else if (names.some(n=>['火星','铃星','擎羊','陀罗'].includes(n))) {
+                        st = { label: '忙碌纠结', css: 'st-busy', icon: '<i class="fas fa-fire"></i>' };
+                    } else if (names.some(n=>['贪狼','廉贞','红鸾','天喜'].includes(n))) {
+                        st = { label: '社交桃花', css: 'st-social', icon: '<i class="fas fa-glass-cheers"></i>' };
+                    } else if (names.some(n=>['紫微','天府','化禄','化权'].includes(n))) {
+                        st = { label: '吉星高照', css: 'st-good', icon: '<i class="fas fa-star"></i>' };
+                    }
+
+                    let lunarText = scope.lunarDate ? (LUNAR_MAP[scope.lunarDate.month - 1] || scope.lunarDate.month) : "未知";
+
+                    const card = document.createElement('div');
+                    card.className = 'moon-card fade-in';
+                    card.innerHTML = `
+                        <div class="moon-header">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">${year}年${month}月</h2>
+                                <div class="text-xs text-slate-400">农历${lunarText}月 · ${mPalace.name}</div>
+                            </div>
+                            <div class="moon-status ${st.css}">${st.icon} ${st.label}</div>
+                        </div>
+                        <div class="text-sm text-slate-600">
+                            <b>${names.slice(0,4).join(' ')}</b> ...
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+        }
+
+        function switchTab(id) {
+            ['tab1','tab2'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            ['btn-tab1','btn-tab2'].forEach(b => { 
+                const btn = document.getElementById(b);
+                btn.className = b==='btn-'+id ? 'flex-1 py-4 text-sm tab-active' : 'flex-1 py-4 text-sm tab-inactive'; 
+            });
+        }
+
         (function init() {
             const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
             for(let i=new Date().getFullYear(); i>=1950; i--) y.add(new Option(i+'年', i));
