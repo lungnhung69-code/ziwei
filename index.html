@@ -3,52 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 深度全能版 V33.3 (最终稳定版)</title>
-    <!-- 样式库 -->
+    <title>紫微斗数 - 深度全能版 V33.4 (逻辑精修版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- 核心算法库 -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
     <script src="https://unpkg.com/iztro@2.5.3/dist/iztro.min.js"></script>
 
     <style>
         body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background-color: #f0f2f5; color: #333; }
-        
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; background: white; font-weight: 800; }
         .tab-inactive { color: #64748b; background: #f8fafc; font-weight: 500; }
-
-        /* 卡片通用样式 */
         .synthesis-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
         .card-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
         .card-title { font-size: 18px; font-weight: 900; color: #1e293b; }
-        
-        /* 深度分析三段式样式 */
         .deep-section { margin-bottom: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #cbd5e1; }
         .ds-title { font-weight: 800; font-size: 13px; color: #475569; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
         .ds-content { font-size: 14px; line-height: 1.6; color: #334155; text-align: justify; }
-        
-        /* 特殊标记颜色 */
         .ds-core { border-left-color: #6366f1; background: #eef2ff; }
         .ds-core .ds-title { color: #4338ca; }
         .ds-pattern { border-left-color: #0ea5e9; background: #f0f9ff; }
         .ds-pattern .ds-title { color: #0369a1; }
         .ds-advice { border-left-color: #10b981; background: #ecfdf5; }
         .ds-advice .ds-title { color: #047857; }
-
-        /* 流年流月样式 */
         .year-card { background: linear-gradient(145deg, #ffffff 0%, #fefaff 100%); border-left: 5px solid #7c3aed; }
         .year-tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 6px; margin-bottom: 6px; }
         .yt-purple { background: #f3e8ff; color: #6b21a8; }
         .yt-blue { background: #dbeafe; color: #1e40af; }
-        
         .moon-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
         .moon-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        
         .moon-status { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
-
-        /* 标签与高亮 */
         .keyword-box { display: inline-block; background: #fff; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #475569; margin-right: 5px; border: 1px solid #e2e8f0; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -61,7 +45,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度全能版
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.3</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V33.4</span>
         </div>
     </div>
 
@@ -148,7 +132,7 @@
     </div>
 
     <script>
-        // === 1. 数据定义库 ===
+        // === 1. 知识库配置 (已大幅扩充疾厄/田宅/交友逻辑) ===
         const PALACE_CONFIG = {
             '命宫': { icon: 'fa-user-circle', type: 'personality', label: '命格总览' },
             '财帛': { icon: 'fa-coins', type: 'wealth', label: '财富运势' },
@@ -165,22 +149,23 @@
         };
 
         const STAR_BASE = {
-            '紫微': { title: '尊贵之星', trait: '气场强大，喜掌权，耳根软，爱面子。' },
-            '天机': { title: '智慧之星', trait: '反应敏捷，善策划，思虑多，易失眠。' },
-            '太阳': { title: '博爱之星', trait: '热情豪爽，喜付出，劳碌命，重名声。' },
-            '武曲': { title: '刚毅之星', trait: '执行力强，重义气，略孤僻，爱搞钱。' },
-            '天同': { title: '福气之星', trait: '乐天知命，不计较，喜享受，微懒散。' },
-            '廉贞': { title: '交际之星', trait: '爱恨分明，善公关，心气高，桃花旺。' },
-            '天府': { title: '财库之星', trait: '稳重敦厚，善守成，格局大，喜奢华。' },
-            '太阴': { title: '富足之星', trait: '温柔细腻，重情感，爱干净，田宅旺。' },
-            '贪狼': { title: '欲望之星', trait: '多才多艺，善应酬，喜投机，桃花重。' },
-            '巨门': { title: '是非之星', trait: '心思细密，口才好，疑心重，易招非。' },
-            '天相': { title: '辅助之星', trait: '温良恭俭，喜粉饰，人缘好，最佳副手。' },
-            '天梁': { title: '荫庇之星', trait: '老成持重，喜助人，遇难呈祥，爱说教。' },
-            '七杀': { title: '肃杀之星', trait: '性格急躁，喜怒无常，敢冒险，能独当一面。' },
-            '破军': { title: '消耗之星', trait: '喜新厌旧，破坏力强，不破不立，大起大落。' }
+            '紫微': { title: '尊贵之星', trait: '气场强大，喜掌权。' },
+            '天机': { title: '智慧之星', trait: '反应敏捷，思虑多。' },
+            '太阳': { title: '博爱之星', trait: '热情豪爽，喜付出。' },
+            '武曲': { title: '刚毅之星', trait: '执行力强，略孤僻。' },
+            '天同': { title: '福气之星', trait: '乐天知命，微懒散。' },
+            '廉贞': { title: '交际之星', trait: '爱恨分明，心气高。' },
+            '天府': { title: '财库之星', trait: '稳重敦厚，格局大。' },
+            '太阴': { title: '富足之星', trait: '温柔细腻，爱干净。' },
+            '贪狼': { title: '欲望之星', trait: '多才多艺，善应酬。' },
+            '巨门': { title: '是非之星', trait: '心思细密，疑心重。' },
+            '天相': { title: '辅助之星', trait: '粉饰太平，人缘好。' },
+            '天梁': { title: '荫庇之星', trait: '老成持重，喜助人。' },
+            '七杀': { title: '肃杀之星', trait: '性格急躁，敢冒险。' },
+            '破军': { title: '消耗之星', trait: '喜新厌旧，破坏强。' }
         };
 
+        // 扩充后的智能分析字典
         const SMART_ANALYSIS = {
             'wealth': {
                 '武曲': '正财星坐守，适合经商或金融，对钱财敏感。',
@@ -202,10 +187,34 @@
                 '天梁': '配偶成熟稳重，可能年龄差距大，像长辈一样照顾你。',
                 '巨门': '沟通容易有隔阂，注意口角，多用包容化解。',
                 '贪狼': '感情丰富，配偶有魅力，需注意防范烂桃花。'
+            },
+            // 新增：疾厄宫（健康）专属
+            'health': {
+                '紫微': '注意脾胃消化功能，易有胃痛或消化不良。',
+                '天机': '注意神经系统，易失眠、神经衰弱或手足麻痹。',
+                '太阳': '注意眼目视力、心血管系统及血压问题。',
+                '武曲': '注意呼吸系统，如鼻炎、咽喉，以及骨骼牙齿健康。',
+                '天同': '注意耳部、肾脏及泌尿系统，易有水肿或肥胖。',
+                '廉贞': '注意心火旺、口舌生疮，或不明原因的炎症。',
+                '天府': '脾胃功能一般，饮食需规律，防中年发福。',
+                '太阴': '注意内分泌失调，女性注意妇科，男性注意肾虚。',
+                '贪狼': '注意肝胆保养及生殖系统，防酒色过度伤身。', // 针对您截图的修复
+                '巨门': '注意口腔、咽喉、食道及呼吸道隐患。',
+                '天相': '注意皮肤过敏、湿疹，或肾脏膀胱问题。',
+                '天梁': '虽有小病但能逢凶化吉，多为肠胃或慢性病。',
+                '七杀': '注意外伤、跌打损伤，呼吸系统也较弱。',
+                '破军': '注意生殖系统健康，以及意外碰伤。'
+            },
+            // 新增：田宅宫（资产）专属
+            'asset': {
+                '紫微': '可在高档社区置业，住处地势较高或近政府机构。',
+                '天机': '住处环境易变动，或常搬家，家中摆设常换。',
+                '太阴': '不动产运极佳，喜住光线柔和、近水或低洼处。',
+                '武曲': '靠近金融区、军警机构，家中金属电器较多。',
+                '破军': '不破不立，可能买旧房翻新，或住处杂乱。'
             }
         };
 
-        // 月运规则库
         const MONTH_RULES = {
             '紫微': { w:'正财稳健', c:'贵人提拔', l:'略显强势', h:'精神饱满' },
             '天机': { w:'投机生财', c:'变动频繁', l:'心思多变', h:'注意失眠' },
@@ -250,7 +259,6 @@
 
         const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'武汉':114.31,'西安':108.95,'周口':114.65,'郑州':113.65,'杭州':120.15,'重庆':106.55,'天津':117.20,'南京':118.79};
         
-        // === 2. 核心算法工具 ===
         function _getStars(p) { return p?.majorStars || []; }
         function _getMinors(p) { return p?.minorStars || []; }
 
@@ -296,7 +304,7 @@
             return null;
         }
 
-        // === 3. 深度分析推理引擎 (Tab 1) ===
+        // === 3. 深度分析推理引擎 (核心修改处) ===
         function analyzePalaceDeeply(palace, astrolabe, birthStem) {
             const pConfig = PALACE_CONFIG[palace.name] || { type: 'general', label: palace.name };
             const majors = palace.majorStars.map(s => s.name);
@@ -317,16 +325,21 @@
             if (activeStars.length === 0) {
                 coreText = "此宫位无主星，格局较弱，易受环境影响，缺乏定性。";
             } else {
-                activeStars.forEach(star => {
-                    const base = STAR_BASE[star];
-                    if (base) starTraits.push(base.title);
-                });
-                coreText = `主星坐守【${activeStars.join('、')}】，呈现${starTraits.join('、')}之象。`;
-                if (borrow) coreText = `(借对宫)${coreText}`;
-                
+                // 优先使用特定场景描述（如疾厄宫），如果没有则使用通用描述
                 const specificDesc = activeStars.map(s => (SMART_ANALYSIS[pConfig.type] || {})[s]).filter(Boolean);
-                if (specificDesc.length > 0) coreText += specificDesc.join(' ');
-                else activeStars.forEach(s => { if(STAR_BASE[s]) coreText += STAR_BASE[s].trait; });
+                
+                if (specificDesc.length > 0) {
+                    coreText = specificDesc.join(' '); // 直接显示健康/财运的具体描述
+                } else {
+                    activeStars.forEach(star => {
+                        const base = STAR_BASE[star];
+                        if (base) starTraits.push(base.title);
+                    });
+                    coreText = `主星坐守【${activeStars.join('、')}】，呈现${starTraits.join('、')}之象。`;
+                    activeStars.forEach(s => { if(STAR_BASE[s]) coreText += STAR_BASE[s].trait; });
+                }
+                
+                if (borrow) coreText = `(借对宫)${coreText}`;
             }
 
             let patternText = "";
@@ -348,11 +361,13 @@
             if (unlucky.length > 0) patternText += `本宫或对宫见【${unlucky.join('、')}】干扰，需防突发阻碍或小人破坏。`;
             if (!patternText) patternText = "格局相对平稳，无剧烈吉凶冲照，按部就班发展即可。";
 
+            // 智能建议逻辑
             let adviceText = "";
             const hasJi = activeStars.some(s => getSiHua(s, birthStem) === '忌');
             const hasLu = activeStars.some(s => getSiHua(s, birthStem) === '禄');
             const hasSha = unlucky.length > 0;
 
+            // 针对不同宫位类型的特殊建议
             if (pConfig.type === 'wealth') {
                 if (hasJi || hasSha) adviceText = "财运有破损风险，切忌借贷、担保或高风险投机。宜积谷防饥，稳健理财。";
                 else if (hasLu) adviceText = "财气顺遂，可适当扩大投资，通过专业技能或人际关系变现。";
@@ -361,6 +376,12 @@
                 if (hasJi) adviceText = "职场易有口舌或变动，建议低调行事，凡事留痕，避免背锅。";
                 else if (activeStars.includes('七杀') || activeStars.includes('破军')) adviceText = "事业宜动不宜静，适合开拓新市场或创业，不宜死守枯木。";
                 else adviceText = "事业运势平稳，适合在现有领域深耕，积累资历等待晋升。";
+            } else if (pConfig.type === 'health') { // 修复：疾厄宫专属建议
+                if (hasJi || hasSha) adviceText = "身体抵抗力稍弱，需定期体检。注意作息规律，避免过度透支，防慢性病隐患。";
+                else adviceText = "体质总体健康，精力充沛。保持良好的生活习惯，适度运动即可。";
+            } else if (pConfig.type === 'asset') { // 修复：田宅宫专属建议
+                if (hasJi) adviceText = "置业需谨慎，注意合同陷阱或房屋漏水等隐患。居家环境宜简单明亮。";
+                else adviceText = "家运安宁，利于置产或装修。居住环境能为您带来正向能量。";
             } else {
                 if (hasSha) adviceText = "当前运势稍显动荡，凡事多做一手准备，心态宜宽不宜急。";
                 else adviceText = "运势平顺，可顺势而为，抓住生活中的小确幸。";
@@ -387,18 +408,15 @@
             const loc = document.getElementById('location').value;
 
             try {
-                // 1. 真太阳时
                 const tstRes = getTrueSolarDate(`${y}-${m}-${d} ${t}`, loc);
                 document.getElementById('solarHint').innerHTML = `<i class="fas fa-clock"></i> 真太阳时：${tstRes.date.getHours()}:${String(tstRes.date.getMinutes()).padStart(2,'0')} (经度修正)`;
 
-                // 2. 历法计算
                 const dateData = calculateBaZiData(tstRes.date);
                 document.getElementById('birthStemDisplay').innerHTML = `
                     <span>农历：${dateData.lunarStr}</span> | 
                     <span>八字：${dateData.baziStr}</span>
                 `;
 
-                // 3. 排盘
                 const tstY = tstRes.date.getFullYear();
                 const tstM = String(tstRes.date.getMonth()+1).padStart(2,'0');
                 const tstD = String(tstRes.date.getDate()).padStart(2,'0');
@@ -406,14 +424,11 @@
                 
                 const astrolabe = iztro.astro.bySolar(`${tstY}-${tstM}-${tstD}`, timeIndex, gender, true, 'zh-CN');
 
-                // 4. 渲染 Tab 1 (深度报告)
                 renderDeepReport(astrolabe, dateData.zwYearStem);
-                
-                // 5. 渲染 Tab 2 (流年运势)
                 renderFortune(astrolabe);
 
                 document.getElementById('resultArea').classList.remove('hidden');
-                switchTab('tab1'); // 默认切回 Tab 1
+                switchTab('tab1'); 
 
             } catch(e) { console.error(e); alert('排盘失败，请检查输入'); }
         }
@@ -421,7 +436,8 @@
         function renderDeepReport(astrolabe, birthStem) {
             const container = document.getElementById('profileContent');
             container.innerHTML = '';
-            const focusPalaces = ['命宫', '财帛', '官禄', '迁移', '夫妻', '疾厄', '福德'];
+            // 调整展示顺序，将疾厄和田宅也纳入重点展示
+            const focusPalaces = ['命宫', '财帛', '官禄', '迁移', '夫妻', '疾厄', '田宅', '福德'];
             
             focusPalaces.forEach(pName => {
                 const palace = astrolabe.palaces.find(p => p.name === pName);
@@ -469,7 +485,6 @@
             const yearStr = currentYear + '-06-01 12:00:00'; 
             let yearlyScope; try { yearlyScope = astrolabe.horoscope(yearStr); } catch(e){}
 
-            // --- 1. 流年卡片 ---
             if (yearlyScope && yearlyScope.yearly) {
                 const yearStem = yearlyScope.yearly.heavenlyStem; 
                 const yIndex = yearlyScope.yearly.index;
@@ -526,7 +541,6 @@
                 `;
             }
 
-            // --- 2. 渲染未来三个月 (多维详解版) ---
             const container = document.getElementById('monthlyForecast');
             container.innerHTML = '';
             
@@ -534,7 +548,6 @@
                 const fDate = new Date(); fDate.setMonth(now.getMonth() + i);
                 const year = fDate.getFullYear();
                 const month = fDate.getMonth() + 1;
-                // 固定为15号以获取该月中间值，避免节气交接误差
                 const fStr = `${year}-${String(month).padStart(2,'0')}-15 12:00:00`;
                 
                 let scope; try { scope = astrolabe.horoscope(fStr); } catch(e) { continue; }
@@ -544,17 +557,13 @@
                     const allStars = [...mPalace.majorStars, ...mPalace.minorStars];
                     const starNames = allStars.map(s => s.name);
                     
-                    // 1. 核心主星逻辑
                     let mainStar = mPalace.majorStars.length > 0 ? mPalace.majorStars[0].name : '';
                     if (!mainStar && mPalace.majorStars.length === 0) {
-                        // 借对宫
                         const pDui = astrolabe.palace((mPalace.index + 6) % 12);
-                        mainStar = pDui.majorStars.length > 0 ? pDui.majorStars[0].name : '天同'; // 兜底
+                        mainStar = pDui.majorStars.length > 0 ? pDui.majorStars[0].name : '天同'; 
                     }
                     
                     const rule = MONTH_RULES[mainStar] || { w:'平稳', c:'平稳', l:'平稳', h:'平稳' };
-                    
-                    // 2. 煞星修正逻辑
                     let warning = null;
                     let modW = rule.w, modC = rule.c, modL = rule.l, modH = rule.h;
                     
@@ -570,11 +579,9 @@
                         modC = '压力大';
                     }
 
-                    // 3. 农历计算 (修复版)
                     const lunarObj = Solar.fromYmd(year, month, 15).getLunar();
                     const lunarText = lunarObj.getMonthInChinese(); 
 
-                    // 4. 构建 UI
                     const card = document.createElement('div');
                     card.className = 'moon-card fade-in';
                     card.innerHTML = `
@@ -633,7 +640,6 @@
             });
         }
 
-        // 初始化函数：修复下拉框空白问题
         (function init() {
             const y=document.getElementById('selYear'), m=document.getElementById('selMonth'), d=document.getElementById('selDay');
             for(let i=new Date().getFullYear(); i>=1950; i--) y.add(new Option(i+'年', i));
