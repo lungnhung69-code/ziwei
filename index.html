@@ -329,14 +329,13 @@
             return { core: coreText, pattern: patternText, advice: adviceText, stars: activeStars, sihuaTags: sihuaTags, isBorrowed: borrow };
         }
 
-        // === 重点新增：2026年深度分析逻辑 ===
-        // === 修正版：2026年深度分析逻辑 (修复流年宫位映射错误) ===
+       // === 2026年深度分析逻辑 (终极完整版：含修正、评分增强、格局检测) ===
         function analyze2026Deeply(astrolabe) {
             // 1. 定位2026流年宫位 (丙午年，地支为午)
             const horsePalace = astrolabe.palaces.find(p => p.earthlyBranch === '午');
             const yIndex = horsePalace.index;
             
-            // 2. 寻找关键星曜落点（本命盘位置）
+            // 2. 寻找关键星曜落点
             const findStarPalace = (starName) => astrolabe.palaces.find(p => p.majorStars.some(s => s.name === starName) || p.minorStars.some(s=>s.name === starName));
             
             const luPalace = findStarPalace('天同');
@@ -344,17 +343,26 @@
             const kePalace = findStarPalace('文昌');
             const jiPalace = findStarPalace('廉贞');
 
-            // 3. 计算流年叠宫关系
-            const overlapping = horsePalace.name; // 本命宫位名称
-            
-            let contentHTML = '';
-
-            // --- 板块一：总纲 ---
+            // 3. 基础信息准备
+            const overlapping = horsePalace.name; 
             const mainStars = _getStars(horsePalace);
             const borrow = mainStars.length === 0;
             const activeStars = borrow ? _getStars(astrolabe.palace((yIndex+6)%12)) : mainStars;
             const starNames = activeStars.map(s => s.name).join('、');
+            const allYearStars = [...horsePalace.majorStars.map(s=>s.name), ...horsePalace.minorStars.map(s=>s.name)];
             
+            // 获取三方四正的星曜 (用于格局判断)
+            const sanFangPalaces = [
+                horsePalace,
+                astrolabe.palace((yIndex+4)%12), // 官
+                astrolabe.palace((yIndex+8)%12), // 财
+                astrolabe.palace((yIndex+6)%12)  // 迁
+            ];
+            const sanFangStars = sanFangPalaces.flatMap(p => [...p.majorStars, ...p.minorStars].map(s=>s.name));
+
+            let contentHTML = '';
+
+            // --- 板块一：总纲 ---
             contentHTML += `
                 <div class="synthesis-card">
                     <div class="card-header">
@@ -376,16 +384,70 @@
                 </div>
             `;
 
+            // --- [新增] 板块一点五：格局智能检测 ---
+            let patterns = [];
+            // 1. 极向离明 (紫微在午)
+            if (activeStars.some(s => s.name === '紫微')) {
+                patterns.push({name: '极向离明格', type: 'good', desc: '帝星坐正午，气象万千，利于求名、掌权、升迁。'});
+                patterns.push({name: '府相朝垣格', type: 'good', desc: '紫微在午必有府相来朝，财官架构稳固，底子厚。'});
+            }
+            // 2. 君臣庆会 (紫微 + 辅弼魁钺)
+            if (activeStars.some(s => s.name === '紫微')) {
+                const helpers = ['左辅','右弼','天魁','天钺','文昌','文曲'];
+                const count = sanFangStars.filter(s => helpers.includes(s)).length;
+                if (count >= 2) patterns.push({name: '君臣庆会格', type: 'good', desc: '得道多助，团队给力，非光杆司令。'});
+            }
+            // 3. 命里逢空 (地空地劫入流年命)
+            if (allYearStars.includes('地空') || allYearStars.includes('地劫')) {
+                patterns.push({name: '命里逢空格', type: 'bad', desc: '<b>关键破格点：</b>半空折翅。虽有大格局，但易有始无终，或表面风光内在虚耗。'});
+            }
+            // 4. 禄马交驰
+            if ((allYearStars.includes('禄存')||sanFangStars.includes('禄存')) && (allYearStars.includes('天马')||sanFangStars.includes('天马'))) {
+                patterns.push({name: '禄马交驰格', type: 'good', desc: '动中生财，奔波越忙收获越大。'});
+            }
+            // 5. 火贪/铃贪
+            if (sanFangStars.includes('贪狼') && (sanFangStars.includes('火星') || sanFangStars.includes('铃星'))) {
+                patterns.push({name: '火贪爆发格', type: 'good', desc: '有突发横财或爆发性机遇。'});
+            }
+
+            if (patterns.length > 0) {
+                let pHtml = patterns.map(p => `
+                    <div class="mb-2 last:mb-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="${p.type==='good'?'bg-orange-100 text-orange-700':'bg-slate-200 text-slate-600'} text-xs font-bold px-2 py-0.5 rounded border ${p.type==='good'?'border-orange-200':'border-slate-300'}">${p.name}</span>
+                        </div>
+                        <div class="text-xs text-slate-600 ml-1">${p.desc}</div>
+                    </div>
+                `).join('');
+                
+                // 辩证总结
+                let summary = "";
+                const hasGood = patterns.some(p=>p.type==='good');
+                const hasBad = patterns.some(p=>p.type==='bad');
+                if (hasGood && hasBad) summary = "<b>💡 综合研判：</b>格局虽大（帝星坐镇），但遭破坏（空劫/煞星）。这预示着2026年<b>“名大于利”</b>，外人看着风光，自己知道辛苦。建议务实落地，防止“画饼充饥”。";
+                else if (hasGood) summary = "<b>💡 综合研判：</b>格局纯粹，气势如虹，是难得的强运之年。";
+                else summary = "<b>💡 综合研判：</b>格局平平，宜稳扎稳打。";
+
+                contentHTML += `
+                    <div class="synthesis-card" style="background: linear-gradient(to bottom right, #fffbeb, #ffffff);">
+                        <div class="card-header">
+                            <div class="card-icon bg-orange-500"><i class="fas fa-crown"></i></div>
+                            <div class="card-title">流年特殊格局</div>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-lg border border-orange-100 mb-3">
+                            ${pHtml}
+                        </div>
+                        <div class="text-xs text-orange-900 bg-orange-50 p-2 rounded border border-orange-200">
+                            ${summary}
+                        </div>
+                    </div>
+                `;
+            }
+
+
             // --- 板块二：丙干四化深度解读 ---
-            
-            // [关键修正]：使用顺时针顺序数组，与 (target - year) 的索引逻辑匹配
-            // 在地支盘上，顺时针方向依次是：命->父->福->田->官->友->迁->疾->财->子->夫->兄
             const getFlowPalaceName = (natalIndex) => {
-                const flowIdxMap = [
-                    '命宫', '父母', '福德', '田宅', '官禄', '交友', 
-                    '迁移', '疾厄', '财帛', '子女', '夫妻', '兄弟'
-                ];
-                // 公式：(本命Index - 流年Index + 12) % 12 计算的是顺时针的步数
+                const flowIdxMap = ['命宫','父母','福德','田宅','官禄','交友','迁移','疾厄','财帛','子女','夫妻','兄弟'];
                 const offset = (natalIndex - yIndex + 12) % 12;
                 return flowIdxMap[offset];
             };
@@ -396,31 +458,22 @@
                 let desc = '';
                 let advice = '';
                 
-                if(type === '禄') { // 天同
+                if(type === '禄') { 
                     desc = `<b>天同化禄</b> 入 <b>流年${flowName}</b> (本命${palace.name})`;
-                    advice = `今年在【${flowName}】领域有福气，容易轻松得利，心态较懒散，但运气不错。适合坐享其成或从事服务、餐饮、心理相关事务。`;
-                } else if(type === '权') { // 天机
+                    advice = `在【${flowName}】领域有福气，容易轻松得利，适合坐享其成或从事服务、餐饮、心理相关事务。`;
+                } else if(type === '权') { 
                     desc = `<b>天机化权</b> 入 <b>流年${flowName}</b> (本命${palace.name})`;
-                    advice = `在【${flowName}】领域变动频繁，需要您主动规划、出谋划策。不仅是脑力激荡，更是执行落地的时机，不可优柔寡断。`;
-                } else if(type === '科') { // 文昌
+                    advice = `在【${flowName}】领域变动频繁，不仅是脑力激荡，更是执行落地的时机，不可优柔寡断。`;
+                } else if(type === '科') { 
                     desc = `<b>文昌化科</b> 入 <b>流年${flowName}</b> (本命${palace.name})`;
                     advice = `【${flowName}】领域易有名声、合约、文书之喜。利于考试、考证或签订合同，有贵人赏识。`;
-                } else if(type === '忌') { // 廉贞 - 重点警告
+                } else if(type === '忌') { 
                     desc = `<b>廉贞化忌</b> 入 <b>流年${flowName}</b> (本命${palace.name})`;
-                    advice = `<b>⚠️ 核心风险：</b>【${flowName}】是今年最脆弱的一环。廉贞化忌代表“纠结、脓血、行政官非、精密仪器故障”。
+                    advice = `<b>⚠️ 核心风险：</b>【${flowName}】是今年最脆弱的一环。廉贞化忌代表“纠结、脓血、行政官非”。
                     <br>• 若在财/官：防合同陷阱、罚款或行政违规。
-                    <br>• 若在疾/命：注意炎症、外伤流血、心血管问题。
-                    <br>• 若在夫/友：防感情纠葛，烂桃花，或因人际关系受累。`;
+                    <br>• 若在疾/命：注意炎症、外伤流血、心血管问题。`;
                 }
-                
-                return `
-                    <div class="${type==='忌' ? 'warn-box' : 'luck-box'}">
-                        <div class="${type==='忌' ? 'warn-title' : 'luck-title'}">
-                            <i class="fas ${type==='忌'?'fa-exclamation-triangle':'fa-star'}"></i> ${desc}
-                        </div>
-                        <div class="text-xs mt-1 text-slate-700 leading-relaxed">${advice}</div>
-                    </div>
-                `;
+                return `<div class="${type==='忌' ? 'warn-box' : 'luck-box'}"><div class="${type==='忌' ? 'warn-title' : 'luck-title'}"><i class="fas ${type==='忌'?'fa-exclamation-triangle':'fa-star'}"></i> ${desc}</div><div class="text-xs mt-1 text-slate-700 leading-relaxed">${advice}</div></div>`;
             };
 
             contentHTML += `
@@ -437,93 +490,53 @@
                     </div>
                 </div>
             `;
-         // --- 板块三：五大领域专项分析 (增强版) ---
-            
-            // 获取流年的 财(8)、官(4)、夫(10)、疾(7) —— 对应顺时针数组索引
+
+            // --- 板块三：五大领域专项分析 (含增强评分) ---
             const getYearPalace = (offset) => astrolabe.palaces.find(p => (p.index - yIndex + 12) % 12 === offset);
+            const yearWealth = getYearPalace(8);
+            const yearCareer = getYearPalace(4);
+            const yearLove = getYearPalace(10);
+            const yearHealth = getYearPalace(7);
             
-            const yearWealth = getYearPalace(8); // 流财
-            const yearCareer = getYearPalace(4); // 流官
-            const yearLove = getYearPalace(10);  // 流夫
-            const yearHealth = getYearPalace(7); // 流疾
-            
-            // 🌟 增强版评分逻辑 🌟
             const getDomainStatus = (p, type) => {
                 if(!p) return { stars: '未知', text: '无法计算', color: 'text-slate-500' };
-                
                 const allStars = [...p.majorStars, ...p.minorStars];
                 const starNames = allStars.map(s=>s.name);
-                
-                // 1. 基础分
-                let score = 60; 
-                let details = [];
-
-                // 2. 吉凶星判定字典
+                let score = 60; let details = [];
                 const luckyStars = ['左辅','右弼','天魁','天钺','文昌','文曲','禄存','天马','化禄','化权','化科'];
                 const badStars = ['擎羊','陀罗','火星','铃星','地空','地劫','化忌','天刑','阴煞'];
 
-                // 3. 通用加减分
                 allStars.forEach(s => {
                     if (luckyStars.includes(s.name)) { score += 5; }
                     if (badStars.includes(s.name)) { score -= 8; }
                 });
 
-                // 4. 2026年特殊逻辑 (廉贞化忌)
-                if (starNames.includes('廉贞')) {
-                    score -= 25; // 廉贞在2026是大忌
-                    details.push('廉贞化忌入局，变数极大');
-                }
-                if (starNames.includes('天机') && type !== 'health') {
-                    score += 10; // 天机化权，利于谋划
-                    details.push('天机化权，主动出击');
-                }
-                if (starNames.includes('天同') && type !== 'career') {
-                    score += 10; // 天同化禄，福气加持
-                    details.push('天同化禄，顺水推舟');
-                }
+                if (starNames.includes('廉贞')) { score -= 25; details.push('廉贞化忌入局，变数极大'); }
+                if (starNames.includes('天机') && type !== 'health') { score += 10; details.push('天机化权，主动出击'); }
+                if (starNames.includes('天同') && type !== 'career') { score += 10; details.push('天同化禄，顺水推舟'); }
 
-                // 5. 领域专属逻辑
                 if (type === 'wealth') {
                     if (['武曲','太阴','天府','贪狼'].some(s => starNames.includes(s))) score += 10;
                     if (starNames.includes('地空') || starNames.includes('地劫')) { score -= 15; details.push('空劫入财，防破耗'); }
                 } else if (type === 'career') {
-                    if (['紫微','太阳','廉贞','七杀','破军'].some(s => starNames.includes(s))) score += 5; // 事业喜强星
+                    if (['紫微','太阳','廉贞','七杀','破军'].some(s => starNames.includes(s))) score += 5;
                     if (starNames.includes('文昌') || starNames.includes('文曲')) score += 5;
                 } else if (type === 'love') {
                     if (['红鸾','天喜','天姚','咸池','贪狼'].some(s => starNames.includes(s))) { score += 10; details.push('桃花星动'); }
                     if (['孤辰','寡宿','武曲','七杀'].some(s => starNames.includes(s))) { score -= 10; details.push('孤克之象，聚少离多'); }
                 } else if (type === 'health') {
-                    // 健康分越低越危险
                     if (['天月','病符'].some(s => starNames.includes(s))) score -= 10;
                     if (starNames.includes('擎羊') || starNames.includes('陀罗')) { score -= 10; details.push('防外伤手术'); }
                 }
 
-                // 6. 结果文本生成
-                let resultText = '';
-                let resultColor = '';
-                
-                if (score >= 85) {
-                    resultText = '🔥 气势如虹：' + (details.length ? details.join('，') : '吉星高照，顺风顺水，可大胆进取。');
-                    resultColor = 'text-red-600';
-                } else if (score >= 70) {
-                    resultText = '✨ 稳中向好：' + (details.length ? details.join('，') : '虽有小波折，但总体机遇大于挑战。');
-                    resultColor = 'text-orange-600';
-                } else if (score >= 50) {
-                    resultText = '⚖️ 有得有失：' + (details.length ? details.join('，') : '运势平稳，多劳多得，不宜投机。');
-                    resultColor = 'text-blue-600';
-                } else if (score >= 30) {
-                    resultText = '🌧️ 阻力较多：' + (details.length ? details.join('，') : '易感疲惫或受阻，建议守成，不做重大变动。');
-                    resultColor = 'text-slate-600';
-                } else {
-                    resultText = '⚠️ 严峻考验：' + (details.length ? details.join('，') : '煞星云集，凡事需做最坏打算，韬光养晦。');
-                    resultColor = 'text-slate-500 bg-slate-100 px-2 py-1 rounded';
-                }
+                let resultText = ''; let resultColor = '';
+                if (score >= 85) { resultText = '🔥 气势如虹：' + (details.length ? details.join('，') : '吉星高照，顺风顺水。'); resultColor = 'text-red-600'; }
+                else if (score >= 70) { resultText = '✨ 稳中向好：' + (details.length ? details.join('，') : '机遇大于挑战。'); resultColor = 'text-orange-600'; }
+                else if (score >= 50) { resultText = '⚖️ 有得有失：' + (details.length ? details.join('，') : '运势平稳，多劳多得。'); resultColor = 'text-blue-600'; }
+                else if (score >= 30) { resultText = '🌧️ 阻力较多：' + (details.length ? details.join('，') : '易感疲惫，建议守成。'); resultColor = 'text-slate-600'; }
+                else { resultText = '⚠️ 严峻考验：' + (details.length ? details.join('，') : '煞星云集，凡事做最坏打算。'); resultColor = 'text-slate-500 bg-slate-100 px-2 py-1 rounded'; }
 
-                return { 
-                    stars: starNames.slice(0,3).join('+') + (starNames.length>3?'...':''), 
-                    text: resultText,
-                    color: resultColor
-                };
+                return { stars: starNames.slice(0,3).join('+') + (starNames.length>3?'...':''), text: resultText, color: resultColor };
             };
 
             const wSt = getDomainStatus(yearWealth, 'wealth');
@@ -554,7 +567,7 @@
                         <div class="text-xs font-bold leading-relaxed ${hSt.color}">${hSt.text}</div>
                     </div>
                 </div>
-            `; 
+            `;
 
             // --- 板块四：月份关键事件预测 ---
             contentHTML += `
@@ -776,5 +789,6 @@
     </script>
 </body>
 </html>
+
 
 
