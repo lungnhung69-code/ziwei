@@ -437,11 +437,9 @@
                     </div>
                 </div>
             `;
-
-            // --- 板块三：五大领域专项分析 ---
-            // 获取流年的 财(8)、官(4)、夫(10)、疾(7)、迁(6) —— 注意这里的offset是基于上面顺时针数组的索引
-            // 命(0), 父(1), 福(2), 田(3), 官(4), 友(5), 迁(6), 疾(7), 财(8), 子(9), 夫(10), 兄(11)
+         // --- 板块三：五大领域专项分析 (增强版) ---
             
+            // 获取流年的 财(8)、官(4)、夫(10)、疾(7) —— 对应顺时针数组索引
             const getYearPalace = (offset) => astrolabe.palaces.find(p => (p.index - yIndex + 12) % 12 === offset);
             
             const yearWealth = getYearPalace(8); // 流财
@@ -449,27 +447,83 @@
             const yearLove = getYearPalace(10);  // 流夫
             const yearHealth = getYearPalace(7); // 流疾
             
+            // 🌟 增强版评分逻辑 🌟
             const getDomainStatus = (p, type) => {
-                if(!p) return { stars: '未知', text: '无法计算' };
-                const stars = [...p.majorStars, ...p.minorStars].map(s=>s.name);
-                const hasJi = stars.includes('化忌') || (type==='health' && stars.includes('廉贞')); 
-                const hasSha = stars.some(s=>['擎羊','陀罗','火星','铃星','地空','地劫'].includes(s));
-                const hasLu = stars.includes('化禄') || stars.includes('禄存');
+                if(!p) return { stars: '未知', text: '无法计算', color: 'text-slate-500' };
                 
-                let score = 50;
-                if(hasLu) score += 20;
-                if(hasJi) score -= 30;
-                if(hasSha) score -= 10;
+                const allStars = [...p.majorStars, ...p.minorStars];
+                const starNames = allStars.map(s=>s.name);
                 
-                let text = '';
-                if(score >= 70) text = '吉星高照，机会颇多。';
-                else if(score <= 30) text = '阻力较大，宜守不宜攻。';
-                else text = '平稳过渡，有得有失。';
+                // 1. 基础分
+                let score = 60; 
+                let details = [];
 
-                if(type === 'health' && (jiPalace === p || stars.includes('廉贞'))) {
-                    text += ' <b>重点注意：</b>廉贞化忌冲照，防心血管、炎症或意外血光。';
+                // 2. 吉凶星判定字典
+                const luckyStars = ['左辅','右弼','天魁','天钺','文昌','文曲','禄存','天马','化禄','化权','化科'];
+                const badStars = ['擎羊','陀罗','火星','铃星','地空','地劫','化忌','天刑','阴煞'];
+
+                // 3. 通用加减分
+                allStars.forEach(s => {
+                    if (luckyStars.includes(s.name)) { score += 5; }
+                    if (badStars.includes(s.name)) { score -= 8; }
+                });
+
+                // 4. 2026年特殊逻辑 (廉贞化忌)
+                if (starNames.includes('廉贞')) {
+                    score -= 25; // 廉贞在2026是大忌
+                    details.push('廉贞化忌入局，变数极大');
                 }
-                return { stars: stars.slice(0,3).join('+'), text };
+                if (starNames.includes('天机') && type !== 'health') {
+                    score += 10; // 天机化权，利于谋划
+                    details.push('天机化权，主动出击');
+                }
+                if (starNames.includes('天同') && type !== 'career') {
+                    score += 10; // 天同化禄，福气加持
+                    details.push('天同化禄，顺水推舟');
+                }
+
+                // 5. 领域专属逻辑
+                if (type === 'wealth') {
+                    if (['武曲','太阴','天府','贪狼'].some(s => starNames.includes(s))) score += 10;
+                    if (starNames.includes('地空') || starNames.includes('地劫')) { score -= 15; details.push('空劫入财，防破耗'); }
+                } else if (type === 'career') {
+                    if (['紫微','太阳','廉贞','七杀','破军'].some(s => starNames.includes(s))) score += 5; // 事业喜强星
+                    if (starNames.includes('文昌') || starNames.includes('文曲')) score += 5;
+                } else if (type === 'love') {
+                    if (['红鸾','天喜','天姚','咸池','贪狼'].some(s => starNames.includes(s))) { score += 10; details.push('桃花星动'); }
+                    if (['孤辰','寡宿','武曲','七杀'].some(s => starNames.includes(s))) { score -= 10; details.push('孤克之象，聚少离多'); }
+                } else if (type === 'health') {
+                    // 健康分越低越危险
+                    if (['天月','病符'].some(s => starNames.includes(s))) score -= 10;
+                    if (starNames.includes('擎羊') || starNames.includes('陀罗')) { score -= 10; details.push('防外伤手术'); }
+                }
+
+                // 6. 结果文本生成
+                let resultText = '';
+                let resultColor = '';
+                
+                if (score >= 85) {
+                    resultText = '🔥 气势如虹：' + (details.length ? details.join('，') : '吉星高照，顺风顺水，可大胆进取。');
+                    resultColor = 'text-red-600';
+                } else if (score >= 70) {
+                    resultText = '✨ 稳中向好：' + (details.length ? details.join('，') : '虽有小波折，但总体机遇大于挑战。');
+                    resultColor = 'text-orange-600';
+                } else if (score >= 50) {
+                    resultText = '⚖️ 有得有失：' + (details.length ? details.join('，') : '运势平稳，多劳多得，不宜投机。');
+                    resultColor = 'text-blue-600';
+                } else if (score >= 30) {
+                    resultText = '🌧️ 阻力较多：' + (details.length ? details.join('，') : '易感疲惫或受阻，建议守成，不做重大变动。');
+                    resultColor = 'text-slate-600';
+                } else {
+                    resultText = '⚠️ 严峻考验：' + (details.length ? details.join('，') : '煞星云集，凡事需做最坏打算，韬光养晦。');
+                    resultColor = 'text-slate-500 bg-slate-100 px-2 py-1 rounded';
+                }
+
+                return { 
+                    stars: starNames.slice(0,3).join('+') + (starNames.length>3?'...':''), 
+                    text: resultText,
+                    color: resultColor
+                };
             };
 
             const wSt = getDomainStatus(yearWealth, 'wealth');
@@ -481,26 +535,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <div class="text-sm font-bold text-yellow-600 mb-1"><i class="fas fa-coins"></i> 流年财运</div>
-                        <div class="text-xs text-slate-400 mb-2">流财在${yearWealth.name} (${wSt.stars}...)</div>
-                        <div class="text-xs text-slate-700 text-justify">${wSt.text}</div>
+                        <div class="text-xs text-slate-400 mb-2">流财在${yearWealth.name} (${wSt.stars})</div>
+                        <div class="text-xs font-bold leading-relaxed ${wSt.color}">${wSt.text}</div>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <div class="text-sm font-bold text-blue-600 mb-1"><i class="fas fa-briefcase"></i> 流年事业</div>
-                        <div class="text-xs text-slate-400 mb-2">流官在${yearCareer.name} (${cSt.stars}...)</div>
-                        <div class="text-xs text-slate-700 text-justify">${cSt.text}</div>
+                        <div class="text-xs text-slate-400 mb-2">流官在${yearCareer.name} (${cSt.stars})</div>
+                        <div class="text-xs font-bold leading-relaxed ${cSt.color}">${cSt.text}</div>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <div class="text-sm font-bold text-pink-600 mb-1"><i class="fas fa-heart"></i> 情感婚姻</div>
-                        <div class="text-xs text-slate-400 mb-2">流夫在${yearLove.name} (${lSt.stars}...)</div>
-                        <div class="text-xs text-slate-700 text-justify">${lSt.text}</div>
+                        <div class="text-xs text-slate-400 mb-2">流夫在${yearLove.name} (${lSt.stars})</div>
+                        <div class="text-xs font-bold leading-relaxed ${lSt.color}">${lSt.text}</div>
                     </div>
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <div class="text-sm font-bold text-emerald-600 mb-1"><i class="fas fa-notes-medical"></i> 健康安全</div>
-                        <div class="text-xs text-slate-400 mb-2">流疾在${yearHealth.name} (${hSt.stars}...)</div>
-                        <div class="text-xs text-slate-700 text-justify">${hSt.text}</div>
+                        <div class="text-xs text-slate-400 mb-2">流疾在${yearHealth.name} (${hSt.stars})</div>
+                        <div class="text-xs font-bold leading-relaxed ${hSt.color}">${hSt.text}</div>
                     </div>
                 </div>
-            `;
+            `; 
 
             // --- 板块四：月份关键事件预测 ---
             contentHTML += `
@@ -722,4 +776,5 @@
     </script>
 </body>
 </html>
+
 
