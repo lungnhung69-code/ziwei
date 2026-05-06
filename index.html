@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>紫微斗数 - 深度全能版 V36.0 (格局强化版)</title>
+    <title>紫微斗数 - 深度全能版 V36.1 (城市经度优化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
@@ -51,7 +51,7 @@
             <h1 class="font-bold text-xl text-slate-800 tracking-wide">
                 <i class="fas fa-brain text-indigo-600 mr-2"></i>紫微斗数 · 深度全能版
             </h1>
-            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V36 格局强化</span>
+            <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded font-bold">V36.1 经度优化</span>
         </div>
     </div>
 
@@ -68,13 +68,15 @@
                 <select id="gender" class="border p-3 rounded-lg text-sm outline-none bg-slate-50"><option value="男">男</option><option value="女">女</option></select>
             </div>
             <div class="relative">
-                <input type="text" id="location" value="北京" placeholder="出生地 (用于真太阳时)" class="border p-3 rounded-lg text-sm w-full pl-10 outline-none bg-slate-50">
+                <input type="text" id="location" value="北京" placeholder="出生地 (用于真太阳时)" list="cityList" class="border p-3 rounded-lg text-sm w-full pl-10 outline-none bg-slate-50">
                 <i class="fas fa-map-marker-alt absolute left-3 top-3.5 text-slate-400"></i>
+                <datalist id="cityList"></datalist>
             </div>
             <button onclick="calculate()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-4 rounded-xl font-bold shadow-lg transition flex justify-center items-center gap-2 text-base">
                 <span>🚀 启动全维推演</span>
             </button>
             <div id="solarHint" class="text-xs text-center text-slate-500 font-mono"></div>
+            <div class="text-[11px] leading-relaxed text-slate-400 text-center">支持常见城市经度自动匹配；未匹配时默认使用东经 120° 标准时区。</div>
         </div>
 
         <!-- 结果区 -->
@@ -182,20 +184,39 @@
             '癸': { '破军': '禄', '巨门': '权', '太阴': '科', '贪狼': '忌' }
         };
 
-        const CITY_LONGITUDES={'北京':116.40,'上海':121.47,'广州':113.23,'深圳':114.05,'成都':104.06,'周口':114.65,'郑州':113.65};
+        const CITY_LONGITUDES = {
+            '北京': 116.40, '上海': 121.47, '广州': 113.23, '深圳': 114.05,
+            '成都': 104.06, '重庆': 106.55, '杭州': 120.16, '南京': 118.78,
+            '武汉': 114.31, '西安': 108.94, '天津': 117.20, '苏州': 120.58,
+            '长沙': 112.94, '青岛': 120.38, '厦门': 118.09, '昆明': 102.71,
+            '沈阳': 123.43, '大连': 121.61, '哈尔滨': 126.63, '乌鲁木齐': 87.62,
+            '拉萨': 91.13, '兰州': 103.84, '贵阳': 106.63, '南宁': 108.37,
+            '海口': 110.32, '周口': 114.65, '郑州': 113.65
+        };
 
         // 辅助函数
         function _getStars(p) { return p?.majorStars ||[]; }
         function _getAllStars(p) { return [...(p?.majorStars||[]), ...(p?.minorStars||[])]; }
         function _getStarNames(p) { return _getAllStars(p).map(s=>s.name); }
         
+        function getCityLongitude(locationName) {
+            const normalized = (locationName || '').trim();
+            for (let [city, lng] of Object.entries(CITY_LONGITUDES)) {
+                if (normalized.includes(city)) return { city, lng, matched: true };
+            }
+            return { city: '默认东八区中线', lng: 120.0, matched: false };
+        }
+
+        function formatClock(date) {
+            return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
         function getTrueSolarDate(ymdhm, locationName) {
-            let lng = 120.0; 
-            for (let c in CITY_LONGITUDES) { if (locationName.includes(c)) lng = CITY_LONGITUDES[c]; }
+            const longitude = getCityLongitude(locationName);
             const date = new Date(ymdhm + ":00");
-            const offsetMinutes = (lng - 120) * 4;
+            const offsetMinutes = (longitude.lng - 120) * 4;
             date.setMinutes(date.getMinutes() + offsetMinutes);
-            return { date, offset: offsetMinutes, lng };
+            return { date, offset: offsetMinutes, lng: longitude.lng, city: longitude.city, matched: longitude.matched };
         }
 
         function calculateBaZiData(solarDate) {
@@ -624,7 +645,9 @@
 
             try {
                 const tstRes = getTrueSolarDate(`${y}-${m}-${d} ${t}`, loc);
-                document.getElementById('solarHint').innerHTML = `<i class="fas fa-clock"></i> 真太阳时：${tstRes.date.getHours()}:${String(tstRes.date.getMinutes()).padStart(2,'0')} (经度修正)`;
+                const offsetLabel = `${tstRes.offset >= 0 ? '+' : ''}${tstRes.offset.toFixed(1)}分钟`;
+                const matchLabel = tstRes.matched ? `匹配城市：${tstRes.city}` : '未匹配城市，使用东经120°';
+                document.getElementById('solarHint').innerHTML = `<i class="fas fa-clock"></i> 真太阳时：${formatClock(tstRes.date)}（${matchLabel}，经度 ${tstRes.lng.toFixed(2)}°，修正 ${offsetLabel}）`;
 
                 const dateData = calculateBaZiData(tstRes.date);
                 document.getElementById('birthStemDisplay').innerHTML = `
@@ -662,6 +685,9 @@
                 d.innerHTML = ''; for(let i=1; i<=days; i++) d.add(new Option(i+'日', i));
             };
             y.onchange = m.onchange = updateD; updateD(); d.value=15;
+
+            const cityList = document.getElementById('cityList');
+            Object.keys(CITY_LONGITUDES).forEach(city => cityList.add(new Option(city)));
         })();
     </script>
 </body>
