@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>王果｜若普律师事务所电子名片</title>
+  <meta name="description" content="王果，资深企业顾问，若普律师事务所电子名片。">
+  <style>
+    :root {
+      --navy: #0c2340;
+      --navy-soft: #15395f;
+      --cream: #f7f1e6;
+      --paper: #fffaf1;
+      --mist: #f5f6f8;
+      --text: #17202a;
+      --muted: #69727d;
+      --gold: #b08a45;
+      --gold-dark: #8a6a2f;
+      --line: rgba(12, 35, 64, 0.12);
+      --shadow: 0 18px 45px rgba(12, 35, 64, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      background:
+        radial-gradient(circle at top left, rgba(176, 138, 69, 0.12), transparent 28rem),
+        linear-gradient(180deg, var(--cream) 0%, var(--mist) 55%, #eef1f4 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      width: min(100%, 520px);
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 72vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 28px 24px;
+      color: #fff;
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(12, 35, 64, 0.96), rgba(21, 57, 95, 0.94)),
+        linear-gradient(45deg, transparent 0%, rgba(176, 138, 69, 0.18) 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(176, 138, 69, 0.28);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      inset: 16px;
+      border-radius: 22px;
+    }
+
+    .hero::after {
+      width: 190px;
+      height: 190px;
+      right: -84px;
+      top: -54px;
+      border-radius: 50%;
+      background: rgba(176, 138, 69, 0.08);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 58px;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-mark::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .name {
+      margin: 0;
+      font-size: clamp(46px, 13vw, 64px);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .role {
+      margin: 16px 0 0;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 18px;
+      letter-spacing: 0.14em;
+    }
+
+    .firm {
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .firm-title {
+      margin: 0;
+      color: var(--cream);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+
+    .firm-slogan {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 14px;
+      letter-spacing: 0.12em;
+    }
+
+    .section {
+      margin-top: 18px;
+      padding: 22px 20px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 250, 241, 0.88);
+      box-shadow: 0 12px 32px rgba(12, 35, 64, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: var(--navy);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+
+    .contact-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .contact-item {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .contact-item:last-child {
+      border-bottom: 0;
+    }
+
+    .contact-label {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .contact-value {
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .contact-value.actionable {
+      color: var(--navy-soft);
+      text-decoration: underline;
+      text-decoration-color: rgba(176, 138, 69, 0.55);
+      text-underline-offset: 4px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .service-card {
+      position: relative;
+      padding: 16px 16px 16px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(12, 35, 64, 0.1);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffffff, #fbf7ef);
+      color: var(--navy);
+      font-weight: 650;
+      box-shadow: 0 8px 20px rgba(12, 35, 64, 0.06);
+    }
+
+    .service-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--gold), rgba(176, 138, 69, 0.25));
+    }
+
+    .actions {
+      display: grid;
+      gap: 12px;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    .button-primary {
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 12px 24px rgba(12, 35, 64, 0.2);
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      border: 1px solid rgba(12, 35, 64, 0.16);
+      background: #fff;
+    }
+
+    .button-muted {
+      color: var(--navy);
+      border: 1px solid rgba(176, 138, 69, 0.38);
+      background: rgba(176, 138, 69, 0.1);
+    }
+
+    .notice {
+      margin: 18px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (min-width: 460px) {
+      .page {
+        padding-top: 28px;
+      }
+
+      .hero {
+        min-height: 620px;
+      }
+
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page" aria-label="王果律师电子名片">
+    <section class="hero" aria-labelledby="card-name">
+      <div class="hero-content">
+        <div class="brand-mark">若普律师事务所</div>
+        <h1 class="name" id="card-name">王果</h1>
+        <p class="role">资深企业顾问</p>
+        <div class="firm" aria-label="律所信息">
+          <p class="firm-title">若普律师事务所</p>
+          <p class="firm-slogan">若信于心，普惠于行</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="contact-title">
+      <h2 class="section-title" id="contact-title">联系方式</h2>
+      <ul class="contact-list">
+        <li class="contact-item">
+          <span class="contact-label">电话</span>
+          <a class="contact-value actionable" href="tel:18010077704">18010077704</a>
+        </li>
+        <li class="contact-item">
+          <span class="contact-label">邮箱</span>
+          <a class="contact-value actionable" href="mailto:18010077704@163.com">18010077704@163.com</a>
+        </li>
+        <li class="contact-item">
+          <span class="contact-label">地址</span>
+          <span class="contact-value">北京市大兴区星光影视园A座541室</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="service-title">
+      <h2 class="section-title" id="service-title">服务领域</h2>
+      <div class="service-grid">
+        <article class="service-card">企业常年法律顾问</article>
+        <article class="service-card">合同审查与风险控制</article>
+        <article class="service-card">劳动用工合规</article>
+        <article class="service-card">婚姻家事与财富传承</article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="consult-title">
+      <h2 class="section-title" id="consult-title">咨询入口</h2>
+      <div class="actions">
+        <a class="button button-primary" href="tel:18010077704">电话咨询</a>
+        <a class="button button-secondary" href="mailto:18010077704@163.com">发送邮件</a>
+        <a class="button button-muted" href="../index.html">返回首页</a>
+      </div>
+    </section>
+
+    <footer class="notice">
+      本页面仅用于律师联系方式展示，不构成具体案件的正式法律意见。具体法律方案应以委托后结合材料分析为准。
+    </footer>
+  </main>
+
+  <script>
+    document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(function (link) {
+      link.addEventListener('click', function () {
+        link.blur();
+      });
+    });
+  </script>
+</body>
+</html>
